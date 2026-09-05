@@ -52,3 +52,32 @@ lifecycle. Only explicit local report paths are written, with no overwrite.
 - Real pinned native inference, target Python 3.12, macOS/Windows camera/GUI and
   60FPS live acceptance are separate gates. Tests with synthetic trackers do not
   close those gates.
+
+## Explicit two-task scheduling experiment (2026-09-06)
+
+The default stays `parallel` (three task calls). `staggered` uses two executor
+workers: start hands and pose, then admit face after either completes. All three
+models run exactly once per original frame at the same model timestamp; model
+assets, thresholds, input resolution, result conversion and missing-data semantics
+are unchanged. This bounds concurrent task API calls, not internal native threads.
+In-flight work is joined on a scheduling failure before returning control. Native
+hang recovery/process isolation is not added. Camera/live CLI defaults are unchanged.
+
+`--compare-scheduling` is track-only, rejects conflicting repeat/mode selections,
+and owns the fixed ABBA plan: parallel/staggered/staggered/parallel. Every pass
+starts with a fresh tracker and consumes every original frame. Each run records
+its active scheduling. No fastest-mode auto-selection or provider fallback exists.
+
+`--verify-results` explicitly computes an ordered hash of source PTS, all numeric
+landmarks (including world coordinates/confidence availability), blendshape names,
+scores and indices. It stores no individual predictions. Hash work is timed apart
+from frame_service, but included in unpaced_loop_fps and CPU load; comparisons
+must use the same verification setting. Equal hashes mean equal outputs, not
+accuracy; unequal hashes need investigation, not silent acceptance or replacement.
+A Python-source aggregate hash supplements git revision/dirty state. It describes
+on-disk package source bytes, not arbitrary imported dependencies or a clean tree.
+
+Acceptance: deterministic event-controlled scheduling/cleanup tests, original
+recording/PTS tests, ABBA order and fresh lifecycle tests, numeric hash sensitivity,
+and native Mac all-frame ABBA. Only the target-host native run can establish a
+speedup; do not promote this scheduling candidate from synthetic worker timings.

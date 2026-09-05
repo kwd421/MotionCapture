@@ -7,6 +7,7 @@ import json
 import math
 import os
 import platform
+import struct
 import subprocess
 import tempfile
 import time
@@ -100,12 +101,63 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+_LANDMARK_FIELDS = (
+    "pose_landmarks", "pose_world_landmarks", "left_hand_landmarks",
+    "left_hand_world_landmarks", "right_hand_landmarks", "right_hand_world_landmarks",
+    "face_landmarks",
+)
+
+
+def _digest_result(digest: Any, frame: Any, result: Any) -> None:
+    """Fixed v1 framing; missing confidence and zero confidence hash differently."""
+    identity = frame.identity
+    digest.update(b"motioncapture-prediction-v1\0")
+    digest.update(struct.pack("<Qqqq", identity.sequence, identity.pts,
+                              identity.time_base.numerator, identity.time_base.denominator))
+    for name in _LANDMARK_FIELDS:
+        points = getattr(result, name)
+        digest.update(struct.pack("<I", len(points)))
+        for point in points:
+            digest.update(struct.pack(
+                "<5dBB", point.x, point.y, point.z,
+                0.0 if point.visibility is None else point.visibility,
+                0.0 if point.presence is None else point.presence,
+                point.visibility is not None, point.presence is not None,
+            ))
+    digest.update(struct.pack("<I", len(result.face_blendshapes)))
+    for shape in result.face_blendshapes:
+        name = shape.category_name.encode("utf-8")
+        digest.update(struct.pack("<I", len(name)))
+        digest.update(name)
+        digest.update(struct.pack("<dBq", shape.score, shape.index is not None,
+                                  0 if shape.index is None else shape.index))
+
+
+def _python_sources_digest(root: Path) -> str | None:
+    """Identify local source bytes without logging content, paths or git diffs."""
+    directory = root / "src" / "motioncapture"
+    paths = sorted(directory.rglob("*.py"))
+    if not paths:
+        return None
+    digest = hashlib.sha256()
+    try:
+        for path in paths:
+            digest.update(path.relative_to(directory).as_posix().encode("utf-8") + b"\0")
+            data = path.read_bytes()
+            digest.update(struct.pack("<Q", len(data)))
+            digest.update(data)
+    except OSError:
+        return None
+    return digest.hexdigest()
+
+
 def run_pass(args, probe: RecordingProbe) -> dict:
     inference = args.mode == "track"
     whole, steady = Group(), Group()
     windows: dict[str, Group] = {}
     workload: dict[str, Group] = {}
     pixel_digest = hashlib.sha256() if args.verify_pixels else None
+    result_digest = hashlib.sha256() if args.verify_results and inference else None
     setup_started = time.perf_counter_ns()
     with ExitStack() as stack:
         tracker = stack.enter_context(_make_tracker(args.model_dir, args.task_scheduling)) \
@@ -142,6 +194,10 @@ def run_pass(args, probe: RecordingProbe) -> dict:
                 before = time.perf_counter_ns()
                 pixel_digest.update(memoryview(frame.image_bgr).cast("B"))
                 durations["pixel_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
+            if result_digest is not None:
+                before = time.perf_counter_ns()
+                _digest_result(result_digest, frame, result)
+                durations["result_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
             whole.add(durations, result)
             if frame.identity.sequence >= args.warmup_frames:
                 steady.add(durations, result)
@@ -164,6 +220,9 @@ def run_pass(args, probe: RecordingProbe) -> dict:
     return {
         "status": "completed", "decoder_cleanup_complete": True,
         "inference_executed": inference, "setup_ms": setup_ms,
+        "task_scheduling": args.task_scheduling if inference else "not_run",
+        "predictions_sha256": result_digest.hexdigest() if result_digest is not None else None,
+        "result_hash_overhead_in_loop_fps": result_digest is not None,
         "loop_s": loop_s, "unpaced_loop_fps": whole.frames / loop_s,
         "decode_threads_reported": actual_threads,
         "pixels_sha256": pixel_digest.hexdigest() if pixel_digest else None,
@@ -192,9 +251,11 @@ def _source_revision() -> dict:
         state = subprocess.run(["git", "-C", str(root), "status", "--porcelain"],
                                capture_output=True, text=True, timeout=3, check=False)
     except (OSError, subprocess.TimeoutExpired):
-        return {"revision": None, "dirty": None}
+        return {"revision": None, "dirty": None,
+                "python_sources_sha256": _python_sources_digest(root)}
     return {"revision": sha.stdout.strip() if sha.returncode == 0 else None,
-            "dirty": bool(state.stdout.strip()) if state.returncode == 0 else None}
+            "dirty": bool(state.stdout.strip()) if state.returncode == 0 else None,
+            "python_sources_sha256": _python_sources_digest(root)}
 
 
 def write_report(path: Path, report: dict) -> None:
@@ -223,7 +284,17 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--ffprobe", default="ffprobe")
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--decode-threads", type=int, default=0)
-    parser.add_argument("--task-scheduling", choices=("parallel", "serial"), default="parallel")
+    parser.add_argument(
+        "--task-scheduling", choices=("parallel", "serial", "staggered"), default="parallel",
+    )
+    parser.add_argument(
+        "--compare-scheduling", action="store_true",
+        help="four fresh passes: parallel, staggered, staggered, parallel; repeats must be 1",
+    )
+    parser.add_argument(
+        "--verify-results", action="store_true",
+        help="hash all numeric predictions and PTS; reports separate verification cost",
+    )
     parser.add_argument("--preview", choices=("display", "native", "none"), default="display")
     parser.add_argument("--model-dir", type=Path, default=Path("models"))
     parser.add_argument("--target-fps", type=float, default=60)
@@ -238,6 +309,14 @@ def main() -> int:
             or not math.isfinite(args.target_fps) or args.target_fps <= 0
             or not 0 <= args.decode_threads <= 64):
         raise ValueError("Invalid benchmark limits")
+    if args.compare_scheduling and (
+        args.mode != "track" or args.repeats != 1 or args.task_scheduling != "parallel"
+    ):
+        raise ValueError("Comparison requires track mode, repeats=1 and default task scheduling")
+    if args.verify_results and args.mode != "track":
+        raise ValueError("Prediction verification requires track mode")
+    plan = (["parallel", "staggered", "staggered", "parallel"]
+            if args.compare_scheduling else [args.task_scheduling] * args.repeats)
     if args.output.exists():
         raise FileExistsError("Report already exists; select a new output name")
     report = {
@@ -248,11 +327,14 @@ def main() -> int:
                     "mediapipe": _installed("mediapipe"), "cpu_count": os.cpu_count(),
                     "opencv_threads": cv2.getNumThreads(), "source": _source_revision()},
         "configuration": {"decode_threads_requested": args.decode_threads,
-                          "task_scheduling": args.task_scheduling,
+                          "task_scheduling": "per_run" if args.compare_scheduling
+                          else args.task_scheduling,
+                          "scheduling_plan": plan,
+                          "verify_results": args.verify_results,
                           "preview": args.preview if args.mode == "track" else "not_run",
                           "target_fps": args.target_fps, "budget_ms": 1000 / args.target_fps,
                           "warmup_frames_included_in_all_frames": args.warmup_frames,
-                          "repeats": args.repeats, "resized": False, "paced": False},
+                          "repeats": len(plan), "resized": False, "paced": False},
         "source": None, "runs": [], "error": None,
         "privacy": {"raw_frames_written": False, "audio_processed": False,
                     "landmarks_written": False, "source_paths_written": False},
@@ -273,8 +355,17 @@ def main() -> int:
 
             report["models"] = [{"key": x.key, "sha256": x.sha256} for x in MODEL_ASSETS]
         report["stage"] = "passes"
-        for _ in range(args.repeats):
-            report["runs"].append(run_pass(args, probe))
+        for scheduling in plan:
+            pass_args = argparse.Namespace(**vars(args))
+            pass_args.task_scheduling = scheduling
+            report["runs"].append(run_pass(pass_args, probe))
+        digests = [r["predictions_sha256"] for r in report["runs"]]
+        report["prediction_equivalence"] = {
+            "kind": "exact ordered numeric outputs and original PTS, not accuracy",
+            "checked": args.verify_results,
+            "all_passes_equal": (len(set(digests)) == 1
+                                 if args.verify_results and all(digests) else None),
+        }
         report["status"] = "completed"
         report["stage"] = "finished"
     except BaseException as exc:

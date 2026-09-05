@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -76,9 +76,9 @@ class MediaPipeLandmarkTracker:
     def __init__(
         self,
         model_dir: Path,
-        task_scheduling: Literal["serial", "parallel"] = "serial",
+        task_scheduling: Literal["serial", "parallel", "staggered"] = "serial",
     ) -> None:
-        if task_scheduling not in {"serial", "parallel"}:
+        if task_scheduling not in {"serial", "parallel", "staggered"}:
             raise ValueError(f"Unsupported task scheduling mode: {task_scheduling}")
         self.model_paths = require_models(model_dir)
         self.task_scheduling = task_scheduling
@@ -141,9 +141,9 @@ class MediaPipeLandmarkTracker:
                     output_facial_transformation_matrixes=False,
                 )
             )
-            if self.task_scheduling == "parallel":
+            if self.task_scheduling in {"parallel", "staggered"}:
                 self._executor = ThreadPoolExecutor(
-                    max_workers=3,
+                    max_workers=2 if self.task_scheduling == "staggered" else 3,
                     thread_name_prefix="landmark-task",
                 )
         except Exception as exc:
@@ -197,6 +197,13 @@ class MediaPipeLandmarkTracker:
                 pose, pose_ms = pose_future.result()
                 hands, hands_ms = hands_future.result()
                 face, face_ms = face_future.result()
+            elif self.task_scheduling == "staggered":
+                if self._executor is None:
+                    raise InferenceError("Staggered task executor is not open")
+                (pose, pose_ms), (hands, hands_ms), (face, face_ms) = _staggered_detect(
+                    self._executor, self._pose, self._hands, self._face,
+                    media_image, timestamp_ms,
+                )
             else:
                 pose, pose_ms = _timed_detect(self._pose, media_image, timestamp_ms)
                 hands, hands_ms = _timed_detect(self._hands, media_image, timestamp_ms)
@@ -256,3 +263,38 @@ def _timed_detect(landmarker: Any, media_image: Any, timestamp_ms: int) -> tuple
     started_ns = time.perf_counter_ns()
     result = landmarker.detect_for_video(media_image, timestamp_ms)
     return result, (time.perf_counter_ns() - started_ns) / 1_000_000.0
+
+
+def _staggered_detect(
+    executor: ThreadPoolExecutor, pose: Any, hands: Any, face: Any,
+    image: Any, timestamp_ms: int,
+) -> tuple[tuple[Any, float], tuple[Any, float], tuple[Any, float]]:
+    """Start hands/pose first; admit face after one completes. No omitted tasks.
+
+    Bounds concurrent task API calls, NOT their internal native worker counts.
+    This is an explicit experiment, not a measured speedup or an error fallback.
+    """
+    futures = []
+    try:
+        hand_future = executor.submit(_timed_detect, hands, image, timestamp_ms)
+        futures.append(hand_future)
+        pose_future = executor.submit(_timed_detect, pose, image, timestamp_ms)
+        futures.append(pose_future)
+        finished, _ = wait(futures, return_when=FIRST_COMPLETED)
+        for future in finished:
+            future.result()  # Do not admit face after an already observed failure.
+        face_future = executor.submit(_timed_detect, face, image, timestamp_ms)
+        futures.append(face_future)
+        return pose_future.result(), hand_future.result(), face_future.result()
+    except BaseException as primary:
+        # No task may still be consuming the input when this call returns/raises.
+        # A native hang still requires process termination; there is no kill/retry.
+        for future in futures:
+            future.cancel()
+        wait(futures)
+        for future in futures:
+            if not future.cancelled():
+                error = future.exception()
+                if error is not None and error is not primary:
+                    primary.add_note(f"Additional task failure: {type(error).__name__}")
+        raise

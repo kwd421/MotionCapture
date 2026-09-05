@@ -66,3 +66,32 @@ VFR 합성 영상의 실제 디코딩과 원본 두 영상의 전체 디코딩�
 고정 Python 3.12 실행과 Ruff 전체 검증도 별도 실기기 게이트입니다.
 `--mode track`은 해당 패키지가 없으면 실패 보고서를 남기며 decode-only로
 자동 전환하지 않습니다. `benchmarks/2026-09-06-recording-inputs.md` 참조.
+
+## Compare task scheduling without changing tracking quality settings
+
+The default remains three-way `parallel`. The optional `staggered` candidate
+starts hands+pose, then face when one finishes (at most two task calls at once).
+This is not a claim of better native performance. Use the same original input:
+
+```bash
+uv run python -m motioncapture.recording_bench \
+  /path/to/20260906_030954.mp4 \
+  --mode track --preview display --target-fps 60 \
+  --compare-scheduling --verify-results \
+  --output sessions/recording60-scheduling.json
+```
+
+This runs parallel/staggered/staggered/parallel with fresh trackers, one complete
+video per pass. Do not add `--repeats 3` to this command; the comparison owns its
+four-pass order. Select a new output name instead of overwriting an existing log.
+Compare per-run `task_scheduling`, `all_frames.stages`, and
+`prediction_equivalence.all_passes_equal`. Count equality alone is not output
+identity or accuracy. Prediction hashing has separately reported CPU/time cost,
+excluded from frame_service but included in unpaced_loop_fps; use the same flag
+for all arms. No automatic promotion of the fastest mode occurs.
+
+The manifest also records an aggregate Python-source hash. A dirty working tree
+is still explicitly reported; the hash does not identify external/native code.
+Local scheduling tests are not a Mac performance benchmark. Native validation and
+sustained 60fps are still required. See
+`benchmarks/2026-09-06-recording60-scheduling.md` for the supplied log analysis.
