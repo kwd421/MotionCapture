@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 from typing import Any, Literal
 
@@ -21,11 +22,12 @@ from motioncapture.contracts import (
 )
 from motioncapture.errors import InferenceError
 from motioncapture.model_assets import require_models
+from motioncapture.recording import RecordedFrame, RecordedIdentity
 
 
 @dataclass(frozen=True, slots=True)
 class LandmarkOutput:
-    identity: FrameIdentity
+    identity: FrameIdentity | RecordedIdentity
     model_timestamp_ms: int
     result: LandmarkResult
     timings: LandmarkTimings
@@ -84,8 +86,8 @@ class MediaPipeLandmarkTracker:
         self._hands: Any | None = None
         self._face: Any | None = None
         self._executor: ThreadPoolExecutor | None = None
-        self._stream_id: str | None = None
-        self._origin_ns: int | None = None
+        self._stream_id: tuple[str, str, str] | None = None
+        self._origin_ns: int | Fraction | None = None
         self._last_timestamp_ms = -1
 
     @property
@@ -151,16 +153,26 @@ class MediaPipeLandmarkTracker:
             ) from exc
 
     def process(self, frame: CapturedFrame) -> LandmarkOutput:
+        return self._process(frame, frame.identity.received_ns, "host_receive_monotonic")
+
+    def process_recorded(self, frame: RecordedFrame) -> LandmarkOutput:
+        """Same models/compute path; original file PTS are never labeled host time."""
+        return self._process(frame, frame.identity.source_ns, "video_pts")
+
+    def _process(
+        self, frame: CapturedFrame | RecordedFrame, source_ns: int | Fraction, domain: str,
+    ) -> LandmarkOutput:
         if self._pose is None or self._hands is None or self._face is None:
             raise InferenceError("MediaPipe landmark tracker is not open")
         try:
             identity = frame.identity
+            stream_key = (domain, identity.source_id, identity.stream_id)
             if self._origin_ns is None:
-                self._origin_ns = identity.received_ns
-                self._stream_id = identity.stream_id
-            if identity.stream_id != self._stream_id:
+                self._origin_ns = source_ns
+                self._stream_id = stream_key
+            if stream_key != self._stream_id:
                 raise ValueError("New capture stream requires a new tracker lifecycle")
-            timestamp_ms = (identity.received_ns - self._origin_ns) // 1_000_000
+            timestamp_ms = (source_ns - self._origin_ns) // 1_000_000
             if timestamp_ms <= self._last_timestamp_ms:
                 raise ValueError("Model millisecond timestamps must strictly increase")
             self._last_timestamp_ms = timestamp_ms
