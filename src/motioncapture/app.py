@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 from collections import deque
@@ -16,6 +17,7 @@ from motioncapture.errors import PrototypeError, SessionRecordError
 from motioncapture.landmarkers import MediaPipeLandmarkTracker
 from motioncapture.model_assets import DEFAULT_MODEL_DIR, require_models
 from motioncapture.render import RenderMetrics, compose_preview
+from motioncapture.runtime import CaptureRuntime
 from motioncapture.session import SessionRecord
 
 WINDOW_NAME = "MotionCapture - Live 2D Body + Face Prototype"
@@ -27,6 +29,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
     parser.add_argument("--fps", type=float, default=30.0)
+    parser.add_argument(
+        "--capture-timeout", type=float, default=10.0,
+        help="maximum seconds per capture startup, frame wait, or shutdown wait",
+    )
     parser.add_argument(
         "--task-scheduling",
         choices=("serial", "parallel"),
@@ -40,12 +46,12 @@ def _parser() -> argparse.ArgumentParser:
         "--headless-frames",
         type=int,
         default=0,
-        help="process exactly this many real camera frames without opening a window",
+        help="infer exactly this many selected real camera frames without opening a window",
     )
     parser.add_argument(
         "--self-check",
         action="store_true",
-        help="verify the pinned model and initialize the landmarker without opening a camera",
+        help="verify the pinned models and initialize the tracker without opening a camera",
     )
     return parser
 
@@ -80,13 +86,10 @@ def run(args: argparse.Namespace) -> int:
         return _self_check(args.model_dir, args.task_scheduling)
     if args.headless_frames < 0:
         raise ValueError("--headless-frames must be zero or greater")
+    if args.width <= 0 or args.height <= 0 or not math.isfinite(args.fps) or args.fps <= 0:
+        raise ValueError("Camera dimensions and FPS must be positive and finite")
 
-    request = CameraRequest(
-        index=args.camera_index,
-        width=args.width,
-        height=args.height,
-        fps=args.fps,
-    )
+    request = CameraRequest(args.camera_index, args.width, args.height, args.fps)
     provider_name = (
         f"{MediaPipeLandmarkTracker.provider_base_name}; {args.task_scheduling} tasks"
     )
@@ -96,40 +99,29 @@ def run(args: argparse.Namespace) -> int:
         inference_provider=provider_name,
         task_scheduling=args.task_scheduling,
     )
-    require_models(args.model_dir)
+    capture = CaptureRuntime(LocalCamera(request), timeout=args.capture_timeout)
     frame_times: deque[int] = deque(maxlen=60)
-    start_timestamp_ns: int | None = None
-    last_timestamp_ms = -1
     manifest_path: Path | None = None
 
     try:
-        with LocalCamera(request) as camera, MediaPipeLandmarkTracker(
-            args.model_dir,
-            task_scheduling=args.task_scheduling,
-        ) as tracker:
-            if camera.observation is None:
+        # Initialize the selected model before starting the continuous camera read.
+        with MediaPipeLandmarkTracker(
+            args.model_dir, task_scheduling=args.task_scheduling,
+        ) as tracker, capture:
+            observation = capture.observation
+            if observation is None:
                 raise RuntimeError("Camera opened without an observation record")
-            session.attach_camera(camera.observation)
-
+            session.attach_camera(observation)
             if not args.headless_frames:
                 cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
                 cv2.resizeWindow(WINDOW_NAME, 1360, 540)
 
             while True:
-                frame = camera.read()
-                host_processing_started_ns = time.perf_counter_ns()
-                if start_timestamp_ns is None:
-                    start_timestamp_ns = frame.timestamp_ns
-                timestamp_ms = max(
-                    last_timestamp_ms + 1,
-                    (frame.timestamp_ns - start_timestamp_ns) // 1_000_000,
-                )
-                last_timestamp_ms = timestamp_ms
-
-                output = tracker.process(frame.image_bgr, timestamp_ms)
-                frame_times.append(time.perf_counter_ns())
-
-                observation = camera.observation
+                frame = capture.read()
+                queue_wait_ms = (time.monotonic_ns() - frame.identity.received_ns) / 1_000_000.0
+                output = tracker.process(frame)
+                capture.check()
+                frame_times.append(time.monotonic_ns())
                 metrics = RenderMetrics(
                     session_id=session.session_id,
                     camera_index=observation.index,
@@ -142,36 +134,44 @@ def run(args: argparse.Namespace) -> int:
                     pose_ms=output.timings.pose_ms,
                     hands_ms=output.timings.hands_ms,
                     face_ms=output.timings.face_ms,
-                    frame_sequence=frame.sequence,
-                    timestamp_ms=timestamp_ms,
+                    frame_sequence=frame.identity.sequence,
+                    timestamp_ms=output.model_timestamp_ms,
                     provider=tracker.provider_name,
                 )
-                preview_composition_started_ns = time.perf_counter_ns()
+                preview_started_ns = time.perf_counter_ns()
                 preview = compose_preview(
-                    frame.image_bgr,
-                    output.result,
-                    metrics,
-                    mirror=args.mirror,
+                    frame.image_bgr, output.result, metrics, mirror=args.mirror,
                 )
-                preview_composition_ms = (
-                    time.perf_counter_ns() - preview_composition_started_ns
+                snapshot = capture.snapshot()
+                # Overlay uses host capture FPS, NOT claimed sensor or display FPS.
+                capture_fps = (
+                    f"{snapshot.mean_capture_fps:.1f}"
+                    if snapshot.mean_capture_fps is not None else "unknown"
+                )
+                cv2.putText(
+                    preview,
+                    f"Latest-only | capture {capture_fps} FPS | replaced {snapshot.replaced}"
+                    f" | queue {queue_wait_ms:.1f} ms",
+                    (28, 94), cv2.FONT_HERSHEY_SIMPLEX, 0.46, (245, 245, 245), 1, cv2.LINE_AA,
+                )
+                preview_ms = (time.perf_counter_ns() - preview_started_ns) / 1_000_000.0
+                receive_to_preview_ms = (
+                    time.monotonic_ns() - frame.identity.received_ns
                 ) / 1_000_000.0
-                host_post_receive_total_ms = (
-                    time.perf_counter_ns() - host_processing_started_ns
-                ) / 1_000_000.0
+                capture.check()
                 session.observe(
                     output.result,
                     output.timings,
-                    preview_composition_ms=preview_composition_ms,
-                    host_post_receive_total_ms=host_post_receive_total_ms,
-                    frame_timestamp_ns=frame.timestamp_ns,
+                    preview_composition_ms=preview_ms,
+                    host_post_receive_total_ms=receive_to_preview_ms,
+                    frame_timestamp_ns=frame.identity.received_ns,
+                    capture_queue_ms=queue_wait_ms,
+                    frame_identity=output.identity,
                 )
-
                 if args.headless_frames:
                     if session.frames >= args.headless_frames:
                         break
                     continue
-
                 cv2.imshow(WINDOW_NAME, preview)
                 key = cv2.waitKey(1) & 0xFF
                 if key in {27, ord("q"), ord("Q")}:
@@ -185,12 +185,19 @@ def run(args: argparse.Namespace) -> int:
         session.finish("failed", f"{type(exc).__name__}: {exc}")
         raise
     finally:
-        cv2.destroyAllWindows()
+        session.attach_capture(capture.snapshot())
         try:
-            manifest_path = session.write(args.session_dir)
-        except SessionRecordError:
-            if sys.exc_info()[0] is None:
-                raise
+            cv2.destroyAllWindows()
+        finally:
+            primary_error = sys.exception()
+            try:
+                manifest_path = session.write(args.session_dir)
+            except SessionRecordError as write_error:
+                if primary_error is None:
+                    raise
+                primary_error.add_note(str(write_error))
+                print(json.dumps({"status": "session_record_failed", "error": str(write_error)}),
+                      file=sys.stderr)
 
     print(
         json.dumps(

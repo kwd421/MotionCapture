@@ -9,17 +9,18 @@ import tempfile
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
 import cv2
-import mediapipe
 
 from motioncapture import __version__
 from motioncapture.capture import CameraObservation, CameraRequest
+from motioncapture.contracts import FrameIdentity, LandmarkTimings
 from motioncapture.errors import SessionRecordError
-from motioncapture.landmarkers import LandmarkTimings
 from motioncapture.model_assets import MODEL_ASSETS
+from motioncapture.runtime import CaptureSnapshot
 
 
 @dataclass(slots=True)
@@ -46,6 +47,14 @@ class LatencySummary:
         }
 
 
+def _installed_version(distribution: str) -> str | None:
+    # Reading diagnostics must not initialize the native inference runtime.
+    try:
+        return version(distribution)
+    except PackageNotFoundError:
+        return None
+
+
 class SessionRecord:
     def __init__(
         self,
@@ -62,6 +71,11 @@ class SessionRecord:
         self.inference_provider = inference_provider
         self.task_scheduling = task_scheduling
         self.camera_observation: CameraObservation | None = None
+        self.capture_snapshot: CaptureSnapshot | None = None
+        self.first_frame_identity: FrameIdentity | None = None
+        self.last_frame_identity: FrameIdentity | None = None
+        self.capture_queue_latency = LatencySummary()
+        self.capture_queue_samples = 0
         self.frames = 0
         self.detections = DetectionTotals()
         self.latencies = {
@@ -83,6 +97,9 @@ class SessionRecord:
     def attach_camera(self, observation: CameraObservation) -> None:
         self.camera_observation = observation
 
+    def attach_capture(self, snapshot: CaptureSnapshot) -> None:
+        self.capture_snapshot = snapshot
+
     def observe(
         self,
         result: Any,
@@ -91,7 +108,18 @@ class SessionRecord:
         preview_composition_ms: float,
         host_post_receive_total_ms: float,
         frame_timestamp_ns: int,
+        capture_queue_ms: float | None = None,
+        frame_identity: FrameIdentity | None = None,
     ) -> None:
+        if frame_identity is not None:
+            if frame_identity.received_ns != frame_timestamp_ns:
+                raise ValueError("Session frame identity and timestamp disagree")
+            if self.first_frame_identity is None:
+                self.first_frame_identity = frame_identity
+            self.last_frame_identity = frame_identity
+        if capture_queue_ms is not None:
+            self.capture_queue_latency.observe(capture_queue_ms)
+            self.capture_queue_samples += 1
         self.frames += 1
         if self.first_frame_timestamp_ns is None:
             self.first_frame_timestamp_ns = frame_timestamp_ns
@@ -127,7 +155,7 @@ class SessionRecord:
                 self.last_frame_timestamp_ns - self.first_frame_timestamp_ns
             ) / 1_000_000_000.0
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "session_id": self.session_id,
             "started_at": self.started_at.isoformat(),
             "finished_at": finished_at.isoformat(),
@@ -139,7 +167,7 @@ class SessionRecord:
                 "platform": platform.platform(),
                 "python": platform.python_version(),
                 "opencv": cv2.__version__,
-                "mediapipe": mediapipe.__version__,
+                "mediapipe": _installed_version("mediapipe"),
                 "inference_provider": self.inference_provider,
             },
             "models": [
@@ -148,6 +176,7 @@ class SessionRecord:
             ],
             "mode": {
                 "capture": "live_local_camera",
+                "delivery": "latest_only_single_slot",
                 "geometry": "monocular_2d_landmarks",
                 "preview_mirrored": self.mirror,
                 "calibrated_3d": False,
@@ -158,10 +187,23 @@ class SessionRecord:
             "camera_observation": (
                 asdict(self.camera_observation) if self.camera_observation is not None else None
             ),
+            "capture": (
+                asdict(self.capture_snapshot) if self.capture_snapshot is not None else None
+            ),
+            "first_processed_frame": (
+                asdict(self.first_frame_identity) if self.first_frame_identity is not None else None
+            ),
+            "last_processed_frame": (
+                asdict(self.last_frame_identity) if self.last_frame_identity is not None else None
+            ),
             "frames": self.frames,
             "latency": {
                 "provenance": "host_process_perf_counter",
                 "camera_sensor_to_display_measured": False,
+                "capture_queue_provenance": "host_receive_to_dequeue_monotonic",
+                "capture_queue": self.capture_queue_latency.payload(self.capture_queue_samples),
+                "post_receive_includes_queue": True,
+                "post_receive_provenance": "host_receive_to_preview_monotonic",
                 "stages": {
                     name: summary.payload(self.frames)
                     for name, summary in self.latencies.items()

@@ -11,41 +11,28 @@ from typing import Any, Literal
 import cv2
 import mediapipe as mp
 
+from motioncapture.contracts import (
+    CapturedFrame,
+    FrameIdentity,
+    LandmarkResult,
+    LandmarkTimings,
+    copy_blendshapes,
+    copy_landmarks,
+)
 from motioncapture.errors import InferenceError
 from motioncapture.model_assets import require_models
 
 
 @dataclass(frozen=True, slots=True)
-class LandmarkResult:
-    pose_landmarks: list[Any]
-    pose_world_landmarks: list[Any]
-    left_hand_landmarks: list[Any]
-    left_hand_world_landmarks: list[Any]
-    right_hand_landmarks: list[Any]
-    right_hand_world_landmarks: list[Any]
-    face_landmarks: list[Any]
-    face_blendshapes: list[Any]
-
-
-@dataclass(frozen=True, slots=True)
 class LandmarkOutput:
+    identity: FrameIdentity
+    model_timestamp_ms: int
     result: LandmarkResult
     timings: LandmarkTimings
 
     @property
     def inference_ms(self) -> float:
         return self.timings.inference_wall_ms
-
-
-@dataclass(frozen=True, slots=True)
-class LandmarkTimings:
-    input_conversion_ms: float
-    pose_ms: float
-    hands_ms: float
-    face_ms: float
-    inference_wall_ms: float
-    result_assembly_ms: float
-    total_ms: float
 
 
 def _first(items: list[list[Any]]) -> list[Any]:
@@ -67,19 +54,20 @@ def _subject_hands(hand_result: Any) -> tuple[list[Any], list[Any], list[Any], l
             else []
         )
 
-        # MediaPipe handedness assumes a mirrored selfie image. Inference receives
-        # the unmirrored camera frame, so swap the label to preserve subject-relative
-        # left/right semantics. Preview mirroring remains display-only.
+        # Preserve the existing prototype's subject-relative handedness mapping.
+        # Inference is unmirrored; preview mirroring is display-only.
         if model_label == "Right":
             left_image, left_world = landmarks, world_landmarks
         elif model_label == "Left":
             right_image, right_world = landmarks, world_landmarks
+        else:
+            raise ValueError("Hand detected without supported handedness")
 
     return left_image, left_world, right_image, right_world
 
 
 class MediaPipeLandmarkTracker:
-    """Own three pinned MediaPipe CPU task landmarker instances."""
+    """Own three pinned MediaPipe CPU tasks and their stream-local model clock."""
 
     provider_base_name = "MediaPipe 0.10.31 CPU (Pose + Hands + Face)"
 
@@ -96,6 +84,9 @@ class MediaPipeLandmarkTracker:
         self._hands: Any | None = None
         self._face: Any | None = None
         self._executor: ThreadPoolExecutor | None = None
+        self._stream_id: str | None = None
+        self._origin_ns: int | None = None
+        self._last_timestamp_ms = -1
 
     @property
     def provider_name(self) -> str:
@@ -111,6 +102,9 @@ class MediaPipeLandmarkTracker:
     def open(self) -> None:
         if any(instance is not None for instance in (self._pose, self._hands, self._face)):
             raise InferenceError("MediaPipe landmark tracker is already open")
+        self._stream_id = None
+        self._origin_ns = None
+        self._last_timestamp_ms = -1
         try:
             self._pose = mp.tasks.vision.PoseLandmarker.create_from_options(
                 mp.tasks.vision.PoseLandmarkerOptions(
@@ -156,12 +150,22 @@ class MediaPipeLandmarkTracker:
                 f"Unable to initialize MediaPipe Pose + Hands + Face tasks: {exc}"
             ) from exc
 
-    def process(self, image_bgr: Any, timestamp_ms: int) -> LandmarkOutput:
+    def process(self, frame: CapturedFrame) -> LandmarkOutput:
         if self._pose is None or self._hands is None or self._face is None:
             raise InferenceError("MediaPipe landmark tracker is not open")
         try:
+            identity = frame.identity
+            if self._origin_ns is None:
+                self._origin_ns = identity.received_ns
+                self._stream_id = identity.stream_id
+            if identity.stream_id != self._stream_id:
+                raise ValueError("New capture stream requires a new tracker lifecycle")
+            timestamp_ms = (identity.received_ns - self._origin_ns) // 1_000_000
+            if timestamp_ms <= self._last_timestamp_ms:
+                raise ValueError("Model millisecond timestamps must strictly increase")
+            self._last_timestamp_ms = timestamp_ms
             pipeline_started_ns = time.perf_counter_ns()
-            image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+            image_rgb = cv2.cvtColor(frame.image_bgr, cv2.COLOR_BGR2RGB)
             media_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_rgb)
             conversion_finished_ns = time.perf_counter_ns()
 
@@ -189,14 +193,14 @@ class MediaPipeLandmarkTracker:
 
             left, left_world, right, right_world = _subject_hands(hands)
             result = LandmarkResult(
-                pose_landmarks=_first(pose.pose_landmarks),
-                pose_world_landmarks=_first(pose.pose_world_landmarks),
-                left_hand_landmarks=left,
-                left_hand_world_landmarks=left_world,
-                right_hand_landmarks=right,
-                right_hand_world_landmarks=right_world,
-                face_landmarks=_first(face.face_landmarks),
-                face_blendshapes=_first(face.face_blendshapes),
+                pose_landmarks=copy_landmarks(_first(pose.pose_landmarks)),
+                pose_world_landmarks=copy_landmarks(_first(pose.pose_world_landmarks)),
+                left_hand_landmarks=copy_landmarks(left),
+                left_hand_world_landmarks=copy_landmarks(left_world),
+                right_hand_landmarks=copy_landmarks(right),
+                right_hand_world_landmarks=copy_landmarks(right_world),
+                face_landmarks=copy_landmarks(_first(face.face_landmarks)),
+                face_blendshapes=copy_blendshapes(_first(face.face_blendshapes)),
             )
             assembly_finished_ns = time.perf_counter_ns()
             timings = LandmarkTimings(
@@ -211,10 +215,10 @@ class MediaPipeLandmarkTracker:
                 / 1_000_000.0,
                 total_ms=(assembly_finished_ns - pipeline_started_ns) / 1_000_000.0,
             )
-            return LandmarkOutput(result=result, timings=timings)
+            return LandmarkOutput(identity, timestamp_ms, result, timings)
         except Exception as exc:
             raise InferenceError(
-                f"MediaPipe inference failed at timestamp_ms={timestamp_ms}: {exc}"
+                f"MediaPipe inference failed at sequence={frame.identity.sequence}: {exc}"
             ) from exc
 
     def close(self) -> None:
