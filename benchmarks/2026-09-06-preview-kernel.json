@@ -1,0 +1,43 @@
+{
+  "scope": "synthetic camera+overlay kernel only; excludes panel, camera IO, MediaPipe, GUI",
+  "source_size": [
+    1280,
+    720
+  ],
+  "preview_size": [
+    960,
+    540
+  ],
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "opencv": "4.13.0",
+  "numpy": "2.3.5",
+  "opencv_threads": 4,
+  "rounds": 6,
+  "iterations_per_round": 250,
+  "round_mean_ms": {
+    "baseline_kernel": [
+      3.995301852,
+      4.038992804,
+      4.0349189160000005,
+      4.077310596,
+      4.087771972,
+      4.120227552
+    ],
+    "display_kernel": [
+      2.768131452,
+      2.942450524,
+      2.580526644,
+      2.930912212,
+      2.571642992,
+      2.3771325240000003
+    ]
+  },
+  "median_round_mean_ms": {
+    "baseline_kernel": 4.0581517,
+    "display_kernel": 2.6743290479999997
+  },
+  "median_reduction_percent": 34.099825593015666,
+  "native_tracking_tested": false,
+  "hardware_camera_tested": false
+}
