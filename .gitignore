@@ -1,0 +1,15 @@
+.DS_Store
+.python-version
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Downloaded model assets and local runtime records.
+models/*.task
+sessions/
+
+# Third-party avatar binaries are fetched locally and retain their own licenses.
+assets/avatars/live2d/haru/
+assets/avatars/vrm/seed-san/
