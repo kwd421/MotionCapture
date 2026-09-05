@@ -24,6 +24,10 @@ class FrameIdentity:
     received_ns: int
     timestamp_provenance: Literal["host_receive_monotonic"] = "host_receive_monotonic"
 
+    # Original media presentation time for explicit offline inputs only.
+    # received_ns always remains the independent host receive/decode time.
+    presentation_timestamp_ns: int | None = None
+
     def __post_init__(self) -> None:
         if not isinstance(self.source_id, str) or not isinstance(self.stream_id, str):
             raise ValueError("Frame source and stream identifiers must be strings")
@@ -33,6 +37,9 @@ class FrameIdentity:
             raise ValueError("Frame sequence and host time must be integers")
         if self.sequence < 0 or self.received_ns < 0:
             raise ValueError("Frame sequence and host time must be nonnegative")
+        if (self.presentation_timestamp_ns is not None
+                and type(self.presentation_timestamp_ns) is not int):
+            raise ValueError("Media presentation time must be an integer or absent")
         if self.timestamp_provenance != "host_receive_monotonic":
             raise ValueError("This slice supports host receive timestamps only")
 

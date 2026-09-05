@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-import cv2
 import mediapipe as mp
 
 from motioncapture.contracts import (
@@ -20,6 +19,7 @@ from motioncapture.contracts import (
     copy_landmarks,
 )
 from motioncapture.errors import InferenceError
+from motioncapture.inference_input import ModelClock, RgbConverter
 from motioncapture.model_assets import require_models
 
 
@@ -75,6 +75,7 @@ class MediaPipeLandmarkTracker:
         self,
         model_dir: Path,
         task_scheduling: Literal["serial", "parallel"] = "serial",
+        *, rgb_mode: Literal["allocated", "reuse"] = "allocated",
     ) -> None:
         if task_scheduling not in {"serial", "parallel"}:
             raise ValueError(f"Unsupported task scheduling mode: {task_scheduling}")
@@ -84,9 +85,9 @@ class MediaPipeLandmarkTracker:
         self._hands: Any | None = None
         self._face: Any | None = None
         self._executor: ThreadPoolExecutor | None = None
-        self._stream_id: str | None = None
-        self._origin_ns: int | None = None
-        self._last_timestamp_ms = -1
+        self._clock = ModelClock()
+        self._rgb = RgbConverter(rgb_mode)
+        self._process_failed = False
 
     @property
     def provider_name(self) -> str:
@@ -102,9 +103,8 @@ class MediaPipeLandmarkTracker:
     def open(self) -> None:
         if any(instance is not None for instance in (self._pose, self._hands, self._face)):
             raise InferenceError("MediaPipe landmark tracker is already open")
-        self._stream_id = None
-        self._origin_ns = None
-        self._last_timestamp_ms = -1
+        self._clock = ModelClock()
+        self._process_failed = False
         try:
             self._pose = mp.tasks.vision.PoseLandmarker.create_from_options(
                 mp.tasks.vision.PoseLandmarkerOptions(
@@ -155,17 +155,11 @@ class MediaPipeLandmarkTracker:
             raise InferenceError("MediaPipe landmark tracker is not open")
         try:
             identity = frame.identity
-            if self._origin_ns is None:
-                self._origin_ns = identity.received_ns
-                self._stream_id = identity.stream_id
-            if identity.stream_id != self._stream_id:
-                raise ValueError("New capture stream requires a new tracker lifecycle")
-            timestamp_ms = (identity.received_ns - self._origin_ns) // 1_000_000
-            if timestamp_ms <= self._last_timestamp_ms:
-                raise ValueError("Model millisecond timestamps must strictly increase")
-            self._last_timestamp_ms = timestamp_ms
+            if self._process_failed:
+                raise ValueError("Failed tracker requires close and a new lifecycle")
+            timestamp_ms = self._clock.accept(identity)
             pipeline_started_ns = time.perf_counter_ns()
-            image_rgb = cv2.cvtColor(frame.image_bgr, cv2.COLOR_BGR2RGB)
+            image_rgb = self._rgb.convert(frame.image_bgr)
             media_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_rgb)
             conversion_finished_ns = time.perf_counter_ns()
 
@@ -217,6 +211,7 @@ class MediaPipeLandmarkTracker:
             )
             return LandmarkOutput(identity, timestamp_ms, result, timings)
         except Exception as exc:
+            self._process_failed = True
             raise InferenceError(
                 f"MediaPipe inference failed at sequence={frame.identity.sequence}: {exc}"
             ) from exc
@@ -225,6 +220,7 @@ class MediaPipeLandmarkTracker:
         executor, self._executor = self._executor, None
         if executor is not None:
             executor.shutdown(wait=True, cancel_futures=True)
+        self._rgb.close()
         pose, self._pose = self._pose, None
         hands, self._hands = self._hands, None
         face, self._face = self._face, None
