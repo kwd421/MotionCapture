@@ -37,7 +37,8 @@ MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True)
          "source-pts-dualpose-cvlut": (True, True),
          "source-pts-dependent-cvlut": (True, True)}
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
-FRAME_HASH_SUITES = frozenset({"pose-parallel", "compute-policy", "dependency-handoff"})
+CROSS_POLICY_SUITES = frozenset({"compute-policy", "pose-execution"})
+FRAME_HASH_SUITES = CROSS_POLICY_SUITES | {"pose-parallel", "dependency-handoff"}
 
 
 @dataclass(frozen=True)
@@ -45,9 +46,31 @@ class ExecutionArm:
     mode: str
     detector_provider: str
     pose_provider: str
+    pose_intra_op_threads: int | None = None
+
+    def record(self) -> dict:
+        # Existing plans inherit the explicitly recorded global --ort-threads.
+        return {key: value for key, value in asdict(self).items() if value is not None}
+
+    def pose_threads(self, inherited: int) -> int:
+        value = inherited if self.pose_intra_op_threads is None else self.pose_intra_op_threads
+        if type(value) is not int or not 1 <= value <= 64:
+            raise BenchmarkError("invalid_pose_thread_budget")
+        return value
 
 
 def experiment_arms(args) -> tuple[ExecutionArm, ...]:
+    if args.suite == "pose-execution":
+        if (args.detector_provider != "coreml-all" or args.pose_provider != "coreml-all"
+                or args.ort_threads != 4 or args.diagnose_from is not None):
+            raise BenchmarkError("pose_execution_requires_fixed_plan_without_diagnostics")
+        mode = "source-pts-ready-cvlut"
+        forward = (
+            ExecutionArm(mode, "coreml-all", "coreml-all", 4),
+            ExecutionArm(mode, "coreml-all", "coreml-ane", 4),
+            ExecutionArm(mode, "coreml-all", "coreml-ane", 1),
+        )
+        return (*forward, *reversed(forward))
     if args.suite == "compute-policy":
         if (args.detector_provider != "coreml-all" or args.pose_provider != "coreml-all"
                 or args.diagnose_from is not None):
@@ -138,12 +161,13 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     lanes = 2 if mode == "source-pts-dualpose-cvlut" else 1
     advance = paced or mode in {"overlap-ready-lut", "overlap-ready-cvlut"}
     kernel = "opencv" if paced or mode == "overlap-ready-cvlut" else "numpy"
-    replay_ages = ReplayAges(count) if paced else None
+    stage_trace = args.suite == "pose-execution"
+    replay_ages = ReplayAges(count, trace_stages=stage_trace) if paced else None
     report = {"mode": mode, "status": "running", "scope": "full_file" if count == len(probe.pts)
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
-              "same_provider_in_all_arms": args.suite != "compute-policy", "pose_lanes": lanes,
+              "same_provider_in_all_arms": args.suite not in CROSS_POLICY_SUITES, "pose_lanes": lanes,
               "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": ("detector_dependency_before_verification" if deferred
@@ -191,10 +215,16 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                     **kernel_options)
         with pipeline:
             report["backend"] = pipeline.metadata
-            if args.suite in {"compute-policy", "dependency-handoff"}:
+            if args.suite in CROSS_POLICY_SUITES | {"dependency-handoff"}:
                 if (pipeline.metadata.get("detector", {}).get("requested") != args.detector_provider
                         or pipeline.metadata.get("pose", {}).get("requested") != args.pose_provider):
                     raise BenchmarkError("compute_policy_session_metadata_mismatch")
+            if args.suite == "pose-execution":
+                expected_pose_threads = getattr(args, "pose_intra_op_threads", args.ort_threads)
+                if (pipeline.metadata["detector"].get("intra_op_threads") != args.ort_threads
+                        or pipeline.metadata["pose"].get("intra_op_threads")
+                        != expected_pose_threads):
+                    raise BenchmarkError("pose_execution_thread_metadata_mismatch")
             phase = "decoder_open"
             with RecordedDecoder(args.input, probe, threads=args.decode_threads) as decoder:
                 report["decode_threads_reported"] = decoder.actual_threads
@@ -230,7 +260,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                         replay_observer_started = time.perf_counter_ns()
                         replay_ages.add(frame.identity, packet.detected.source_release, verified_ns,
                                         people=len(packet.people),
-                                        pose_stage_ms=packet.times["pose_stage_ms"])
+                                        pose_stage_ms=packet.times["pose_stage_ms"],
+                                        stage_times=packet.times if stage_trace else None)
                         packet.times["replay_observer_ms"] = (
                             time.perf_counter_ns()-replay_observer_started)/1e6
                     cadence_started = time.perf_counter_ns()
@@ -304,7 +335,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     else:
         report["provider_disagreement"] = {**comparison.summary(),
             "reference": ("first ALL/ALL arm; cross-policy pipeline comparison, NOT truth"
-                          if args.suite == "compute-policy"
+                          if args.suite in CROSS_POLICY_SUITES
                           else "same-provider first completed arm; NOT truth")}
     return report, new_reference
 
@@ -345,17 +376,18 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
                 report["runtime"][package] = None
         paths = {k: verify_asset(args.asset_dir, k) for k in ("yolox-tiny", args.model)}
         report["assets"] = {key: receipt for key, (_, receipt) in paths.items()}
-        def factory(key, provider):
+        def factory(key, provider, *, threads=None):
             return partial(OrtModel, paths[key][0], ASSETS[key].shape, provider,
-                           allow_cpu=args.allow_cpu_partitions, threads=args.ort_threads)
+                           allow_cpu=args.allow_cpu_partitions,
+                           threads=args.ort_threads if threads is None else threads)
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
         report["configuration"] = {"plan": plan, "model": args.model,
-            "execution_arm_plan": [asdict(arm) for arm in arms],
+            "execution_arm_plan": [arm.record() for arm in arms],
             "compute_unit_policy_is_physical_dispatch_proof": False,
-            "detector_provider": "per_arm_plan" if args.suite == "compute-policy"
+            "detector_provider": "per_arm_plan" if args.suite in CROSS_POLICY_SUITES
                                  else args.detector_provider,
-            "pose_provider": "per_arm_plan" if args.suite == "compute-policy"
+            "pose_provider": "per_arm_plan" if args.suite in CROSS_POLICY_SUITES
                              else args.pose_provider,
             "allow_cpu_partitions": args.allow_cpu_partitions, "preview": "none",
             "max_frames": args.max_frames, "target_fps": 60, "warmup_frames": 60,
@@ -367,6 +399,9 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "detector_threshold": .5, "nms_threshold": .45, "keypoint_threshold": .3,
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
+            "pose_threads_override": "per-arm override, otherwise inherit ort_threads",
+            "stage_trace_source_window_seconds": 1 if args.suite == "pose-execution" else None,
+            "stage_trace_is_causal_or_hardware_proof": False,
             "verification_pixel_hash_in_all_loops": True,
             "output_cadence_source_window_seconds": 10,
             "cadence_observer_in_all_loops": True,
@@ -394,16 +429,19 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
         bank = None
         for index, arm in enumerate(arms):
             checkpoint(args.output, f".arm-{index+1:02d}.started",
-                       {**asdict(arm), "status": "started"})
+                       {**arm.record(), "status": "started"})
             arm_args = copy(args)
             arm_args.detector_provider = arm.detector_provider
             arm_args.pose_provider = arm.pose_provider
+            arm_args.pose_intra_op_threads = arm.pose_threads(args.ort_threads)
             arm_factories = (factory("yolox-tiny", arm.detector_provider),
-                             factory(args.model, arm.pose_provider))
+                             factory(args.model, arm.pose_provider,
+                                     threads=arm_args.pose_intra_op_threads))
             print(f"ARM {index+1}/{len(arms)}: detector={arm.detector_provider} "
-                  f"pose={arm.pose_provider} mode={arm.mode}", flush=True)
+                  f"pose={arm.pose_provider} pose_threads={arm_args.pose_intra_op_threads} "
+                  f"mode={arm.mode}", flush=True)
             row, enrolled = pass_runner(arm_args, probe, arm.mode, arm_factories, bank)
-            row["execution_arm"] = asdict(arm)
+            row["execution_arm"] = arm.record()
             report["runs"].append(row)
             checkpoint(args.output, f".arm-{index+1:02d}", row)
             if enrolled is not None:
@@ -450,7 +488,7 @@ def parser():
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
                                        "handoff", "native-normalize", "paced", "pose-parallel",
-                                       "compute-policy", "dependency-handoff"),
+                                       "compute-policy", "dependency-handoff", "pose-execution"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

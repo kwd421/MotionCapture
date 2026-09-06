@@ -122,9 +122,21 @@ def _age_summary(samples: Samples) -> dict:
 
 class ReplayAges:
     """Consumer-owned source-age statistics; no source images or joint values."""
-    def __init__(self, limit: int):
+    # The first six durations form a same-frame causal path. Model-call times
+    # and decode time are additional observations, NOT extra terms in that sum.
+    PATH_FIELDS = (
+        "scheduled_source_to_detector_ms", "detector_stage_ms", "detector_to_pose_wait_ms",
+        "pose_stage_ms", "result_residence_ms", "verification_ms",
+    )
+    TRACE_FIELDS = (*PATH_FIELDS, "detector_inference_ms", "pose_inference_ms", "decode_read_ms")
+
+    def __init__(self, limit: int, *, trace_stages: bool = False):
         if type(limit) is not int or not 1 <= limit <= 120000:
             raise BenchmarkError("invalid_replay_limit")
+        if type(trace_stages) is not bool:
+            raise BenchmarkError("invalid_replay_stage_trace_selection")
+        self.trace_stages = trace_stages
+        self._stage_windows = {}
         self.limit = limit
         self.frames = 0
         self._first = self._last_age = self._clock = None
@@ -134,7 +146,7 @@ class ReplayAges:
         self.by_people, self.worst = {}, []
 
     def add(self, identity, release: Release, verified_ns: int, *, people=None,
-            pose_stage_ms=None) -> None:
+            pose_stage_ms=None, stage_times=None) -> None:
         clock = (identity.source_id, identity.stream_id, identity.time_base)
         if (identity.sequence != self.frames or self.frames >= self.limit
                 or not isinstance(identity.time_base, Fraction) or identity.time_base <= 0
@@ -150,6 +162,29 @@ class ReplayAges:
                 or (pose_stage_ms is not None and (not math.isfinite(pose_stage_ms)
                                                    or pose_stage_ms < 0))):
             raise BenchmarkError("invalid_replay_workload")
+        # Validate selected observations BEFORE modifying the successful prefix.
+        trace = None
+        if self.trace_stages:
+            if people is None or not isinstance(stage_times, dict):
+                raise BenchmarkError("missing_replay_stage_trace")
+            trace = {}
+            for name in self.TRACE_FIELDS:
+                value = stage_times.get(name)
+                if (isinstance(value, bool) or not isinstance(value, (int, float))
+                        or not math.isfinite(value) or value < 0):
+                    raise BenchmarkError("invalid_replay_stage_trace")
+                trace[name] = float(value)
+            if (pose_stage_ms is None or not math.isclose(trace["pose_stage_ms"], pose_stage_ms,
+                                                        rel_tol=1e-12, abs_tol=1e-9)):
+                raise BenchmarkError("replay_pose_stage_disagrees")
+            age_ms = (verified_ns - release.due_ns) / 1e6
+            remainder = age_ms - math.fsum(trace[name] for name in self.PATH_FIELDS)
+            # Sub-nanosecond negative roundoff is retained, never clamped to zero.
+            if remainder < -1e-6:
+                raise BenchmarkError("replay_stage_path_exceeds_source_age")
+            trace["unattributed_observer_gap_ms"] = remainder
+        elif stage_times is not None:
+            raise BenchmarkError("replay_stage_trace_not_selected")
         if self._first is None:
             self._first, self._clock = identity.pts, clock
         age = (verified_ns - release.due_ns) / 1e6
@@ -161,15 +196,50 @@ class ReplayAges:
         if len(self.worst) < 16 or age > self.worst[-1]["source_age_ms"]:
             self.worst.append({"sequence": identity.sequence, "pts": identity.pts,
                                "people_at_output": people, "source_age_ms": age,
-                               "release_lateness_ms": late, "pose_stage_ms": pose_stage_ms})
+                               "release_lateness_ms": late, "pose_stage_ms": pose_stage_ms,
+                               **({"stage_times": trace.copy()} if trace is not None else {})})
             self.worst.sort(key=lambda row: row["source_age_ms"], reverse=True)
             del self.worst[16:]
         bucket = int((identity.pts - self._first) * identity.time_base // 10)
         self.windows.setdefault(bucket, Samples()).add(age)
+        if trace is not None:
+            second = int((identity.pts - self._first) * identity.time_base)
+            window = self._stage_windows.setdefault(second, {"frames": 0, "people": {},
+                                                             "metrics": {}})
+            window["frames"] += 1
+            key = str(people)
+            window["people"][key] = window["people"].get(key, 0) + 1
+            for name, value in {**trace, "source_age_ms": age,
+                                "release_lateness_ms": late}.items():
+                window["metrics"].setdefault(name, Samples()).add(value)
         self._last_age = age
         self._previous_due, self._previous_verified = release.due_ns, verified_ns
         self._last_pts = identity.pts
         self.frames += 1
+
+    def stage_summary(self) -> dict:
+        if not self.trace_stages:
+            return {"status": "not_selected"}
+        return {
+            "status": "observed" if self.frames else "no_samples",
+            "frames": self.frames, "expected_frames": self.limit,
+            "coverage": "complete" if self.frames == self.limit else "partial",
+            "source_window_seconds": 1,
+            "path_fields_in_order": list(self.PATH_FIELDS),
+            "remainder": "source_age minus path sum; signed rounding and observer gaps",
+            "scope": "same-frame stages in original-PTS bins; not hardware or causal attribution",
+            "source_windows": [
+                {"start_s": second, "end_s": second + 1, "frames": window["frames"],
+                 "person_count_distribution": window["people"].copy(),
+                 "metrics": {name: value.summary(1000 / 60)
+                             for name, value in window["metrics"].items()}}
+                for second, window in self._stage_windows.items()
+            ],
+            "scalar_sample_count": sum(len(v.data) for window in self._stage_windows.values()
+                                       for v in window["metrics"].values()),
+            "maximum_scalar_samples": self.limit * (len(self.TRACE_FIELDS) + 3),
+            "observations_are_ground_truth": False,
+        }
 
     def summary(self) -> dict:
         return {
@@ -177,6 +247,7 @@ class ReplayAges:
             "frames": self.frames, "expected_frames": self.limit,
             "coverage": "complete" if self.frames == self.limit else "partial",
             "source_age_ms": _age_summary(self.ages),
+            "stage_trace": self.stage_summary(),
             "detector_release_lateness_ms": _age_summary(self.lateness),
             "last_source_age_ms": self._last_age,
             "source_age_by_ending_person_count": {
