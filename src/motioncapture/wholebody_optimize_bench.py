@@ -34,8 +34,10 @@ from motioncapture.wholebody_stages import StagePipeline
 MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True),
          "overlap-lut": (True, True), "overlap-ready-lut": (True, True),
          "overlap-ready-cvlut": (True, True), "source-pts-ready-cvlut": (True, True),
-         "source-pts-dualpose-cvlut": (True, True)}
+         "source-pts-dualpose-cvlut": (True, True),
+         "source-pts-dependent-cvlut": (True, True)}
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
+FRAME_HASH_SUITES = frozenset({"pose-parallel", "compute-policy", "dependency-handoff"})
 
 
 @dataclass(frozen=True)
@@ -58,7 +60,10 @@ def experiment_arms(args) -> tuple[ExecutionArm, ...]:
         )
         return (*forward, *reversed(forward))
     plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
-    if args.suite == "pose-parallel":
+    if args.suite == "dependency-handoff":
+        plan = ["source-pts-ready-cvlut", "source-pts-dependent-cvlut",
+                "source-pts-dependent-cvlut", "source-pts-ready-cvlut"]
+    elif args.suite == "pose-parallel":
         plan = ["source-pts-ready-cvlut", "source-pts-dualpose-cvlut",
                 "source-pts-dualpose-cvlut", "source-pts-ready-cvlut"]
     elif args.suite == "paced":
@@ -128,7 +133,8 @@ class Stats:
 def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
-    paced = mode in {"source-pts-ready-cvlut", "source-pts-dualpose-cvlut"}
+    deferred = mode == "source-pts-dependent-cvlut"
+    paced = deferred or mode in {"source-pts-ready-cvlut", "source-pts-dualpose-cvlut"}
     lanes = 2 if mode == "source-pts-dualpose-cvlut" else 1
     advance = paced or mode in {"overlap-ready-lut", "overlap-ready-cvlut"}
     kernel = "opencv" if paced or mode == "overlap-ready-cvlut" else "numpy"
@@ -140,7 +146,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
               "same_provider_in_all_arms": args.suite != "compute-policy", "pose_lanes": lanes,
               "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
-              "pose_handoff": "ready_before_verification" if advance else "after_verification",
+              "pose_handoff": ("detector_dependency_before_verification" if deferred
+                               else "ready_before_verification" if advance
+                               else "after_verification"),
               "timing_scope": {"loop": ("original-PTS-paced file incl verification; no GUI" if paced
                                         else "all-frame unpaced service incl verification; no GUI"),
                                "frame_work_ms": (
@@ -149,6 +157,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                "source_to_photon_measured": False,
                                "pose_inference_ms": "sum of all person calls; may overlap",
                                "pose_stage_ms": "elapsed wall time for ALL people in frame",
+                               "pose_queue_ms": "submit to pose body; includes selected dependency",
+                               "pose_dependency_wait_ms": "pose worker waits for admitted detector",
+                               "pose_owner_dispatch_ms": "executor queue before dependency wait",
                                "initial_recipe_check_in_loop": fast,
                                "pose_submit_gap_ms": (
                                    "prior pose completion to next submission; N-1"),
@@ -157,7 +168,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     stats, steady = Stats(), Stats()
     cadence = OutputCadence(count, probe.pts[0])
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
-    new_reference = (StageReference(count, frame_hashes=args.suite in {"pose-parallel", "compute-policy"})
+    new_reference = (StageReference(count, frame_hashes=args.suite in FRAME_HASH_SUITES)
                      if reference is None else None)
     comparison = StageDifference()
     pipeline = decoder = None
@@ -180,7 +191,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                     **kernel_options)
         with pipeline:
             report["backend"] = pipeline.metadata
-            if args.suite == "compute-policy":
+            if args.suite in {"compute-policy", "dependency-handoff"}:
                 if (pipeline.metadata.get("detector", {}).get("requested") != args.detector_provider
                         or pipeline.metadata.get("pose", {}).get("requested") != args.pose_provider):
                     raise BenchmarkError("compute_policy_session_metadata_mismatch")
@@ -192,6 +203,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                 cpu_start = time.process_time_ns()
                 loop_start = time.perf_counter_ns()
                 handoff_options = {"advance_pose": True} if advance else {}
+                if deferred:
+                    handoff_options["defer_pose"] = True
                 for packet in pipeline.packets(decoder, count, overlap=overlap, fast=fast,
                                                verify_eof=count == len(probe.pts),
                                                **handoff_options):
@@ -349,8 +362,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "decoder_every_original_pts": True, "detector_cadence": "every_source_frame",
             "maximum_people": 8, "max_pending_each_stage": 1,
             "same_frame_pose_lane_limit": 2 if args.suite == "pose-parallel" else 1,
-            "per_frame_prediction_hashes": args.suite in {"pose-parallel", "compute-policy"},
-            "per_frame_box_hashes": args.suite in {"pose-parallel", "compute-policy"},
+            "per_frame_prediction_hashes": args.suite in FRAME_HASH_SUITES,
+            "per_frame_box_hashes": args.suite in FRAME_HASH_SUITES,
             "detector_threshold": .5, "nms_threshold": .45, "keypoint_threshold": .3,
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
@@ -360,6 +373,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "pacing_policy": ("per-arm source_pacing; original_pts uses fixed detector-worker epoch; "
                               "no drops or rebases"),
             "ready_handoff_policy": "only_if_next_detector_already_done; no extra source admission",
+            "dependency_handoff_policy": "pose worker awaits admitted detector; selected mode only",
+            "dependency_handoff_adds_sessions_or_source_admission": False,
             "comparison_to_previous_loop_fps_requires_same_observer_work": True}
         checkpoint(args.output, ".manifest", report)
         if args.diagnose_from:
@@ -434,7 +449,8 @@ def parser():
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
-                                       "handoff", "native-normalize", "paced", "pose-parallel", "compute-policy"),
+                                       "handoff", "native-normalize", "paced", "pose-parallel",
+                                       "compute-policy", "dependency-handoff"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

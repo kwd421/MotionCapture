@@ -92,6 +92,24 @@ class StageOwner:
         self._future.add_done_callback(self._record_failure)
         return submitted
 
+    def borrow_result(self) -> Callable[[], Any]:
+        """Capture one result getter without releasing this owner's request slot.
+
+        Only the owning caller may submit/receive. Another stage may invoke this
+        getter, but cannot acknowledge/cancel the Future through it. Binding the
+        current Future avoids accidentally observing a later submitted request.
+        """
+        self.check()
+        if self._closed or self._session is None:
+            raise BenchmarkError("stage_not_open")
+        if self._future is None:
+            raise BenchmarkError("stage_has_no_request")
+        future = self._future
+        if future.done():
+            # Surface a completed failure before current output is emitted.
+            future.result()
+        return future.result
+
     def take_ready(self):
         """Caller-only nonblocking receive; a completed failure is still an error."""
         self.check()
@@ -209,6 +227,22 @@ def pose(session, submitted, detected, size, threshold, fast, kernel="numpy"):
     return Posed(detected, people, times, tuple(per_person), end)
 
 
+def pose_after_detection(session, submitted, result, expected_identity, size, threshold,
+                         fast, kernel):
+    """Wait ONLY on the independent detector owner; never block the result consumer."""
+    entered = time.perf_counter_ns()
+    detected = result()
+    resolved = time.perf_counter_ns()
+    if not isinstance(detected, Detected) or detected.frame.identity != expected_identity:
+        raise BenchmarkError("pose_dependency_identity_mismatch")
+    packet = pose(session, submitted, detected, size, threshold, fast, kernel)
+    # pose_queue_ms intentionally retains submit-to-body semantics, including
+    # this dependency. pose_stage_ms excludes waiting; source age excludes nothing.
+    packet.times["pose_owner_dispatch_ms"] = (entered - submitted) / 1e6
+    packet.times["pose_dependency_wait_ms"] = (resolved - entered) / 1e6
+    return packet
+
+
 def pose_parallel(session, submitted, detected, size, threshold, fast, kernel, auxiliary):
     """Two same-frame lanes; retain every detector slot in its original order.
 
@@ -279,6 +313,8 @@ class StagePipeline:
     pose_requests: int = field(default=0, init=False)
     ready_handoffs: int = field(default=0, init=False)
     unready_handoffs: int = field(default=0, init=False)
+    dependency_handoff: bool = field(default=False, init=False)
+    dependency_handoffs: int = field(default=0, init=False)
 
     def __post_init__(self):
         if self.normalization_kernel not in {"numpy", "opencv"}:
@@ -333,14 +369,19 @@ class StagePipeline:
             self.auxiliary_pose.check()
 
     def packets(self, frames: Iterable[RecordedFrame], count: int, *, overlap: bool,
-                fast: bool, verify_eof: bool = False, advance_pose: bool = False):
+                fast: bool, verify_eof: bool = False, advance_pose: bool = False,
+                defer_pose: bool = False):
         if (self.used or count <= 0 or (advance_pose and not overlap)
+                or type(defer_pose) is not bool
+                or (defer_pose and (not advance_pose or not overlap or self.pose_lanes != 1))
                 or (not fast and self.normalization_kernel != "numpy")):
             raise BenchmarkError("invalid_pipeline_run")
         self.used = True
-        self.advance_pose = advance_pose
+        self.advance_pose = advance_pose and not defer_pose
+        self.dependency_handoff = defer_pose
         last_pose_end = None
         prestarted = None
+        deferred_gap = None
 
         def submit_pose(detected, index):
             if detected.frame.identity.sequence != index:
@@ -379,7 +420,14 @@ class StagePipeline:
         submit_detector(first)
         del first
         for index in range(count):
-            if prestarted is None:
+            if defer_pose and index > 0:
+                # The continuation and caller observe the SAME Future. This
+                # receive acknowledges the detector before admitting another frame.
+                detected = self.detector.receive()
+                submit_gap = deferred_gap
+                if detected.frame.identity.sequence != index or submit_gap is None:
+                    raise BenchmarkError("pipeline_dependency_sequence_mismatch")
+            elif prestarted is None:
                 detected = self.detector.receive()
                 submit_gap = submit_pose(detected, index)
             else:
@@ -388,6 +436,7 @@ class StagePipeline:
             if overlap and index+1 < count:
                 upcoming = read_frame()
                 submit_detector(upcoming)
+                upcoming_identity = upcoming.identity
                 del upcoming
             packet = self.pose.receive()
             self.check()  # Do not emit after an observed later-frame failure.
@@ -398,7 +447,18 @@ class StagePipeline:
                 packet.times["pose_submit_gap_ms"] = submit_gap
             # Admit no extra source frame and never wait here. In the common
             # pose-bound case the next detection has already completed.
-            if advance_pose and index+1 < count:
+            if defer_pose and index+1 < count:
+                # The detector request is already admitted. Enqueue its dependent
+                # pose while the current output is about to be validated, even
+                # when detection is not finished yet. No caller-side wait or poll.
+                submitted = self.pose.submit(
+                    pose_after_detection, self.detector.borrow_result(), upcoming_identity,
+                    self.size, self.threshold, fast, self.normalization_kernel)
+                deferred_gap = (submitted-last_pose_end)/1e6
+                self.pose_requests += 1
+                self.dependency_handoffs += 1
+                self.check()
+            elif advance_pose and index+1 < count:
                 ready, upcoming_detection = self.detector.take_ready()
                 if ready:
                     next_gap = submit_pose(upcoming_detection, index+1)
@@ -442,5 +502,8 @@ class StagePipeline:
                 "ready_pose_handoffs": self.ready_handoffs,
                 "next_detection_not_ready": self.unready_handoffs,
                 "ready_handoff_waits_for_detector": False,
+                "dependency_pose_handoff_enabled": self.dependency_handoff,
+                "dependency_pose_handoffs": self.dependency_handoffs,
+                "dependency_wait_owner": "pose_worker" if self.dependency_handoff else None,
                 "normalization_kernel": self.normalization_kernel,
                 "source_pacing": self.pacer.summary() if self.pacer is not None else None}
