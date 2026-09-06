@@ -1,0 +1,57 @@
+{
+  "base_commit": "fa357ff0a1768abe6715a0931170b24a61ba776d",
+  "status": "targeted_contract_tests_passed_native_paced_replay_pending",
+  "tests": {
+    "passed": 106,
+    "new_replay_cases": 15,
+    "new_suite_repeated_runs": 3,
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_pts_replay.py tests/test_wholebody_native_normalization.py tests/test_wholebody_handoff.py tests/test_wholebody_optimization.py tests/test_recording.py tests/test_recording_bench.py",
+    "legacy_plan_assertion_fix": "Use DEFAULT_MODES for the six-arm default plan; optional registry is not the default plan. Production default plan unchanged."
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5"
+  },
+  "real_components": [
+    "OpenCV pixel transforms",
+    "FFmpeg/OpenCV variable-PTS decoding",
+    "dedicated stage threads and cancellation events",
+    "actual benchmark CLI, partial records and no-clobber checkpoints"
+  ],
+  "test_doubles": [
+    "neural sessions",
+    "deterministic schedule clock/waiter for arithmetic tests"
+  ],
+  "python312_syntax": "passed_for_all_five_changed_python_files",
+  "python312_runtime": "not_run",
+  "ruff": "not_available; installation attempt failed; not_run",
+  "full_repository_suite": "not_run",
+  "native_onnx_coreml_replay": "not_run",
+  "camera_display_validation": "not_run",
+  "read_only_r3_aggregate_checks": 435,
+  "r3_full_file_capacity_over_60fps_observed": true,
+  "r4_native_performance_claim": false,
+  "performance_optimization_complete": false,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false,
+  "snapshot_scope": "Imported file-runner source dependencies and targeted baseline tests matched fetched fa357ff Git blob IDs; not a full repository snapshot or user uncommitted-source verification.",
+  "known_open": [
+    "source-aged real-time delivery on M5",
+    "sustained multi-person performance",
+    "camera/display latency",
+    "CPU/CoreML crop-sensitive pose outliers",
+    "M1 and Windows device acceptance"
+  ],
+  "changed_files_git_blobs": {
+    "src/motioncapture/wholebody_replay.py": "46ed2c0457cd6e312682c6f50496052f48cc9835",
+    "src/motioncapture/wholebody_stages.py": "ddf89c497373c5215637d897fb3cf131ee16868e",
+    "src/motioncapture/wholebody_optimize_bench.py": "3c90c9c4a54f3625256b08cd0c967f71b48f3400",
+    "tests/test_wholebody_pts_replay.py": "0372eb23aa6cec6d2f1927e3c4044b332e55c902",
+    "tests/test_wholebody_optimization.py": "fc45a9333177b101376e0794c2bb1ba54a0a6721",
+    "specs/wholebody-pts-replay.md": "0ee6855a0a3094d9869ea21113eaf26a04a6ba03",
+    "benchmarks/2026-09-06-r3-review-pts-replay.md": "c98081993aa872bb78b90b5fa94eff0768816b97"
+  }
+}

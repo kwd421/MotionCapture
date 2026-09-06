@@ -316,7 +316,7 @@ def test_suite_serializes_six_arms_and_does_not_overwrite(tiny_vfr, tmp_path, mo
                              (lambda: Model("detector"), lambda: Model("pose")), reference)
     assert bench.execute(args, pass_runner=fake_native) == 0
     data = json.loads(args.output.read_text())
-    assert seen == [*bench.MODES, *reversed(bench.MODES)]
+    assert seen == [*bench.DEFAULT_MODES, *reversed(bench.DEFAULT_MODES)]
     assert data["all_pass_prediction_hashes_equal"] is True
     assert len(list(tmp_path.glob("*.arm-??.json"))) == 6
     with pytest.raises(FileExistsError):

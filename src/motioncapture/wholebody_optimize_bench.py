@@ -25,12 +25,13 @@ from motioncapture.wholebody_boundary_probe import run_diagnostics
 from motioncapture.wholebody_cadence import OutputCadence
 from motioncapture.wholebody_catalog import ASSETS, CANDIDATES, BenchmarkError, sha256, verify_asset
 from motioncapture.wholebody_onnx import CAPABILITIES, PARTS, PROVIDERS, OrtModel
+from motioncapture.wholebody_replay import ReplayAges, SourcePacer
 from motioncapture.wholebody_stage_comparison import StageDifference, StageReference, update_digest
 from motioncapture.wholebody_stages import StagePipeline
 
 MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True),
          "overlap-lut": (True, True), "overlap-ready-lut": (True, True),
-         "overlap-ready-cvlut": (True, True)}
+         "overlap-ready-cvlut": (True, True), "source-pts-ready-cvlut": (True, True)}
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
 
 
@@ -72,16 +73,20 @@ class Stats:
 def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
-    advance = mode in {"overlap-ready-lut", "overlap-ready-cvlut"}
-    kernel = "opencv" if mode == "overlap-ready-cvlut" else "numpy"
+    paced = mode == "source-pts-ready-cvlut"
+    advance = mode in {"overlap-ready-lut", "overlap-ready-cvlut", "source-pts-ready-cvlut"}
+    kernel = "opencv" if mode in {"overlap-ready-cvlut", "source-pts-ready-cvlut"} else "numpy"
+    replay_ages = ReplayAges(count) if paced else None
     report = {"mode": mode, "status": "running", "scope": "full_file" if count == len(probe.pts)
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
               "same_provider_in_all_arms": True,
+              "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": "ready_before_verification" if advance else "after_verification",
-              "timing_scope": {"loop": "all-frame unpaced service incl verification; no GUI",
+              "timing_scope": {"loop": ("original-PTS-paced file incl verification; no GUI" if paced
+                                        else "all-frame unpaced service incl verification; no GUI"),
                                "frame_work_ms": (
                                    "sum of host-measured stage wall times; NOT latency"),
                                "submit_to_pose_completion_ms": "host detector submit to pose end",
@@ -106,6 +111,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         phase = "session_setup"
         started = time.perf_counter_ns()
         kernel_options = {"normalization_kernel": kernel} if kernel != "numpy" else {}
+        if paced:
+            kernel_options["pacer"] = SourcePacer(count)
         pipeline = pipeline_factory(*factories, size=(ASSETS[args.model].shape[3],
                                                       ASSETS[args.model].shape[2]),
                                     **kernel_options)
@@ -139,6 +146,11 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                         packet.times["verified_output_interval_ms"] = (
                             verified_ns-previous_verified_ns)/1e6
                     previous_verified_ns = verified_ns
+                    if replay_ages is not None:
+                        replay_observer_started = time.perf_counter_ns()
+                        replay_ages.add(frame.identity, packet.detected.source_release, verified_ns)
+                        packet.times["replay_observer_ms"] = (
+                            time.perf_counter_ns()-replay_observer_started)/1e6
                     cadence_started = time.perf_counter_ns()
                     cadence.add(frame.identity, len(packet.people), verified_ns)
                     packet.times["cadence_observer_ms"] = (
@@ -169,7 +181,10 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         new_reference = None
     duration = (loop_end-loop_start)/1e9 if loop_start is not None else None
     ok = report["status"] == "completed"
-    report.update(loop_s=duration, unpaced_loop_fps=count/duration if ok and duration else None,
+    report.update(loop_s=duration,
+                  unpaced_loop_fps=count/duration if ok and duration and not paced else None,
+                  paced_loop_fps=count/duration if ok and duration and paced else None,
+                  replay_ages=replay_ages.summary() if replay_ages is not None else None,
                   all_frames=stats.summary(), steady_after_initial_frames=steady.summary(),
                   output_cadence=cadence.summary(),
                   last_completed=completed,
@@ -183,6 +198,12 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                   hash_scope="complete_pass" if ok else "completed_prefix",
                   reference_hash_equal=(digest.hexdigest() == reference.predictions_sha256
                                         if reference is not None and ok else None))
+    if paced:
+        report["output_cadence"]["scope"] = (
+            "source-PTS-paced host validation completions; not camera/display deadlines")
+        report["output_cadence"]["interval_budget_note"] = (
+            "Legacy 16.67ms counters are NOT replay deadline misses; source PTS may differ from 60Hz. "
+            "Inspect scheduled-source ages and release lateness for backlog.")
     if new_reference is not None:
         new_reference.predictions_sha256 = digest.hexdigest()
     else:
@@ -229,7 +250,10 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
         plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
-        if args.suite == "native-normalize":
+        if args.suite == "paced":
+            plan = ["overlap-ready-cvlut", "source-pts-ready-cvlut",
+                    "source-pts-ready-cvlut", "overlap-ready-cvlut"]
+        elif args.suite == "native-normalize":
             plan = ["overlap-ready-lut", "overlap-ready-cvlut",
                     "overlap-ready-cvlut", "overlap-ready-lut"]
         elif args.suite == "handoff":
@@ -253,6 +277,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "verification_pixel_hash_in_all_loops": True,
             "output_cadence_source_window_seconds": 10,
             "cadence_observer_in_all_loops": True,
+            "pacing_policy": ("per-arm source_pacing; original_pts uses fixed detector-worker epoch; "
+                              "no drops or rebases"),
             "ready_handoff_policy": "only_if_next_detector_already_done; no extra source admission",
             "comparison_to_previous_loop_fps_requires_same_observer_work": True}
         checkpoint(args.output, ".manifest", report)
@@ -320,7 +346,7 @@ def parser():
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
-                                       "handoff", "native-normalize"),
+                                       "handoff", "native-normalize", "paced"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

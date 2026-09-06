@@ -23,6 +23,7 @@ from motioncapture.wholebody_fast_input import check_recipe, fast_pose_tensor
 from motioncapture.wholebody_onnx import (
     decode_people, decode_pose, detector_tensor, pose_tensor,
 )
+from motioncapture.wholebody_replay import Release, ReplayCancelled, SourcePacer
 
 
 @dataclass(frozen=True)
@@ -32,6 +33,7 @@ class Detected:
     times: dict[str, float]
     submitted_ns: int
     completed_ns: int
+    source_release: Release | None = None
 
 
 @dataclass(frozen=True)
@@ -141,11 +143,18 @@ class StageOwner:
         finally:
             self._executor.shutdown(wait=True, cancel_futures=True)
         if errors:
-            raise errors[0]
+            # Intentional pacing cancellation must not mask a native close failure.
+            primary = next((e for e in errors if not isinstance(e, ReplayCancelled)), errors[0])
+            for secondary in errors:
+                if secondary is not primary:
+                    primary.add_note(f"Additional stage error: {type(secondary).__name__}")
+            raise primary
 
 
-def detect(session, submitted, frame):
-    start = time.perf_counter_ns()
+def detect(session, submitted, frame, pacer=None):
+    entered = time.perf_counter_ns()
+    release = pacer.wait(frame.identity) if pacer is not None else None
+    start = time.perf_counter_ns() if release is not None else entered
     tensor, ratio = detector_tensor(frame.image_bgr)
     a = time.perf_counter_ns()
     outputs = session.run(tensor)
@@ -157,13 +166,17 @@ def detect(session, submitted, frame):
         raise BenchmarkError("person_capacity_exceeded")
     boxes.flags.writeable = False
     end = time.perf_counter_ns()
-    return Detected(frame, boxes, {
-        "detector_queue_ms": (start-submitted)/1e6,
+    times = {
+        "detector_queue_ms": (entered-submitted)/1e6,
         "detector_pre_ms": (a-start)/1e6,
         "detector_inference_ms": (b-a)/1e6,
         "detector_post_ms": (end-b)/1e6,
         "detector_stage_ms": (end-start)/1e6,
-    }, submitted, end)
+    }
+    if release is not None:
+        times["source_pacing_wait_ms"] = release.wait_ms
+        times["scheduled_source_to_detector_ms"] = (start-release.due_ns)/1e6
+    return Detected(frame, boxes, times, submitted, end, release)
 
 
 def pose(session, submitted, detected, size, threshold, fast, kernel="numpy"):
@@ -202,6 +215,7 @@ class StagePipeline:
     size: tuple[int, int] = (192, 256)
     threshold: float = .3
     normalization_kernel: str = "numpy"
+    pacer: SourcePacer | None = None
     detector: StageOwner = field(init=False)
     pose: StageOwner = field(init=False)
     metadata: dict = field(default_factory=dict, init=False)
@@ -228,12 +242,17 @@ class StagePipeline:
         return self
 
     def __exit__(self, _kind, exc, _tb):
+        # Wake scheduled-but-unreleased work on error or an early consumer stop.
+        if self.pacer is not None and (exc is not None or self.read_frames > self.emitted_frames):
+            self.pacer.cancel()
         errors = []
         for owner in (self.detector, self.pose):
             try:
                 owner.close()
             except BaseException as failure:
-                errors.append(failure)
+                if not (isinstance(failure, ReplayCancelled) and self.pacer is not None
+                        and self.pacer.cancelled):
+                    errors.append(failure)
         if errors:
             if exc is not None:
                 for error in errors:
@@ -274,13 +293,17 @@ class StagePipeline:
                 raise BenchmarkError("pipeline_frame_sequence_mismatch")
             self.read_frames += 1
             return frame
+        def submit_detector(frame):
+            arguments = (frame,) if self.pacer is None else (frame, self.pacer)
+            self.detector.submit(detect, *arguments)
+
         first = read_frame()
         # Explicit real-source preflight, NOT counted as tracked people or timed inference.
         if fast:
             h, w = first.image_bgr.shape[:2]
             check_recipe(first.image_bgr, np.array([0., 0., w, h], np.float32), self.size,
                          kernel=self.normalization_kernel)
-        self.detector.submit(detect, first)
+        submit_detector(first)
         del first
         for index in range(count):
             if prestarted is None:
@@ -291,7 +314,7 @@ class StagePipeline:
                 prestarted = None
             if overlap and index+1 < count:
                 upcoming = read_frame()
-                self.detector.submit(detect, upcoming)
+                submit_detector(upcoming)
                 del upcoming
             packet = self.pose.receive()
             self.check()  # Do not emit after an observed later-frame failure.
@@ -318,7 +341,7 @@ class StagePipeline:
             yield packet
             del packet, detected
             if not overlap and index+1 < count:
-                self.detector.submit(detect, read_frame())
+                submit_detector(read_frame())
         if verify_eof:
             try:
                 next(iterator)
@@ -342,4 +365,5 @@ class StagePipeline:
                 "ready_pose_handoffs": self.ready_handoffs,
                 "next_detection_not_ready": self.unready_handoffs,
                 "ready_handoff_waits_for_detector": False,
-                "normalization_kernel": self.normalization_kernel}
+                "normalization_kernel": self.normalization_kernel,
+                "source_pacing": self.pacer.summary() if self.pacer is not None else None}
