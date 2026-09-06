@@ -42,7 +42,7 @@
   ],
   "sha256_files": {
     "README_HAND_ACCELERATION.md": "6910ae5ea9f50bd8489a9785c13f7fab572c52221b2a8f97f88f6c1245eeab03",
-    "benchmarks/2026-09-06-hand-backends.md": "b4f9ff69a80ca489f747260cdcf9e890409561582e0c243f1ece9f8a771baeaf",
+    "benchmarks/2026-09-06-hand-backends.md": "fe5da958553c0b837a7f07190a8c68b6cec803ac42b25b38f2e3a9f63133b062",
     "specs/browser-hands-experiment.md": "ff7e3fee82383e7ccad43991e4dd19a4cd3f8d3b73b676f95d174c31d455f3f7",
     "src/motioncapture/browser_hands.py": "8972ec3432411f9f0e08ad4bca40c9a75d0a665a5b47c180ca01cf68a9cb804e",
     "src/motioncapture/hand_acceleration_bench.py": "03c63ecfe5d77d90abce29ffe01d59bc002ca6732bbbf83798fe4bd162e797fe",
