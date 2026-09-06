@@ -1,0 +1,45 @@
+{
+  "status": "local_contract_tests_passed_native_acceptance_pending",
+  "parent": "669e7c1af6f381413ac9d819aeae17c6f34c9f9f",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "tests": {
+    "new_candidate_tests": 34,
+    "existing_recording_tests": 14,
+    "passed": 48,
+    "total_targeted": 48,
+    "command": "PYTHONPATH=src python -m pytest tests/test_wholebody_candidates.py tests/test_recording.py"
+  },
+  "executed_real_components": [
+    "OpenCV BGR/affine/SimCC/NMS math",
+    "FFmpeg/OpenCV variable-PTS fixture decoder",
+    "safe zip extraction/no-clobber checks",
+    "CLI help/assets metadata"
+  ],
+  "explicit_test_doubles": [
+    "ONNX sessions/model tensors",
+    "provider kernel profiling events",
+    "fault-injected model operations",
+    "optional native MediaPipe controls"
+  ],
+  "python312_syntax": "passed",
+  "python312_runtime": "not_run",
+  "onnxruntime_available": false,
+  "model_archives_downloaded_here": false,
+  "actual_onnx_inference": "not_run",
+  "actual_coreml": "not_run",
+  "m1_m5_windows_acceptance": "not_run",
+  "ruff": "not_run_unavailable",
+  "full_repository_suite": "not_run",
+  "network_limitation": "Model downloads/ORT wheel unavailable in this execution host. No native speed or accuracy claim.",
+  "files_sha256": {
+    "src/motioncapture/wholebody_bench.py": "ce0e0cbf463e3b85b83d30af515053320d487ebcbfd3ec31e5fb84c1a29f1635",
+    "src/motioncapture/wholebody_assets.py": "899840bc368220ba012fd10f4b7684ca7a90b0c1362b336a10736a7eae7eec38",
+    "src/motioncapture/wholebody_onnx.py": "440ed30ed590206e54160daed741e605da0a30db3f9771af1aaf2af0ffcf6e53",
+    "tests/test_wholebody_candidates.py": "dbf8cd7b29ecf286b78d5f6d68c4c6e467d5e657f2023284e832247b8e5841a8",
+    "specs/wholebody-onnx-benchmark.md": "579f773276dda70490dd42aace5a18807c4c0bb3084a812349324aee8afc91a2",
+    "README_WHOLEBODY_BENCH.md": "977961ea8eb6c636dd5368f720707f5398f4c223d934f683873d3f4dcfd6bb9f",
+    "THIRD_PARTY_WHOLEBODY.md": "bd649385a007bd3201724480988aa80b58c05801f347b57e32e50220c270e570",
+    "licenses/Apache-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}
