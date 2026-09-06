@@ -33,3 +33,23 @@ accuracy without a quality review. Reference CPU is not ground truth.
 Live defaults and VMC/retargeting are out of scope. Acceptance: actual target-Mac
 all-frame comparison plus time/quality gates. Synthetic protocol/browser tests
 verify transport and failure states only, never native inference speed.
+
+## Failure evidence extension (schema 2)
+
+A pass must not disappear when processing/cleanup fails. The recording owner
+retains completed-prefix groups and last completed/current source sequence/PTS;
+failed samples never become valid frames or a successful full-pass FPS. Cleanup
+acknowledgements and original failure type remain separate.
+
+The bridge owns one immutable first-failure snapshot before request disposal.
+It contains only request lifecycle fields and latest authenticated page heartbeat
+(last worker phase/ID, phase age, host receive age, visibility). Heartbeats do
+not reset request deadlines and are not proof of GPU dispatch or root cause.
+Worker faults and unexpected WebGL context loss are terminal; deliberate close
+must not trigger a false context-loss failure. No model restart or CPU fallback.
+
+Disagreement locations are bounded to 16 frame/PTS/max-distance records and
+contain no raw coordinates. Partial quality summaries are explicitly incomplete.
+Acceptance includes injected fourth-pass failure, original exception surviving
+cleanup, bounded sampled telemetry and absence of private frame/path/token data.
+See README_HAND_DIAGNOSTICS.md for current negative results and target run.

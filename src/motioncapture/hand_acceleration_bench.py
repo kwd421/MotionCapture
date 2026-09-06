@@ -42,13 +42,15 @@ def _parser():
 
 def run(args):
     if (args.max_frames < 0 or args.warmup_frames < 0 or not 0 <= args.decode_threads <= 64
-            or not math.isfinite(args.target_fps) or args.target_fps <= 0):
+            or not math.isfinite(args.target_fps) or args.target_fps <= 0
+            or not math.isfinite(args.browser_timeout) or not 0 < args.browser_timeout <= 300):
         raise ValueError("Invalid benchmark limits")
     if args.output.exists():
         raise FileExistsError("Output exists; choose a new report filename")
     plan = (["native", "web_cpu", "web_gpu", "web_gpu", "web_cpu", "native"]
             if args.include_web_cpu else ["native", "web_gpu", "web_gpu", "native"])
-    report = {"schema_version": 1, "status": "running", "stage": "preflight", "runs": [],
+    lab = None
+    report = {"schema_version": 2, "status": "running", "stage": "preflight", "runs": [],
               "experiment": "hybrid_browser_hands", "source": None,
               "runtime": {"platform": platform.platform(), "python": platform.python_version(),
                           "mediapipe": baseline._installed("mediapipe"),
@@ -57,7 +59,9 @@ def run(args):
                                 "target_fps": args.target_fps, "preview": args.preview,
                                 "task_scheduling": "parallel", "resized": False,
                                 "paced": False, "result_verification": True,
-                                "frame_observer_overhead_in_loop_fps": True},
+                                "frame_observer_overhead_in_loop_fps": True,
+                                "browser_diagnostics": "sampled_1Hz_page_heartbeat",
+                                "browser_timeout_s": args.browser_timeout},
               "scope": ("full three-task unpaced service including local browser transport; "
                         "not live"),
               "privacy": {"raw_frames_written": False, "landmarks_written": False,
@@ -137,30 +141,54 @@ def run(args):
                     verify_results=True, verify_pixels=False,
                 )
                 begin = time.perf_counter_ns()
-                result = baseline.run_pass(pass_args, probe, tracker_factory=make_tracker,
-                    result_observer=observe, frame_limit=args.max_frames)
-                result["backend"] = backend
-                result["pass_wall_including_setup_cleanup_hash_s"] = (
-                    time.perf_counter_ns() - begin
-                ) / 1e9
-                result["hand_comparison"] = (
-                    comparison.summary() if comparison else {"kind": "reference"}
-                )
-                result["hand_backend"] = (browser_tasks[0].summary(1000 / args.target_fps)
-                                           if browser_tasks else {"delegate": "native CPU"})
-                result["tab_hidden_events"] = lab.hidden_events - hidden_start
-                result["performance_comparable"] = result["tab_hidden_events"] == 0 and lab.visible
-                report["runs"].append(result)
+                result = {}
+                try:
+                    result = baseline.run_pass(pass_args, probe, tracker_factory=make_tracker,
+                        result_observer=observe, frame_limit=args.max_frames,
+                        failure_record=result)
+                except BaseException:
+                    result["status"] = "failed"
+                    result["performance_comparable"] = False
+                    raise
+                finally:
+                    # A failed fourth pass must not disappear from the final JSON.
+                    result["backend"] = backend
+                    result["pass_index"] = pass_index + 1
+                    result["pass_wall_including_setup_cleanup_hash_s"] = (
+                        time.perf_counter_ns() - begin
+                    ) / 1e9
+                    result["hand_comparison"] = (
+                        comparison.summary(allow_partial=True) if comparison
+                        else {"kind": "reference", "frames_recorded": reference.count}
+                    )
+                    result["hand_backend"] = (
+                        browser_tasks[0].summary(1000 / args.target_fps) if browser_tasks
+                        else {"delegate": "native CPU"} if backend == "native"
+                        else {"delegate_requested": "GPU" if backend == "web_gpu" else "CPU",
+                              "initialization_complete": False, "actual_delegate": None,
+                              "model_cleanup_acknowledged": False}
+                    )
+                    result["tab_hidden_events"] = lab.hidden_events - hidden_start
+                    result["performance_comparable"] = (
+                        result.get("status") == "completed"
+                        and result["tab_hidden_events"] == 0 and lab.visible
+                    )
+                    report["runs"].append(result)
                 print(json.dumps({"pass": pass_index + 1, "backend": backend,
                                   "fps": result["unpaced_loop_fps"]}), flush=True)
             natives = [r["predictions_sha256"] for r in report["runs"]
                        if r["backend"] == "native"]
-            report["native_reference_repeat_equal"] = len(set(natives)) == 1
+            report["native_reference_repeat_equal"] = len(natives) >= 2 and len(set(natives)) == 1
             report["performance_comparable"] = all(r["performance_comparable"] for r in report["runs"])
         report["status"], report["stage"] = "completed", "finished"
+        report["browser_diagnostics"] = lab.snapshot()
     except BaseException as exc:
         report["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
+        report["performance_verdict"] = "failed_incomplete_experiment"
+        report["performance_comparable"] = False
         report["error"] = {"type": type(exc).__name__, "stage": report["stage"]}
+        if lab is not None:
+            report["browser_failure"] = lab.failure_snapshot or lab.snapshot()
         cause = exc
         while cause is not None:
             if isinstance(cause, BrowserHandError):

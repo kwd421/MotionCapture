@@ -76,8 +76,8 @@ class HandComparison:
             self.world_errors[i, matched] = np.linalg.norm(diff[:, :, 3:] * 1000, axis=-1)
         self.count += 1
 
-    def summary(self):
-        if self.count != len(self.reference.pts):
+    def summary(self, *, allow_partial=False):
+        if not allow_partial and self.count != len(self.reference.pts):
             raise ValueError("Incomplete comparison")
 
         def stats(values):
@@ -87,7 +87,20 @@ class HandComparison:
                     "p95": float(np.quantile(a, .95)) if len(a) else None,
                     "p99": float(np.quantile(a, .99)) if len(a) else None,
                     "max": float(a.max()) if len(a) else None}
+        # Store only locating metadata and aggregate displacement, never coordinates.
+        errors = self.pixel_errors[:self.count]
+        rows = np.flatnonzero(np.isfinite(errors).any(axis=(1, 2)))
+        worst = []
+        if len(rows):
+            maxima = np.max(np.where(np.isfinite(errors[rows]), errors[rows], -np.inf), axis=(1, 2))
+            for at in np.argsort(-maxima, kind="stable")[:16]:
+                i = int(rows[at])
+                worst.append({"sequence": i, "pts": self.reference.pts[i],
+                              "max_xy_displacement_pixels": float(maxima[at])})
         return {"frames": self.count, "slot_order": ["left", "right"],
+                "comparison_complete": self.count == len(self.reference.pts),
+                "largest_disagreement_frames": worst,
+                "outlier_locations_limit": 16,
                 "reference_only_frames": self.reference_only.tolist(),
                 "candidate_only_frames": self.candidate_only.tolist(),
                 "matched_slot_frames": self.matched.tolist(),

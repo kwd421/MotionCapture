@@ -11,7 +11,7 @@ import secrets
 import struct
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -22,6 +22,12 @@ import numpy as np
 SDK_VERSION = "0.10.32"
 MAX_RESPONSE = 256 * 1024
 MAX_PIXELS = 4096 * 4096
+PROGRESS_PHASES = frozenset({"waiting", "received", "opening", "pixels", "detect",
+                             "result_post", "result_acked", "closing", "stopped"})
+FAULT_CODES = frozenset({"browser_worker_error", "browser_message_error", "browser_page_closed",
+                         "browser_unhandled_rejection", "browser_fetch_failed",
+                         "browser_task_failed", "browser_gpu_context_lost",
+                         "protocol_post_failed", "protocol_read_failed"})
 
 
 class BrowserHandError(RuntimeError):
@@ -110,6 +116,8 @@ class _Request:
     pixels: bytes
     delivered: bool = False
     response: dict | None = None
+    created_ns: int = field(default_factory=time.monotonic_ns)
+    sent_ns: int | None = None
 
 
 class BrowserHandLab:
@@ -126,6 +134,12 @@ class BrowserHandLab:
         self.client: str | None = None
         self.closed = False
         self.failure: str | None = None
+        self.failure_snapshot: dict | None = None
+        self.last_completed_request: dict | None = None
+        self.browser_progress: dict | None = None
+        self.progress_received_ns: int | None = None
+        self.progress_sequence = -1
+        self.heartbeat_count = 0
         self.next_id = 0
         self.hidden_events = 0
         self.visible = True
@@ -139,10 +153,34 @@ class BrowserHandLab:
     def url(self):
         return self.origin + "/#" + self.token
 
+    def snapshot(self):
+        """Only protocol metadata; never pixels, token, URL or model outputs."""
+        with self.condition:
+            now = time.monotonic_ns()
+            request = self.pending
+            pending = None if request is None else {
+                "id": request.identifier, "operation": request.operation,
+                "timestamp_ms": request.metadata.get("timestamp_ms"),
+                "age_ms": (now - request.created_ns) / 1e6,
+                "claimed_by_browser_fetch": request.delivered,
+                "http_write_completed": request.sent_ns is not None,
+                "result_received": request.response is not None,
+            }
+            return {"schema_version": 1, "failure": self.failure,
+                    "request_timeout_s": self.timeout, "pending": pending,
+                    "last_completed_request": self.last_completed_request,
+                    "browser_progress": self.browser_progress,
+                    "heartbeat_count": self.heartbeat_count,
+                    "heartbeat_age_ms": ((now - self.progress_received_ns) / 1e6
+                                         if self.progress_received_ns is not None else None),
+                    "tab_visible": self.visible, "tab_hidden_events": self.hidden_events,
+                    "stage_is_sampled_not_a_causal_trace": True}
+
     def fail(self, code: str):
         with self.condition:
             if self.failure is None:
                 self.failure = code
+                self.failure_snapshot = self.snapshot()
             self.condition.notify_all()
 
     def _handler(self):
@@ -218,6 +256,8 @@ class BrowserHandLab:
                             ).encode()
                             data = struct.pack("<I", len(metadata)) + metadata + request.pixels
                         self.reply(200, data, "application/octet-stream")
+                        with owner.condition:
+                            request.sent_ns = time.monotonic_ns()
                     elif path in owner.assets:
                         mime = "application/wasm" if path.endswith(".wasm") else (
                             "text/javascript" if path.endswith((".mjs", ".js")) else
@@ -267,6 +307,33 @@ class BrowserHandLab:
                                 raise ValueError("Invalid visibility")
                             owner.visible = data["visible"]
                             owner.hidden_events += int(not owner.visible)
+                        elif path == "/rpc/progress":
+                            seq = data.get("sequence")
+                            item = data.get("worker")
+                            if (type(seq) is not int or seq < 0 or not isinstance(item, dict)
+                                    or item.get("phase") not in PROGRESS_PHASES
+                                    or (item.get("id") is not None
+                                        and (type(item["id"]) is not int or item["id"] <= 0))
+                                    or type(data.get("visible")) is not bool):
+                                raise ValueError("Invalid progress")
+                            age = _number(data.get("phase_age_ms"))
+                            if not 0 <= age <= 86400000:
+                                raise ValueError("Invalid progress age")
+                            # Stale overlapping heartbeats cannot replace a newer observation.
+                            if seq > owner.progress_sequence:
+                                owner.progress_sequence = seq
+                                owner.heartbeat_count += 1
+                                owner.progress_received_ns = time.monotonic_ns()
+                                owner.browser_progress = {"id": item.get("id"),
+                                    "phase": item["phase"], "phase_age_ms": age}
+                                if owner.visible and not data["visible"]:
+                                    owner.hidden_events += 1
+                                owner.visible = data["visible"]
+                        elif path == "/rpc/fault":
+                            code = data.get("code")
+                            if code not in FAULT_CODES:
+                                raise ValueError("Invalid fault code")
+                            owner.fail(code)
                         elif path == "/rpc/result":
                             request = owner.pending
                             if (request is None or not request.delivered
@@ -282,7 +349,7 @@ class BrowserHandLab:
                             self.reply(404)
                             return
                     self.reply(200, b"{}")
-                except (ValueError, TypeError, json.JSONDecodeError, TimeoutError):
+                except (ValueError, TypeError, json.JSONDecodeError, TimeoutError, BrowserHandError):
                     owner.fail("invalid_browser_protocol")
                     self.reply(400)
                     self.close_connection = True
@@ -332,7 +399,7 @@ class BrowserHandLab:
                 if "error" in response:
                     known = {"webgl2_unavailable", "gpu_renderer_unavailable",
                              "unverified_or_software_gpu", "invalid_open",
-                             "invalid_detect_state", "invalid_close_state"}
+                             "invalid_detect_state", "invalid_close_state", "browser_gpu_context_lost"}
                     detail = response["error"]
                     code = detail.get("code") if isinstance(detail, dict) else None
                     code = code if code in known else "browser_task_failed"
@@ -341,6 +408,10 @@ class BrowserHandLab:
                 if not isinstance(response.get("result"), dict):
                     self.fail("invalid_browser_result")
                     raise BrowserHandError("invalid_browser_result")
+                self.last_completed_request = {
+                    "id": request.identifier, "operation": request.operation,
+                    "timestamp_ms": request.metadata.get("timestamp_ms"),
+                }
                 return response["result"]
             finally:
                 self.pending = None

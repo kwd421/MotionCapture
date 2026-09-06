@@ -68,9 +68,9 @@ def test_existing_report_is_not_overwritten(tmp_path):
     assert args.output.read_text() == "keep"
 
 
-@pytest.mark.parametrize("limit", [0, 3])
+@pytest.mark.parametrize("limit, inject_failure", [(0, False), (3, False), (0, True)])
 def test_six_pass_runner_uses_fresh_models_and_reports_disagreement(
-    tiny_vfr, tmp_path, monkeypatch, limit,
+    tiny_vfr, tmp_path, monkeypatch, limit, inject_failure,
 ):
     """Real VFR decode, explicitly synthetic inference/browser orchestration."""
     import json
@@ -93,6 +93,9 @@ def test_six_pass_runner_uses_fresh_models_and_reports_disagreement(
 
     class Lab:
         url, hidden_events, visible = "synthetic://test-only", 0, True
+        failure_snapshot = None
+        def snapshot(self):
+            return {"explicit_test_double": True}
         def __init__(self, *args, **kwargs):
             pass
         def __enter__(self):
@@ -124,6 +127,8 @@ def test_six_pass_runner_uses_fresh_models_and_reports_disagreement(
             if self.hand:
                 self.hand.close()
         def process_recorded(self, frame):
+            if inject_failure and len(created) == 4 and frame.identity.sequence == 3:
+                raise experiment.BrowserHandError("browser_request_timeout")
             self.times.append(frame.identity.pts)
             source_times.append(frame.identity.pts)
             x = .3 if self.hand and self.hand.delegate == "GPU" else .2
@@ -143,8 +148,27 @@ def test_six_pass_runner_uses_fresh_models_and_reports_disagreement(
         str(tiny_vfr), "--output", str(tmp_path/"result.json"), "--preview", "none",
         "--include-web-cpu", "--max-frames", str(limit),
     ])
-    assert experiment.run(args) == 0
+    code = experiment.run(args)
     report = json.loads(args.output.read_text())
+    if inject_failure:
+        assert code == 2 and report["status"] == "failed"
+        assert report["error"]["code"] == "browser_request_timeout"
+        assert len(report["runs"]) == 4 and len(created) == 4
+        failed = report["runs"][-1]
+        assert failed["backend"] == "web_gpu" and failed["pass_index"] == 4
+        assert failed["all_frames"]["frames"] == 3
+        assert failed["current_frame"]["sequence"] == 3
+        assert failed["last_completed_frame"]["sequence"] == 2
+        assert failed["failure_phase"] == "inference"
+        assert failed["decoder_cleanup_complete"] is True
+        assert failed["unpaced_loop_fps"] is None
+        assert failed["predictions_sha256"] is None
+        assert not failed["hand_comparison"]["comparison_complete"]
+        assert not failed["performance_comparable"]
+        assert not report["performance_comparable"]
+        assert str(tmp_path) not in args.output.read_text()
+        return
+    assert code == 0
     assert report["status"] == "completed" and report["native_reference_repeat_equal"]
     assert [r["backend"] for r in report["runs"]] == [
         "native", "web_cpu", "web_gpu", "web_gpu", "web_cpu", "native",

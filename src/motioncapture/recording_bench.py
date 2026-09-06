@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 import time
 from array import array
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from dataclasses import asdict
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -151,8 +151,45 @@ def _python_sources_digest(root: Path) -> str | None:
     return digest.hexdigest()
 
 
+@contextmanager
+def _record_cleanup(owner, states: dict, name: str):
+    """Record acknowledged cleanup without replacing the original failure."""
+    states[name] = "opening"
+    try:
+        value = owner.__enter__()
+    except BaseException:
+        states[name] = "unknown_after_open_failure"
+        raise
+    states[name] = "open"
+    try:
+        yield value
+    except BaseException as primary:
+        try:
+            owner.__exit__(type(primary), primary, primary.__traceback__)
+        except BaseException as cleanup_error:
+            states[name] = "failed"
+            primary.add_note(f"{name} cleanup: {type(cleanup_error).__name__}")
+        else:
+            states[name] = "complete"
+        raise
+    else:
+        try:
+            owner.__exit__(None, None, None)
+        except BaseException:
+            states[name] = "failed"
+            raise
+        states[name] = "complete"
+
+
+def _frame_location(identity):
+    if identity is None:
+        return None
+    return {"sequence": identity.sequence, "pts": identity.pts,
+            "time_base": str(identity.time_base)}
+
+
 def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
-             result_observer=None, frame_limit: int = 0) -> dict:
+             result_observer=None, frame_limit: int = 0, failure_record: dict | None = None) -> dict:
     if type(frame_limit) is not int or frame_limit < 0:
         raise ValueError("Invalid explicit prefix frame limit")
     target_frames = min(frame_limit, len(probe.pts)) if frame_limit else len(probe.pts)
@@ -163,70 +200,117 @@ def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
     pixel_digest = hashlib.sha256() if args.verify_pixels else None
     result_digest = hashlib.sha256() if args.verify_results and inference else None
     setup_started = time.perf_counter_ns()
-    with ExitStack() as stack:
-        tracker = stack.enter_context((tracker_factory or _make_tracker)(
-            args.model_dir, args.task_scheduling)) \
-            if inference else None
-        compose = _make_preview(args.preview) if inference else None
-        decoder = stack.enter_context(RecordedDecoder(args.input, probe,
-                                                      threads=args.decode_threads))
-        setup_ms = (time.perf_counter_ns() - setup_started) / 1_000_000
-        loop_started = time.perf_counter_ns()
-        for frame in decoder:
-            start = time.perf_counter_ns()
-            durations = {"decode_read_ms": frame.decode_ms}
-            output = tracker.process_recorded(frame) if tracker is not None else None
-            result = output.result if output is not None else None
-            if output is not None:
-                if output.identity != frame.identity:
-                    raise ValueError("Recorded tracker output identity mismatch")
-                durations.update(asdict(output.timings))
-            if compose is not None:
-                metrics = SimpleNamespace(
-                    camera_backend="FFMPEG FILE", camera_index=0,
-                    frame_width=probe.width, frame_height=probe.height,
-                    processing_fps=0, inference_ms=output.timings.inference_wall_ms,
-                    pose_ms=output.timings.pose_ms, hands_ms=output.timings.hands_ms,
-                    face_ms=output.timings.face_ms,
-                )
-                before = time.perf_counter_ns()
-                preview = compose(frame.image_bgr, result, metrics, mirror=False)
-                durations["preview_ms"] = (time.perf_counter_ns() - before) / 1_000_000
-                del preview
-            durations["frame_service_ms"] = frame.decode_ms + (
-                time.perf_counter_ns() - start) / 1_000_000
-            if pixel_digest is not None:
-                before = time.perf_counter_ns()
-                pixel_digest.update(memoryview(frame.image_bgr).cast("B"))
-                durations["pixel_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
-            if result_digest is not None:
-                before = time.perf_counter_ns()
-                _digest_result(result_digest, frame, result)
-                durations["result_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
-            if result_observer is not None:
-                before = time.perf_counter_ns()
-                result_observer(frame, result)
-                durations["comparison_observer_ms"] = (time.perf_counter_ns() - before) / 1e6
-            whole.add(durations, result)
-            if frame.identity.sequence >= args.warmup_frames:
-                steady.add(durations, result)
-            relative_s = (frame.identity.pts - probe.pts[0]) * probe.time_base
-            window = int(relative_s // 10) * 10
-            windows.setdefault(f"{window}-{window + 10}s", Group()).add(durations, result)
-            if result is not None:
-                hands = (int(bool(result.left_hand_landmarks))
-                         + int(bool(result.right_hand_landmarks)))
-                key = f"resolved_hands={hands},face={int(bool(result.face_landmarks))}"
-                workload.setdefault(key, Group()).add(durations, result)
-            if whole.frames == target_frames and target_frames < len(probe.pts):
-                break
-        loop_s = (time.perf_counter_ns() - loop_started) / 1e9
-        if whole.frames != target_frames or (target_frames == len(probe.pts) and not decoder.complete):
-            raise ValueError("Incomplete recording benchmark")
-        actual_threads = decoder.actual_threads
-    # Hash after cleanup, outside the measured loop: detect input replacement.
-    if _sha256(args.input) != probe.sha256:
-        raise ValueError("Recording changed during the benchmark")
+    setup_ms = loop_started = loop_s = actual_threads = None
+    phase = "setup"
+    current_frame = last_completed = None
+    cleanup = {}
+    try:
+        with ExitStack() as stack:
+            tracker = stack.enter_context(_record_cleanup(
+                (tracker_factory or _make_tracker)(args.model_dir, args.task_scheduling),
+                cleanup, "tracker")) if inference else None
+            compose = _make_preview(args.preview) if inference else None
+            decoder = stack.enter_context(_record_cleanup(
+                RecordedDecoder(args.input, probe, threads=args.decode_threads), cleanup, "decoder"))
+            setup_ms = (time.perf_counter_ns() - setup_started) / 1_000_000
+            loop_started = time.perf_counter_ns()
+            phase = "decode"
+            for frame in decoder:
+                current_frame = frame.identity
+                phase = "inference" if inference else "decode_complete"
+                start = time.perf_counter_ns()
+                durations = {"decode_read_ms": frame.decode_ms}
+                output = tracker.process_recorded(frame) if tracker is not None else None
+                result = output.result if output is not None else None
+                if output is not None:
+                    if output.identity != frame.identity:
+                        raise ValueError("Recorded tracker output identity mismatch")
+                    durations.update(asdict(output.timings))
+                if compose is not None:
+                    phase = "preview"
+                    metrics = SimpleNamespace(
+                        camera_backend="FFMPEG FILE", camera_index=0,
+                        frame_width=probe.width, frame_height=probe.height,
+                        processing_fps=0, inference_ms=output.timings.inference_wall_ms,
+                        pose_ms=output.timings.pose_ms, hands_ms=output.timings.hands_ms,
+                        face_ms=output.timings.face_ms,
+                    )
+                    before = time.perf_counter_ns()
+                    preview = compose(frame.image_bgr, result, metrics, mirror=False)
+                    durations["preview_ms"] = (time.perf_counter_ns() - before) / 1_000_000
+                    del preview
+                durations["frame_service_ms"] = frame.decode_ms + (
+                    time.perf_counter_ns() - start) / 1_000_000
+                phase = "verification"
+                if pixel_digest is not None:
+                    before = time.perf_counter_ns()
+                    pixel_digest.update(memoryview(frame.image_bgr).cast("B"))
+                    durations["pixel_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
+                if result_digest is not None:
+                    before = time.perf_counter_ns()
+                    _digest_result(result_digest, frame, result)
+                    durations["result_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
+                if result_observer is not None:
+                    phase = "observer"
+                    before = time.perf_counter_ns()
+                    result_observer(frame, result)
+                    durations["comparison_observer_ms"] = (time.perf_counter_ns() - before) / 1e6
+                phase = "aggregation"
+                whole.add(durations, result)
+                if frame.identity.sequence >= args.warmup_frames:
+                    steady.add(durations, result)
+                relative_s = (frame.identity.pts - probe.pts[0]) * probe.time_base
+                window = int(relative_s // 10) * 10
+                windows.setdefault(f"{window}-{window + 10}s", Group()).add(durations, result)
+                if result is not None:
+                    hands = (int(bool(result.left_hand_landmarks))
+                             + int(bool(result.right_hand_landmarks)))
+                    key = f"resolved_hands={hands},face={int(bool(result.face_landmarks))}"
+                    workload.setdefault(key, Group()).add(durations, result)
+                last_completed = current_frame
+                phase = "decode"
+                if whole.frames == target_frames and target_frames < len(probe.pts):
+                    break
+            phase = "verify_frame_count"
+            loop_s = (time.perf_counter_ns() - loop_started) / 1e9
+            if whole.frames != target_frames or (target_frames == len(probe.pts) and not decoder.complete):
+                raise ValueError("Incomplete recording benchmark")
+            actual_threads = decoder.actual_threads
+            phase = "cleanup"
+        phase = "source_verification"
+        # Hash after cleanup, outside the measured loop: detect input replacement.
+        if _sha256(args.input) != probe.sha256:
+            raise ValueError("Recording changed during the benchmark")
+    except BaseException as primary:
+        if failure_record is not None:
+            try:
+                budget = 1000 / args.target_fps
+                failure_record.update({
+                    "status": "failed", "failure_phase": phase,
+                    "requested_frames": target_frames,
+                    "scope": "full_file" if target_frames == len(probe.pts) else "explicit_prefix",
+                    "statistics_scope": "completed_prefix_only",
+                    "all_frames": whole.summary(budget, inference),
+                    "steady_after_initial_frames": steady.summary(budget, inference),
+                    "windows_source_time": {k: g.summary(budget, inference)
+                                            for k, g in windows.items()},
+                    "resolved_detection_workloads": {k: g.summary(budget, inference)
+                                                     for k, g in workload.items()},
+                    "last_completed_frame": _frame_location(last_completed),
+                    "current_frame": _frame_location(current_frame),
+                    "next_expected_sequence": whole.frames,
+                    "cleanup": dict(cleanup),
+                    "decoder_cleanup_complete": cleanup.get("decoder") == "complete",
+                    "tracker_cleanup_complete": cleanup.get("tracker") == "complete",
+                    "setup_ms": setup_ms,
+                    "elapsed_until_failure_s": (time.perf_counter_ns() - setup_started) / 1e9,
+                    "timeout_sample_in_completed_statistics": False,
+                    "unpaced_loop_fps": None, "predictions_sha256": None,
+                    "error_type": type(primary).__name__,
+                })
+            except Exception as diagnostic_error:
+                primary.add_note(f"Failure snapshot: {type(diagnostic_error).__name__}")
+        raise
     budget = 1000 / args.target_fps
     return {
         "status": "completed", "decoder_cleanup_complete": True,

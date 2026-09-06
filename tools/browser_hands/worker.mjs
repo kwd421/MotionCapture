@@ -12,19 +12,30 @@ self.onmessage = async ({data}) => {
   };
   let task = null, rgba = null, canvas = null, gl = null, lastTimestamp = -1;
   let HandLandmarker, FilesetResolver, vision;
+  let currentId = null, lostHandler = null;
+  const progress = phase => self.postMessage({id: currentId, phase});
+  const detachContext = () => {
+    if (canvas && lostHandler) canvas.removeEventListener("webglcontextlost", lostHandler);
+    lostHandler = null;
+  };
+  const reportFault = code => self.postMessage({status: "failed", code});
   try {
     const {unpackMessage, rgbToRgba, checkGpuRenderer} = await import("./protocol.mjs");
     await post("/rpc/hello", {});
     self.postMessage({status: "connected"});
     while (true) {
+      progress("waiting");
       const response = await fetch("/rpc/next", {headers, cache: "no-store"});
       if (response.status === 204) continue;
       if (response.status === 410) break;
       if (!response.ok) throw Error("protocol_read_failed");
       const {meta, pixels} = unpackMessage(await response.arrayBuffer());
+      currentId = meta.id;
+      progress("received");
       try {
         let result;
         if (meta.op === "open") {
+          progress("opening");
           if (task || !["CPU", "GPU"].includes(meta.delegate)) throw Error("invalid_open");
           if (!HandLandmarker) {
             ({HandLandmarker, FilesetResolver} = await import("/sdk/vision_bundle.mjs"));
@@ -39,6 +50,8 @@ self.onmessage = async ({data}) => {
             if (!info) throw Error("gpu_renderer_unavailable");
             renderer = checkGpuRenderer(gl.getParameter(info.UNMASKED_RENDERER_WEBGL));
             vendor = gl.getParameter(info.UNMASKED_VENDOR_WEBGL);
+            lostHandler = () => reportFault("browser_gpu_context_lost");
+            canvas.addEventListener("webglcontextlost", lostHandler);
           }
           const begin = performance.now();
           task = await HandLandmarker.createFromOptions(vision, {
@@ -56,39 +69,51 @@ self.onmessage = async ({data}) => {
         } else if (meta.op === "detect") {
           if (!task || meta.timestamp_ms <= lastTimestamp) throw Error("invalid_detect_state");
           lastTimestamp = meta.timestamp_ms;
+          progress("pixels");
           const begin = performance.now();
           rgba = rgbToRgba(pixels, meta.width, meta.height, rgba);
           const image = new ImageData(rgba, meta.width, meta.height);
           const prepared = performance.now();
+          if (gl?.isContextLost()) throw Error("browser_gpu_context_lost");
+          progress("detect");
           const hands = task.detectForVideo(image, meta.timestamp_ms);
           const finished = performance.now();
+          if (gl?.isContextLost()) throw Error("browser_gpu_context_lost");
           result = {timestamp_ms: meta.timestamp_ms, pixels_ms: prepared - begin,
             detect_ms: finished - prepared,
             hands: {landmarks: hands.landmarks, worldLandmarks: hands.worldLandmarks,
                     handedness: hands.handedness}};
           // All GPU/CPU model results have returned before this buffer is reused.
         } else {
+          progress("closing");
           if (!task) throw Error("invalid_close_state");
+          detachContext(); // Deliberate close must not be misreported as GPU loss.
           task.close(); task = null; rgba = null;
           if (gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
           gl = null; canvas = null;
           result = {closed: true};
           self.postMessage({status: "pass_closed"});
         }
+        progress("result_post");
         await post("/rpc/result", {id: meta.id, result});
+        progress("result_acked");
       } catch (error) {
-        self.postMessage({status: "failed", error: String(error.message)});
         const known = new Set(["webgl2_unavailable", "gpu_renderer_unavailable",
-          "unverified_or_software_gpu", "invalid_open", "invalid_detect_state", "invalid_close_state"]);
+          "unverified_or_software_gpu", "invalid_open", "invalid_detect_state", "invalid_close_state",
+          "browser_gpu_context_lost"]);
         const code = known.has(error.message) ? error.message : "browser_task_failed";
         await post("/rpc/result", {id: meta.id, error: {code}});
+        reportFault(code === "browser_gpu_context_lost" ? code : "browser_task_failed");
         break; // Never retry a GPU operation on CPU.
       }
     }
     self.postMessage({status: "stopped"});
   } catch (error) {
-    self.postMessage({status: "failed", error: String(error.message)});
+    const code = ["protocol_post_failed", "protocol_read_failed"].includes(error.message)
+      ? error.message : "browser_fetch_failed";
+    reportFault(code);
   } finally {
+    detachContext();
     try { task?.close(); } catch { /* Python has already failed; not a success. */ }
     if (gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
     task = rgba = canvas = gl = null;
