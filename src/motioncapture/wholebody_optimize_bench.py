@@ -22,13 +22,15 @@ import numpy as np
 from motioncapture.recording import RecordedDecoder, inspect_recording
 from motioncapture.recording_bench import Samples, _source_revision, write_report
 from motioncapture.wholebody_boundary_probe import run_diagnostics
+from motioncapture.wholebody_cadence import OutputCadence
 from motioncapture.wholebody_catalog import ASSETS, CANDIDATES, BenchmarkError, sha256, verify_asset
 from motioncapture.wholebody_onnx import CAPABILITIES, PARTS, PROVIDERS, OrtModel
 from motioncapture.wholebody_stage_comparison import StageDifference, StageReference, update_digest
 from motioncapture.wholebody_stages import StagePipeline
 
 MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True),
-         "overlap-lut": (True, True), "overlap-ready-lut": (True, True)}
+         "overlap-lut": (True, True), "overlap-ready-lut": (True, True),
+         "overlap-ready-cvlut": (True, True)}
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
 
 
@@ -70,12 +72,14 @@ class Stats:
 def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
-    advance = mode == "overlap-ready-lut"
+    advance = mode in {"overlap-ready-lut", "overlap-ready-cvlut"}
+    kernel = "opencv" if mode == "overlap-ready-cvlut" else "numpy"
     report = {"mode": mode, "status": "running", "scope": "full_file" if count == len(probe.pts)
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
               "same_provider_in_all_arms": True,
+              "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": "ready_before_verification" if advance else "after_verification",
               "timing_scope": {"loop": "all-frame unpaced service incl verification; no GUI",
                                "frame_work_ms": (
@@ -88,6 +92,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                "verified_output_interval_ms": (
                                    "successive validation completions; N-1")}}
     stats, steady = Stats(), Stats()
+    cadence = OutputCadence(count, probe.pts[0])
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
     new_reference = StageReference(count) if reference is None else None
     comparison = StageDifference()
@@ -100,8 +105,10 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
             raise BenchmarkError("source_changed_before_pass")
         phase = "session_setup"
         started = time.perf_counter_ns()
+        kernel_options = {"normalization_kernel": kernel} if kernel != "numpy" else {}
         pipeline = pipeline_factory(*factories, size=(ASSETS[args.model].shape[3],
-                                                      ASSETS[args.model].shape[2]))
+                                                      ASSETS[args.model].shape[2]),
+                                    **kernel_options)
         with pipeline:
             report["backend"] = pipeline.metadata
             phase = "decoder_open"
@@ -132,6 +139,10 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                         packet.times["verified_output_interval_ms"] = (
                             verified_ns-previous_verified_ns)/1e6
                     previous_verified_ns = verified_ns
+                    cadence_started = time.perf_counter_ns()
+                    cadence.add(frame.identity, len(packet.people), verified_ns)
+                    packet.times["cadence_observer_ms"] = (
+                        time.perf_counter_ns() - cadence_started) / 1e6
                     stats.add(packet)
                     if frame.identity.sequence >= 60:
                         steady.add(packet)
@@ -160,6 +171,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     ok = report["status"] == "completed"
     report.update(loop_s=duration, unpaced_loop_fps=count/duration if ok and duration else None,
                   all_frames=stats.summary(), steady_after_initial_frames=steady.summary(),
+                  output_cadence=cadence.summary(),
                   last_completed=completed,
                   pipeline=pipeline.snapshot() if pipeline is not None else None,
                   decoder_cleanup=("owner_released"
@@ -175,7 +187,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         new_reference.predictions_sha256 = digest.hexdigest()
     else:
         report["provider_disagreement"] = {**comparison.summary(),
-            "reference": "same-provider sequential/reference first completed pass; NOT truth"}
+            "reference": "same-provider first completed arm; NOT truth"}
     return report, new_reference
 
 
@@ -217,7 +229,10 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
         plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
-        if args.suite == "handoff":
+        if args.suite == "native-normalize":
+            plan = ["overlap-ready-lut", "overlap-ready-cvlut",
+                    "overlap-ready-cvlut", "overlap-ready-lut"]
+        elif args.suite == "handoff":
             plan = ["overlap-lut", "overlap-ready-lut", "overlap-ready-lut", "overlap-lut"]
         elif args.suite == "pipeline":
             plan = ["sequential-lut", "overlap-lut", "overlap-lut", "sequential-lut"]
@@ -236,6 +251,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
             "verification_pixel_hash_in_all_loops": True,
+            "output_cadence_source_window_seconds": 10,
+            "cadence_observer_in_all_loops": True,
             "ready_handoff_policy": "only_if_next_detector_already_done; no extra source admission",
             "comparison_to_previous_loop_fps_requires_same_observer_work": True}
         checkpoint(args.output, ".manifest", report)
@@ -303,7 +320,7 @@ def parser():
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
-                                       "handoff"),
+                                       "handoff", "native-normalize"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

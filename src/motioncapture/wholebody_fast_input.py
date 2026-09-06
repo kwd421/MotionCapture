@@ -29,9 +29,18 @@ def array_hash(value: np.ndarray) -> str:
     return h.hexdigest()
 
 
-def normalize(crop: np.ndarray) -> np.ndarray:
+def normalize(crop: np.ndarray, *, kernel: str = "numpy") -> np.ndarray:
     if crop.dtype != np.uint8 or crop.ndim != 3 or crop.shape[2] != 3:
         raise BenchmarkError("normalization_requires_uint8_bgr")
+    if min(crop.shape[:2]) < 1:
+        raise BenchmarkError("normalization_requires_nonempty_crop")
+    if kernel == "opencv":
+        # Same float32 entries, no arithmetic or precision change. LUT returns
+        # HWC; the explicit layout copy is part of the measured candidate cost.
+        mapped = cv2.LUT(crop, TABLE.reshape(1, 256, 3))
+        return np.ascontiguousarray(mapped.transpose(2, 0, 1)[None])
+    if kernel != "numpy":
+        raise BenchmarkError("unknown_normalization_kernel")
     height, width = crop.shape[:2]
     result = np.empty((1, 3, height, width), np.float32)
     # np.take(out=...) avoids an intermediate HWC floating-point allocation.
@@ -63,14 +72,16 @@ def crop_geometry(image: np.ndarray, bbox: np.ndarray, size: tuple[int, int]):
     return crop, center, scale, matrix
 
 
-def fast_pose_tensor(image: np.ndarray, bbox: np.ndarray, size: tuple[int, int]):
+def fast_pose_tensor(image: np.ndarray, bbox: np.ndarray, size: tuple[int, int],
+                     *, kernel: str = "numpy"):
     crop, center, scale, _ = crop_geometry(image, bbox, size)
-    return normalize(crop), center, scale
+    return normalize(crop, kernel=kernel), center, scale
 
 
-def check_recipe(image: np.ndarray, bbox: np.ndarray, size: tuple[int, int]) -> None:
+def check_recipe(image: np.ndarray, bbox: np.ndarray, size: tuple[int, int],
+                 *, kernel: str = "numpy") -> None:
     """Fail on source-recipe drift. Run outside measured loops; not a fallback."""
-    actual = fast_pose_tensor(image, bbox, size)
+    actual = fast_pose_tensor(image, bbox, size, kernel=kernel)
     expected = pose_tensor(image, bbox, size)
     if any(a.dtype != b.dtype or a.shape != b.shape or a.tobytes() != b.tobytes()
            for a, b in zip(actual, expected, strict=True)):

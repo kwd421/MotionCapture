@@ -1,0 +1,35 @@
+{
+  "scope": "synthetic ROI affine+lookup+NCHW only; no native model or M5 claim",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "opencv": "4.13.0",
+  "numpy": "2.3.5",
+  "opencv_threads": 4,
+  "exact_roi_comparisons": 32,
+  "rounds": 6,
+  "iterations_per_round": 400,
+  "round_mean_ms": {
+    "numpy": [
+      0.49582599250000003,
+      0.4529577475,
+      0.46498290249999996,
+      0.4466183575,
+      0.45112924249999997,
+      0.46358174249999995
+    ],
+    "opencv": [
+      0.3839528775,
+      0.3780211475,
+      0.38211929499999997,
+      0.388224935,
+      0.38564422,
+      0.37886892000000005
+    ]
+  },
+  "median_round_mean_ms": {
+    "numpy": 0.45826974499999995,
+    "opencv": 0.38303608624999996
+  },
+  "median_time_reduction_percent": 16.41689410458462,
+  "native_inference_measured": false
+}

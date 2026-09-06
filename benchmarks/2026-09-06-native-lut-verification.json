@@ -1,0 +1,43 @@
+{
+  "base_commit": "ec5103a5de25b6cd7fcf4ea8a4cf670c222bb251",
+  "status": "targeted_contract_tests_passed_native_candidate_pending",
+  "tests": {
+    "passed": 73,
+    "new_cases": 15,
+    "existing_cases": 58,
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_native_normalization.py tests/test_wholebody_handoff.py tests/test_wholebody_assets.py tests/test_wholebody_onnx.py tests/test_wholebody_bench.py tests/test_recording.py tests/test_recording_bench.py"
+  },
+  "python": "3.13.5",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "opencv": "4.13.0",
+  "numpy": "2.3.5",
+  "python312_syntax": "passed",
+  "python312_runtime": "not_run",
+  "ruff": "unavailable_not_run",
+  "native_coreml": "not_available",
+  "full_repository_suite": "not_run",
+  "real_components": [
+    "OpenCV LUT/affine/layout",
+    "FFmpeg/OpenCV VFR decoding",
+    "stage concurrency/ownership",
+    "actual CLI/report and checkpoint writing"
+  ],
+  "neural_sessions": "explicit synthetic fixtures only",
+  "local_pixel_kernel": "see 2026-09-06-native-lut-kernel.json; no neural or M5 speedup claim",
+  "read_only_user_report_checks": 361,
+  "performance_optimization_complete": false,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "changed_files_git_blobs": {
+    "src/motioncapture/wholebody_fast_input.py": "af46138e5f1bad86c0aeb90c490b307569b759a1",
+    "src/motioncapture/wholebody_stages.py": "771d897a03abc8dfd08173c47c25705520695818",
+    "src/motioncapture/wholebody_optimize_bench.py": "00b401519927e4c5767a1731821cdda146052648",
+    "src/motioncapture/wholebody_cadence.py": "111a90f3dae669dbc8ddf47b4df62db0c027f1a1",
+    "tests/test_wholebody_native_normalization.py": "cf150b0dbf2e5fa4d5d953882730ae69008a45ec",
+    "tools/benchmark_wholebody_native_lut.py": "7d33904ca7cd20d9ac907cb2ea40fbc8c1a0c10b",
+    "specs/wholebody-native-normalization.md": "4fbd022f71a051851b49e28db30663d95f4068a7",
+    "benchmarks/2026-09-06-r2-review-native-lut.md": "91375bf167b3787217c37afe9abf60263cdeb699",
+    "benchmarks/2026-09-06-native-lut-kernel.json": "65cabe2db4352aaf21dd811acd6e32fc185281b5"
+  },
+  "snapshot_scope": "All imported source dependencies in the targeted file-runner path matched the fetched remote ec5103a blob IDs. No full repository or user uncommitted source claim."
+}

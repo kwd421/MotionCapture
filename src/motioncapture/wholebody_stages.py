@@ -12,6 +12,7 @@ import time
 from collections.abc import Callable, Iterable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
+from functools import partial
 from typing import Any
 
 import numpy as np
@@ -165,11 +166,11 @@ def detect(session, submitted, frame):
     }, submitted, end)
 
 
-def pose(session, submitted, detected, size, threshold, fast):
+def pose(session, submitted, detected, size, threshold, fast, kernel="numpy"):
     start = time.perf_counter_ns()
     pre = inference = post = 0.0
     people, per_person = [], []
-    prepare = fast_pose_tensor if fast else pose_tensor
+    prepare = partial(fast_pose_tensor, kernel=kernel) if fast else pose_tensor
     for box in detected.boxes:
         began = time.perf_counter_ns()
         tensor, center, scale = prepare(detected.frame.image_bgr, box, size)
@@ -200,6 +201,7 @@ class StagePipeline:
     pose_factory: Callable[[], Any]
     size: tuple[int, int] = (192, 256)
     threshold: float = .3
+    normalization_kernel: str = "numpy"
     detector: StageOwner = field(init=False)
     pose: StageOwner = field(init=False)
     metadata: dict = field(default_factory=dict, init=False)
@@ -212,6 +214,8 @@ class StagePipeline:
     unready_handoffs: int = field(default=0, init=False)
 
     def __post_init__(self):
+        if self.normalization_kernel not in {"numpy", "opencv"}:
+            raise BenchmarkError("unknown_normalization_kernel")
         self.detector = StageOwner(self.detector_factory, "wholebody-detector")
         self.pose = StageOwner(self.pose_factory, "wholebody-pose")
 
@@ -243,7 +247,8 @@ class StagePipeline:
 
     def packets(self, frames: Iterable[RecordedFrame], count: int, *, overlap: bool,
                 fast: bool, verify_eof: bool = False, advance_pose: bool = False):
-        if self.used or count <= 0 or (advance_pose and not overlap):
+        if (self.used or count <= 0 or (advance_pose and not overlap)
+                or (not fast and self.normalization_kernel != "numpy")):
             raise BenchmarkError("invalid_pipeline_run")
         self.used = True
         self.advance_pose = advance_pose
@@ -253,7 +258,10 @@ class StagePipeline:
         def submit_pose(detected, index):
             if detected.frame.identity.sequence != index:
                 raise BenchmarkError("pipeline_detection_identity_mismatch")
-            submitted = self.pose.submit(pose, detected, self.size, self.threshold, fast)
+            arguments = (detected, self.size, self.threshold, fast)
+            if self.normalization_kernel != "numpy":
+                arguments += (self.normalization_kernel,)
+            submitted = self.pose.submit(pose, *arguments)
             self.pose_requests += 1
             # First request has no predecessor; omit that sample rather than inventing 0.
             return None if last_pose_end is None else (submitted-last_pose_end)/1e6
@@ -270,7 +278,8 @@ class StagePipeline:
         # Explicit real-source preflight, NOT counted as tracked people or timed inference.
         if fast:
             h, w = first.image_bgr.shape[:2]
-            check_recipe(first.image_bgr, np.array([0., 0., w, h], np.float32), self.size)
+            check_recipe(first.image_bgr, np.array([0., 0., w, h], np.float32), self.size,
+                         kernel=self.normalization_kernel)
         self.detector.submit(detect, first)
         del first
         for index in range(count):
@@ -332,4 +341,5 @@ class StagePipeline:
                 "ready_pose_handoff_enabled": self.advance_pose,
                 "ready_pose_handoffs": self.ready_handoffs,
                 "next_detection_not_ready": self.unready_handoffs,
-                "ready_handoff_waits_for_detector": False}
+                "ready_handoff_waits_for_detector": False,
+                "normalization_kernel": self.normalization_kernel}
