@@ -151,7 +151,11 @@ def _python_sources_digest(root: Path) -> str | None:
     return digest.hexdigest()
 
 
-def run_pass(args, probe: RecordingProbe) -> dict:
+def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
+             result_observer=None, frame_limit: int = 0) -> dict:
+    if type(frame_limit) is not int or frame_limit < 0:
+        raise ValueError("Invalid explicit prefix frame limit")
+    target_frames = min(frame_limit, len(probe.pts)) if frame_limit else len(probe.pts)
     inference = args.mode == "track"
     whole, steady = Group(), Group()
     windows: dict[str, Group] = {}
@@ -160,7 +164,8 @@ def run_pass(args, probe: RecordingProbe) -> dict:
     result_digest = hashlib.sha256() if args.verify_results and inference else None
     setup_started = time.perf_counter_ns()
     with ExitStack() as stack:
-        tracker = stack.enter_context(_make_tracker(args.model_dir, args.task_scheduling)) \
+        tracker = stack.enter_context((tracker_factory or _make_tracker)(
+            args.model_dir, args.task_scheduling)) \
             if inference else None
         compose = _make_preview(args.preview) if inference else None
         decoder = stack.enter_context(RecordedDecoder(args.input, probe,
@@ -198,6 +203,10 @@ def run_pass(args, probe: RecordingProbe) -> dict:
                 before = time.perf_counter_ns()
                 _digest_result(result_digest, frame, result)
                 durations["result_verification_ms"] = (time.perf_counter_ns() - before) / 1e6
+            if result_observer is not None:
+                before = time.perf_counter_ns()
+                result_observer(frame, result)
+                durations["comparison_observer_ms"] = (time.perf_counter_ns() - before) / 1e6
             whole.add(durations, result)
             if frame.identity.sequence >= args.warmup_frames:
                 steady.add(durations, result)
@@ -209,8 +218,10 @@ def run_pass(args, probe: RecordingProbe) -> dict:
                          + int(bool(result.right_hand_landmarks)))
                 key = f"resolved_hands={hands},face={int(bool(result.face_landmarks))}"
                 workload.setdefault(key, Group()).add(durations, result)
+            if whole.frames == target_frames and target_frames < len(probe.pts):
+                break
         loop_s = (time.perf_counter_ns() - loop_started) / 1e9
-        if not decoder.complete or whole.frames != len(probe.pts):
+        if whole.frames != target_frames or (target_frames == len(probe.pts) and not decoder.complete):
             raise ValueError("Incomplete recording benchmark")
         actual_threads = decoder.actual_threads
     # Hash after cleanup, outside the measured loop: detect input replacement.
@@ -219,6 +230,9 @@ def run_pass(args, probe: RecordingProbe) -> dict:
     budget = 1000 / args.target_fps
     return {
         "status": "completed", "decoder_cleanup_complete": True,
+        "scope": "full_file" if target_frames == len(probe.pts) else "explicit_prefix",
+        "requested_frames": target_frames,
+        "observer_overhead_in_loop_fps": result_observer is not None,
         "inference_executed": inference, "setup_ms": setup_ms,
         "task_scheduling": args.task_scheduling if inference else "not_run",
         "predictions_sha256": result_digest.hexdigest() if result_digest is not None else None,

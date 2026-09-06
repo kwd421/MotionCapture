@@ -1,0 +1,65 @@
+{
+  "scope": "targeted synthetic protocol/model tests and real HTTP/VFR/OpenCV; not hardware AI",
+  "base_revision": "d77c332e08d281d80d50087c846f1dc6452fb836",
+  "environment": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.13.5",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5",
+    "pytest": "9.0.2",
+    "node": "v22.16.0"
+  },
+  "python_tests": {
+    "passed": 75,
+    "skipped": 2,
+    "skipped_reason": "Optional Chromium worker tests; explicit attempts blocked by environment localhost policy"
+  },
+  "node_protocol_tests": {
+    "passed": 4
+  },
+  "python_312_ast": "passed",
+  "node_syntax": "passed",
+  "native_mediapipe_executed": false,
+  "actual_browser_sdk_executed": false,
+  "gpu_inference_verified": false,
+  "ane_verified": false,
+  "speedup_verified": false,
+  "browser_e2e_attempt": {
+    "status": "blocked",
+    "reason": "net::ERR_BLOCKED_BY_ADMINISTRATOR at localhost page.goto",
+    "tests": 2,
+    "policy_bypass_attempted": false
+  },
+  "unverified": [
+    "Python 3.12 execution",
+    "Ruff",
+    "complete repository test suite",
+    "Mac/Windows live capture and display",
+    "real target backend A/B",
+    "native CPU vs GPU quality",
+    "thermals and sustained 60Hz"
+  ],
+  "sha256_files": {
+    "README_HAND_ACCELERATION.md": "6910ae5ea9f50bd8489a9785c13f7fab572c52221b2a8f97f88f6c1245eeab03",
+    "benchmarks/2026-09-06-hand-backends.md": "b4f9ff69a80ca489f747260cdcf9e890409561582e0c243f1ece9f8a771baeaf",
+    "specs/browser-hands-experiment.md": "ff7e3fee82383e7ccad43991e4dd19a4cd3f8d3b73b676f95d174c31d455f3f7",
+    "src/motioncapture/browser_hands.py": "8972ec3432411f9f0e08ad4bca40c9a75d0a665a5b47c180ca01cf68a9cb804e",
+    "src/motioncapture/hand_acceleration_bench.py": "03c63ecfe5d77d90abce29ffe01d59bc002ca6732bbbf83798fe4bd162e797fe",
+    "src/motioncapture/hand_comparison.py": "fb6aca0f9de9e0626d1d8599fa8254aa291c0667594fd506d47c41928f65cb2d",
+    "src/motioncapture/landmarkers.py": "70857342f8a86d3cf1e254309d06fea55dcdf90c3a9db8396df2539d31ed2a77",
+    "src/motioncapture/recording_bench.py": "79833ea8abc6dc4c38b8eaf9981998a2392d79f2f22c4cbf68786ed6139996d7",
+    "tests/test_acceleration_runner.py": "ddb5061a2764b26c4b41f2bfccf77c4d7b7af4f36f97bb7e75dc842186039ec6",
+    "tests/test_browser_hands.py": "4b08ce0babbef4548191728925258b7217b2ca4b5a369aab768d8d61f2e88c87",
+    "tests/test_browser_worker.py": "cafcec099cc04d828ec4138ad5961ae6b4cf6c9d2f2bf27e54deff6f50238f5c",
+    "tests/test_hand_comparison.py": "f79e6a5b4a3ecdb094187608c64ee3b8fb62c8be2e3b0f345d37321151ea490d",
+    "tools/browser_hands/.gitignore": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97",
+    "tools/browser_hands/index.html": "1460841a9ae7e5be46be7c3d7b24cd4182f030d1847f06aa45cd47a24a73127d",
+    "tools/browser_hands/package.json": "12dedfc15a399225e3cbbb7af925fc0e3f8719ca018fbac592ce84610572084a",
+    "tools/browser_hands/page.mjs": "6a86618281ea673c17c20149152846dec48edec47f3794b0dc71f5703a9cf0ba",
+    "tools/browser_hands/protocol.mjs": "0a1af4e46e4a28089d9b687b11b16a3bb64ab69f733d49f2fc1dbfeda1a75f53",
+    "tools/browser_hands/protocol.test.mjs": "fbfa64c4554fc110b0552f7b606d25e1514d33e88b7f525005c5b0a1b991e550",
+    "tools/browser_hands/style.css": "553b4fcf418323bf96382e7facade1f2dd3b3946478d72d9bb98015ddbdb924c",
+    "tools/browser_hands/worker.mjs": "4b63cc4deb4b9c2670cf6a332ba7ecc34a5007652d2fd0be380cf54909e8ed83"
+  }
+}

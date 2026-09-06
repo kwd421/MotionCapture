@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from fractions import Fraction
@@ -77,11 +78,13 @@ class MediaPipeLandmarkTracker:
         self,
         model_dir: Path,
         task_scheduling: Literal["serial", "parallel", "staggered"] = "serial",
+        *, hand_task_factory: Callable[[Path], Any] | None = None,
     ) -> None:
         if task_scheduling not in {"serial", "parallel", "staggered"}:
             raise ValueError(f"Unsupported task scheduling mode: {task_scheduling}")
         self.model_paths = require_models(model_dir)
         self.task_scheduling = task_scheduling
+        self._hand_task_factory = hand_task_factory
         self._pose: Any | None = None
         self._hands: Any | None = None
         self._face: Any | None = None
@@ -92,6 +95,10 @@ class MediaPipeLandmarkTracker:
 
     @property
     def provider_name(self) -> str:
+        if self._hand_task_factory is not None:
+            hand_provider = self._hands.provider_name if self._hands is not None else "not initialized"
+            return (f"MediaPipe 0.10.31 CPU Pose/Face; Hands={hand_provider}; "
+                    f"{self.task_scheduling} tasks")
         return f"{self.provider_base_name}; {self.task_scheduling} tasks"
 
     @staticmethod
@@ -119,16 +126,19 @@ class MediaPipeLandmarkTracker:
                     output_segmentation_masks=False,
                 )
             )
-            self._hands = mp.tasks.vision.HandLandmarker.create_from_options(
-                mp.tasks.vision.HandLandmarkerOptions(
-                    base_options=self._base(self.model_paths["hands"]),
-                    running_mode=mp.tasks.vision.RunningMode.VIDEO,
-                    num_hands=2,
-                    min_hand_detection_confidence=0.5,
-                    min_hand_presence_confidence=0.5,
-                    min_tracking_confidence=0.5,
+            if self._hand_task_factory is None:
+                self._hands = mp.tasks.vision.HandLandmarker.create_from_options(
+                    mp.tasks.vision.HandLandmarkerOptions(
+                        base_options=self._base(self.model_paths["hands"]),
+                        running_mode=mp.tasks.vision.RunningMode.VIDEO,
+                        num_hands=2,
+                        min_hand_detection_confidence=0.5,
+                        min_hand_presence_confidence=0.5,
+                        min_tracking_confidence=0.5,
+                    )
                 )
-            )
+            else:
+                self._hands = self._hand_task_factory(self.model_paths["hands"])
             self._face = mp.tasks.vision.FaceLandmarker.create_from_options(
                 mp.tasks.vision.FaceLandmarkerOptions(
                     base_options=self._base(self.model_paths["face"]),
@@ -147,7 +157,10 @@ class MediaPipeLandmarkTracker:
                     thread_name_prefix="landmark-task",
                 )
         except Exception as exc:
-            self.close()
+            try:
+                self.close()
+            except Exception as cleanup:
+                exc.add_note(f"Tracker cleanup failed: {type(cleanup).__name__}")
             raise InferenceError(
                 f"Unable to initialize MediaPipe Pose + Hands + Face tasks: {exc}"
             ) from exc
@@ -247,9 +260,17 @@ class MediaPipeLandmarkTracker:
         pose, self._pose = self._pose, None
         hands, self._hands = self._hands, None
         face, self._face = self._face, None
+        errors = []
         for instance in (face, hands, pose):
             if instance is not None:
-                instance.close()
+                try:
+                    instance.close()
+                except Exception as exc:
+                    errors.append(exc)
+        if errors:
+            for other in errors[1:]:
+                errors[0].add_note(f"Additional cleanup failure: {type(other).__name__}")
+            raise errors[0]
 
     def __enter__(self) -> MediaPipeLandmarkTracker:
         self.open()
