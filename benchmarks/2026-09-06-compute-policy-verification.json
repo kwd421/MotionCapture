@@ -1,0 +1,60 @@
+{
+  "base_commit": "ca29fee08106b58abb7f5301983bb83dc01dfe2b",
+  "status": "targeted_contract_tests_passed_native_compute_policy_pending",
+  "tests": {
+    "baseline": 88,
+    "new": 16,
+    "passed": 104,
+    "new_suite_total_runs": 3,
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_compute_policy.py tests/test_wholebody_handoff.py tests/test_wholebody_native_normalization.py tests/test_wholebody_pts_replay.py tests/test_wholebody_assets.py tests/test_wholebody_onnx.py tests/test_wholebody_bench.py tests/test_recording.py tests/test_recording_bench.py"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5"
+  },
+  "real_components": [
+    "OpenCV tensor/crop/decoder contracts",
+    "FFmpeg VFR file path",
+    "PTS pacer and actual stage workers",
+    "per-arm constructors/checkpoints/failure cleanup",
+    "CPU process clock plumbing and elapsed/summed time separation"
+  ],
+  "explicit_test_doubles": [
+    "neural sessions and outputs",
+    "selected provider failures",
+    "isolated controlled process CPU clock test"
+  ],
+  "native_onnx_coreml": "not_run",
+  "new_device_speedup_measured": false,
+  "python312_syntax": "passed",
+  "python312_runtime": "not_available_not_run",
+  "ruff": "not_available_not_run",
+  "full_repository_suite": "not_run",
+  "unchanged_dependency_blobs_verified": {
+    "src/motioncapture/__init__.py": "4f317e905c77fd76d8663eb5e762ccd43f103f38",
+    "src/motioncapture/recording.py": "5fbcaa054a1309747889fad1519db3cc63db5905",
+    "src/motioncapture/recording_bench.py": "4d88d90d063a1e80391fdc3a780fc6fcfd6ad173",
+    "src/motioncapture/wholebody_catalog.py": "9625da880f199753440d0bc322d6766ac4b211eb",
+    "src/motioncapture/wholebody_onnx.py": "e60095a8ab7008413fcebe8ef3c31be14abda12d",
+    "src/motioncapture/wholebody_fast_input.py": "af46138e5f1bad86c0aeb90c490b307569b759a1",
+    "src/motioncapture/wholebody_boundary_probe.py": "49c62f19f72b2753d2d25b981bb7482beb7de6d2",
+    "src/motioncapture/wholebody_cadence.py": "111a90f3dae669dbc8ddf47b4df62db0c027f1a1",
+    "src/motioncapture/wholebody_replay.py": "e74e6c3724a846b97c64fe4999f88fcc778a532f",
+    "src/motioncapture/wholebody_stages.py": "bde62d7a40168049defe05865ad7e5794d60a17d"
+  },
+  "base_source_fingerprint_matches_users_dirty_tree": "not_claimed",
+  "r5_report_aggregate_checks": 1554,
+  "r5_check_failures": 0,
+  "changed_file_blobs": {
+    "src/motioncapture/wholebody_optimize_bench.py": "a4a2c9ee50b63f301e56a18efc7fedae94be1d23",
+    "src/motioncapture/wholebody_stage_comparison.py": "519b51cd5f189e02e6303fffd2ffed2d81be1dee",
+    "tests/test_wholebody_compute_policy.py": "079d1d4feb1940066f7f5cc1a0700d7fd780fa90",
+    "specs/wholebody-compute-policy.md": "910dc5ea4698837d0dfb1f829455065b1c73f421",
+    "benchmarks/2026-09-06-r5-review-compute-policy.md": "cabb14037812268d2901febbf672c3ee21f93841"
+  },
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "performance_optimization_complete": false
+}

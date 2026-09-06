@@ -12,6 +12,8 @@ import json
 import math
 import platform
 import time
+from copy import copy
+from dataclasses import asdict, dataclass
 from functools import partial
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
@@ -36,6 +38,47 @@ MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True)
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
 
 
+@dataclass(frozen=True)
+class ExecutionArm:
+    mode: str
+    detector_provider: str
+    pose_provider: str
+
+
+def experiment_arms(args) -> tuple[ExecutionArm, ...]:
+    if args.suite == "compute-policy":
+        if (args.detector_provider != "coreml-all" or args.pose_provider != "coreml-all"
+                or args.diagnose_from is not None):
+            raise BenchmarkError("compute_policy_requires_fixed_plan_without_diagnostics")
+        mode = "source-pts-ready-cvlut"
+        forward = (
+            ExecutionArm(mode, "coreml-all", "coreml-all"),
+            ExecutionArm(mode, "coreml-gpu", "coreml-ane"),
+            ExecutionArm(mode, "coreml-ane", "coreml-gpu"),
+        )
+        return (*forward, *reversed(forward))
+    plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
+    if args.suite == "pose-parallel":
+        plan = ["source-pts-ready-cvlut", "source-pts-dualpose-cvlut",
+                "source-pts-dualpose-cvlut", "source-pts-ready-cvlut"]
+    elif args.suite == "paced":
+        plan = ["overlap-ready-cvlut", "source-pts-ready-cvlut",
+                "source-pts-ready-cvlut", "overlap-ready-cvlut"]
+    elif args.suite == "native-normalize":
+        plan = ["overlap-ready-lut", "overlap-ready-cvlut",
+                "overlap-ready-cvlut", "overlap-ready-lut"]
+    elif args.suite == "handoff":
+        plan = ["overlap-lut", "overlap-ready-lut", "overlap-ready-lut", "overlap-lut"]
+    elif args.suite == "pipeline":
+        plan = ["sequential-lut", "overlap-lut", "overlap-lut", "sequential-lut"]
+    elif args.suite == "normalize":
+        plan = ["sequential-reference", "sequential-lut",
+                "sequential-lut", "sequential-reference"]
+    elif args.suite == "diagnostics":
+        plan = []
+    return tuple(ExecutionArm(mode, args.detector_provider, args.pose_provider) for mode in plan)
+
+
 class Stats:
     def __init__(self):
         self.frames = self.people = 0
@@ -53,8 +96,13 @@ class Stats:
         self.people += len(people)
         n = str(len(people))
         self.counts[n] = self.counts.get(n, 0) + 1
-        self.by_count.setdefault(n, {"frame_pose_ms": Samples(), "per_person_ms": Samples()})
+        self.by_count.setdefault(n, {
+            "frame_pose_ms": Samples(), "per_person_ms": Samples(),
+            "elapsed_pose_stage_ms": Samples(), "elapsed_detector_stage_ms": Samples(),
+        })
         self.by_count[n]["frame_pose_ms"].add(packet.times["pose_inference_ms"])
+        self.by_count[n]["elapsed_pose_stage_ms"].add(packet.times["pose_stage_ms"])
+        self.by_count[n]["elapsed_detector_stage_ms"].add(packet.times["detector_stage_ms"])
         for value in packet.per_person_ms:
             self.by_count[n]["per_person_ms"].add(value)
         for name, value in packet.times.items():
@@ -66,6 +114,12 @@ class Stats:
         return {"frames": self.frames, "person_observations": self.people,
                 "person_count_distribution": self.counts,
                 "valid_point_observations": self.valid_points, "counts_are_accuracy": False,
+                "pose_count_timing_semantics": {
+                    "frame_pose_ms": "SUM of person-call durations; may overlap",
+                    "per_person_ms": "individual call duration, not full frame cost",
+                    "elapsed_pose_stage_ms": "elapsed wall time for all people in frame",
+                    "elapsed_detector_stage_ms": "elapsed detection wall time in same frame",
+                },
                 "stages": {k: v.summary(1000/60) for k, v in self.stages.items()},
                 "pose_by_person_count": {n: {k: v.summary(1000/60) for k, v in group.items()}
                                          for n, group in self.by_count.items()}}
@@ -83,7 +137,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
-              "same_provider_in_all_arms": True, "pose_lanes": lanes,
+              "same_provider_in_all_arms": args.suite != "compute-policy", "pose_lanes": lanes,
               "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": "ready_before_verification" if advance else "after_verification",
@@ -103,12 +157,13 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     stats, steady = Stats(), Stats()
     cadence = OutputCadence(count, probe.pts[0])
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
-    new_reference = (StageReference(count, frame_hashes=args.suite == "pose-parallel")
+    new_reference = (StageReference(count, frame_hashes=args.suite in {"pose-parallel", "compute-policy"})
                      if reference is None else None)
     comparison = StageDifference()
     pipeline = decoder = None
     phase, completed = "source_integrity", None
     loop_start = loop_end = None
+    cpu_start = cpu_end = None
     previous_verified_ns = None
     try:
         if sha256(args.input) != probe.sha256:
@@ -125,11 +180,16 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                     **kernel_options)
         with pipeline:
             report["backend"] = pipeline.metadata
+            if args.suite == "compute-policy":
+                if (pipeline.metadata.get("detector", {}).get("requested") != args.detector_provider
+                        or pipeline.metadata.get("pose", {}).get("requested") != args.pose_provider):
+                    raise BenchmarkError("compute_policy_session_metadata_mismatch")
             phase = "decoder_open"
             with RecordedDecoder(args.input, probe, threads=args.decode_threads) as decoder:
                 report["decode_threads_reported"] = decoder.actual_threads
                 report["setup_ms"] = (time.perf_counter_ns()-started)/1e6
                 phase = "process"
+                cpu_start = time.process_time_ns()
                 loop_start = time.perf_counter_ns()
                 handoff_options = {"advance_pose": True} if advance else {}
                 for packet in pipeline.packets(decoder, count, overlap=overlap, fast=fast,
@@ -138,9 +198,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                     frame = packet.detected.frame
                     began = time.perf_counter_ns()
                     if new_reference is not None:
-                        new_reference.store(frame, packet.people)
+                        new_reference.store(frame, packet.people, boxes=packet.detected.boxes)
                     else:
-                        comparison.add(reference, frame, packet.people)
+                        comparison.add(reference, frame, packet.people, boxes=packet.detected.boxes)
                     update_digest(digest, frame, packet.people)
                     identity = f"{frame.identity.sequence}:{frame.identity.pts};".encode()
                     boxes_digest.update(identity)
@@ -173,6 +233,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                         print(f"{mode}: {stats.frames}/{count}", flush=True)
                     del packet, frame
                 loop_end = time.perf_counter_ns()
+                cpu_end = time.process_time_ns()
                 if stats.frames != count or (count == len(probe.pts) and not decoder.complete):
                     raise BenchmarkError("pipeline_frame_coverage_mismatch")
                 phase = "decoder_cleanup"
@@ -184,6 +245,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     except BaseException as exc:
         if loop_end is None:
             loop_end = time.perf_counter_ns()
+            cpu_end = time.process_time_ns()
         report["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
         report["error"] = {"phase": phase, "type": type(exc).__name__,
                            "code": getattr(exc, "code", None), "last_completed": completed}
@@ -193,6 +255,14 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         report.setdefault("backend", pipeline.metadata)
     duration = (loop_end-loop_start)/1e9 if loop_start is not None else None
     ok = report["status"] == "completed"
+    cpu_s = (cpu_end-cpu_start)/1e9 if cpu_start is not None and cpu_end is not None else None
+    report["host_process_cost"] = {
+        "process_cpu_s": cpu_s,
+        "mean_cpu_cores_during_loop": cpu_s / duration if cpu_s is not None and duration else None,
+        "scope": ("measured loop, all host process threads; setup excluded" if ok
+                  else "partial run; caught failure may include teardown"),
+        "gpu_ane_time_measured": False, "power_measured": False,
+    }
     report.update(loop_s=duration,
                   unpaced_loop_fps=count/duration if ok and duration and not paced else None,
                   paced_loop_fps=count/duration if ok and duration and paced else None,
@@ -220,7 +290,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         new_reference.predictions_sha256 = digest.hexdigest()
     else:
         report["provider_disagreement"] = {**comparison.summary(),
-            "reference": "same-provider first completed arm; NOT truth"}
+            "reference": ("first ALL/ALL arm; cross-policy pipeline comparison, NOT truth"
+                          if args.suite == "compute-policy"
+                          else "same-provider first completed arm; NOT truth")}
     return report, new_reference
 
 
@@ -245,6 +317,10 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
     try:
         if not args.input.is_file():
             raise BenchmarkError("input_video_missing")
+        phase = "configuration"
+        arms = experiment_arms(args)
+        plan = [arm.mode for arm in arms]
+        phase = "inspect"
         probe = inspector(args.input)
         report["source"] = probe.summary()
         report["runtime"] = {"python": platform.python_version(), "platform": platform.platform(),
@@ -261,33 +337,20 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
                            allow_cpu=args.allow_cpu_partitions, threads=args.ort_threads)
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
-        plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
-        if args.suite == "pose-parallel":
-            plan = ["source-pts-ready-cvlut", "source-pts-dualpose-cvlut",
-                    "source-pts-dualpose-cvlut", "source-pts-ready-cvlut"]
-        elif args.suite == "paced":
-            plan = ["overlap-ready-cvlut", "source-pts-ready-cvlut",
-                    "source-pts-ready-cvlut", "overlap-ready-cvlut"]
-        elif args.suite == "native-normalize":
-            plan = ["overlap-ready-lut", "overlap-ready-cvlut",
-                    "overlap-ready-cvlut", "overlap-ready-lut"]
-        elif args.suite == "handoff":
-            plan = ["overlap-lut", "overlap-ready-lut", "overlap-ready-lut", "overlap-lut"]
-        elif args.suite == "pipeline":
-            plan = ["sequential-lut", "overlap-lut", "overlap-lut", "sequential-lut"]
-        elif args.suite == "normalize":
-            plan = ["sequential-reference", "sequential-lut",
-                    "sequential-lut", "sequential-reference"]
-        elif args.suite == "diagnostics":
-            plan = []
         report["configuration"] = {"plan": plan, "model": args.model,
-            "detector_provider": args.detector_provider, "pose_provider": args.pose_provider,
+            "execution_arm_plan": [asdict(arm) for arm in arms],
+            "compute_unit_policy_is_physical_dispatch_proof": False,
+            "detector_provider": "per_arm_plan" if args.suite == "compute-policy"
+                                 else args.detector_provider,
+            "pose_provider": "per_arm_plan" if args.suite == "compute-policy"
+                             else args.pose_provider,
             "allow_cpu_partitions": args.allow_cpu_partitions, "preview": "none",
             "max_frames": args.max_frames, "target_fps": 60, "warmup_frames": 60,
             "decoder_every_original_pts": True, "detector_cadence": "every_source_frame",
             "maximum_people": 8, "max_pending_each_stage": 1,
             "same_frame_pose_lane_limit": 2 if args.suite == "pose-parallel" else 1,
-            "per_frame_prediction_hashes": args.suite == "pose-parallel",
+            "per_frame_prediction_hashes": args.suite in {"pose-parallel", "compute-policy"},
+            "per_frame_box_hashes": args.suite in {"pose-parallel", "compute-policy"},
             "detector_threshold": .5, "nms_threshold": .45, "keypoint_threshold": .3,
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
@@ -314,10 +377,18 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
                 return 2
         phase = "passes"
         bank = None
-        for index, mode in enumerate(plan):
+        for index, arm in enumerate(arms):
             checkpoint(args.output, f".arm-{index+1:02d}.started",
-                       {"mode": mode, "status": "started"})
-            row, enrolled = pass_runner(args, probe, mode, factories, bank)
+                       {**asdict(arm), "status": "started"})
+            arm_args = copy(args)
+            arm_args.detector_provider = arm.detector_provider
+            arm_args.pose_provider = arm.pose_provider
+            arm_factories = (factory("yolox-tiny", arm.detector_provider),
+                             factory(args.model, arm.pose_provider))
+            print(f"ARM {index+1}/{len(arms)}: detector={arm.detector_provider} "
+                  f"pose={arm.pose_provider} mode={arm.mode}", flush=True)
+            row, enrolled = pass_runner(arm_args, probe, arm.mode, arm_factories, bank)
+            row["execution_arm"] = asdict(arm)
             report["runs"].append(row)
             checkpoint(args.output, f".arm-{index+1:02d}", row)
             if enrolled is not None:
@@ -363,7 +434,7 @@ def parser():
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
-                                       "handoff", "native-normalize", "paced", "pose-parallel"),
+                                       "handoff", "native-normalize", "paced", "pose-parallel", "compute-policy"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

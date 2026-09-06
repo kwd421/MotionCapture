@@ -23,8 +23,10 @@ class StageReference:
         self.clock = None
         self.predictions_sha256 = None
         self.frame_hashes = np.empty((count, 32), np.uint8) if frame_hashes else None
+        self.box_hashes = np.empty((count, 32), np.uint8) if frame_hashes else None
+        self.box_seen = np.zeros(count, np.bool_) if frame_hashes else None
 
-    def store(self, frame, people):
+    def store(self, frame, people, *, boxes=None):
         identity = frame.identity
         i = identity.sequence
         clock = (identity.source_id, identity.time_base)
@@ -36,6 +38,9 @@ class StageReference:
             digest = hashlib.sha256()
             update_digest(digest, frame, people)
             self.frame_hashes[i] = np.frombuffer(digest.digest(), np.uint8)
+            if boxes is not None:
+                self.box_hashes[i] = np.frombuffer(_box_digest(boxes, len(people)), np.uint8)
+                self.box_seen[i] = True
         self.clock = clock
         self.people[i], self.pts[i] = len(people), identity.pts
         if len(people) == 1:
@@ -52,8 +57,10 @@ class StageDifference:
         self.hash_checked = self.hash_changed = self.hash_multi_checked = 0
         self.hash_multi_changed = 0
         self.first_hash_changes = []
+        self.box_checked = self.box_changed = self.box_count_changed = 0
+        self.first_box_changes = []
 
-    def add(self, reference, frame, people):
+    def add(self, reference, frame, people, *, boxes=None):
         i = frame.identity.sequence
         if reference is None or not 0 <= i < len(reference.people) or reference.people[i] < 0:
             self.unavailable += 1
@@ -75,6 +82,15 @@ class StageDifference:
                 self.first_hash_changes.append({"sequence": i, "pts": frame.identity.pts,
                                                "reference_people": int(reference.people[i]),
                                                "candidate_people": len(people)})
+        if boxes is not None and reference.box_hashes is not None and reference.box_seen[i]:
+            changed = _box_digest(boxes, len(people)) != reference.box_hashes[i].tobytes()
+            count_changed = reference.people[i] != len(people)
+            self.box_checked += 1
+            self.box_changed += int(changed)
+            self.box_count_changed += int(count_changed)
+            if changed and len(self.first_box_changes) < 16:
+                self.first_box_changes.append({"sequence": i, "pts": frame.identity.pts,
+                                               "count_changed": bool(count_changed)})
         if reference.people[i] > 1 or len(people) > 1:
             self.ambiguous += 1
             return
@@ -112,6 +128,12 @@ class StageDifference:
                 "candidate_only_point_observations": self.only_candidate,
                 "worst_frames": self.worst, "coordinate_delta_lower_is_better": True,
                 "accuracy_verified": False,
+                "per_frame_detector_boxes": {
+                    "checked_frames": self.box_checked, "changed_frames": self.box_changed,
+                    "count_mismatch_frames": self.box_count_changed,
+                    "first_changes": self.first_box_changes,
+                    "scope": "ordered detector-slot float32 edges; not actor correspondence",
+                },
                 "per_frame_predictions": {
                     "status": "compared" if self.hash_checked else "not_requested_or_no_samples",
                     "checked_frames": self.hash_checked, "changed_frames": self.hash_changed,
@@ -119,6 +141,13 @@ class StageDifference:
                     "multi_person_frames_changed": self.hash_multi_changed,
                     "first_changes": self.first_hash_changes,
                     "scope": "all slots, scores, validity and PTS; bitwise, not actor accuracy"}}
+
+
+def _box_digest(boxes, people_count):
+    if (not isinstance(boxes, np.ndarray) or boxes.shape != (people_count, 4)
+            or boxes.dtype != np.float32 or not np.isfinite(boxes).all()):
+        raise BenchmarkError("invalid_detector_box_comparison")
+    return hashlib.sha256(np.asarray(boxes, dtype="<f4").tobytes()).digest()
 
 
 def update_digest(digest, frame, people):
