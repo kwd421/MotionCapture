@@ -1,0 +1,55 @@
+{
+  "base_commit": "971dad890128a542774deb07d9a79d3286042c49",
+  "status": "targeted_contract_tests_passed_native_candidate_pending",
+  "tests": {
+    "passed": 58,
+    "new_cases": 18,
+    "existing_cases": 40,
+    "repeated_new_suite_runs": 5,
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_handoff.py tests/test_wholebody_assets.py tests/test_wholebody_onnx.py tests/test_wholebody_bench.py tests/test_recording.py tests/test_recording_bench.py"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5"
+  },
+  "real_test_components": [
+    "stage ownership and event-controlled concurrency",
+    "OpenCV crop/normalization/decoding",
+    "FFmpeg VFR fixture",
+    "actual benchmark runner and checkpoint writing"
+  ],
+  "synthetic_test_components": [
+    "neural model sessions",
+    "injected native operation failures"
+  ],
+  "python312_syntax": "passed",
+  "python312_runtime": "not_run",
+  "ruff": "not_available_not_run",
+  "full_repository_suite": "not_run",
+  "native_candidate_inference": "not_run",
+  "original_video_contract_replay": "attempt_exceeded_45_second_tool_budget_no_result_claimed",
+  "tested_changed_git_blobs": {
+    "src/motioncapture/wholebody_stages.py": "b2236447e346773fca7e9e96c5ae422d7239b363",
+    "src/motioncapture/wholebody_optimize_bench.py": "acb74b1b73468d097508948a9ef8dbca1ab51edd",
+    "tests/test_wholebody_handoff.py": "12545c513b657a336025da640fd3d9ac850e457c",
+    "specs/wholebody-stage-handoff.md": "d116f25c355ca55065b743d431e3e66948e12953",
+    "benchmarks/2026-09-06-ready-handoff.md": "3cd0b80f401b57cdc4249cf23516c5d5e0500384"
+  },
+  "known_unresolved": [
+    "CPU/CoreML detector crop sensitivity and sparse large joint disagreements",
+    "sustained live 60fps and quality",
+    "actual GPU/ANE dispatch"
+  ],
+  "performance_optimization_complete": false,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false,
+  "test_snapshot_scope": {
+    "edited_owners": "byte matched remote 971dad8 before editing",
+    "unchanged_codecs": "wholebody_onnx, wholebody_catalog, recording, fast_input, stage_comparison and boundary_probe matched remote blob IDs",
+    "recording_bench": "prior supplied artifact snapshot; current source-revision metadata path not independently validated",
+    "repository_wide_snapshot": "not reconstructed; targeted scope only"
+  }
+}

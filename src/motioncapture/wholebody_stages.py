@@ -86,6 +86,16 @@ class StageOwner:
         submitted = time.perf_counter_ns()
         self._future = self._executor.submit(operation, self._session, submitted, *args)
         self._future.add_done_callback(self._record_failure)
+        return submitted
+
+    def take_ready(self):
+        """Caller-only nonblocking receive; a completed failure is still an error."""
+        self.check()
+        if self._future is None:
+            raise BenchmarkError("stage_has_no_request")
+        if not self._future.done():
+            return False, None
+        return True, self.receive()
 
     def receive(self):
         if self._future is None:
@@ -196,6 +206,10 @@ class StagePipeline:
     read_frames: int = field(default=0, init=False)
     emitted_frames: int = field(default=0, init=False)
     used: bool = field(default=False, init=False)
+    advance_pose: bool = field(default=False, init=False)
+    pose_requests: int = field(default=0, init=False)
+    ready_handoffs: int = field(default=0, init=False)
+    unready_handoffs: int = field(default=0, init=False)
 
     def __post_init__(self):
         self.detector = StageOwner(self.detector_factory, "wholebody-detector")
@@ -228,10 +242,22 @@ class StagePipeline:
         self.pose.check()
 
     def packets(self, frames: Iterable[RecordedFrame], count: int, *, overlap: bool,
-                fast: bool, verify_eof: bool = False):
-        if self.used or count <= 0:
+                fast: bool, verify_eof: bool = False, advance_pose: bool = False):
+        if self.used or count <= 0 or (advance_pose and not overlap):
             raise BenchmarkError("invalid_pipeline_run")
         self.used = True
+        self.advance_pose = advance_pose
+        last_pose_end = None
+        prestarted = None
+
+        def submit_pose(detected, index):
+            if detected.frame.identity.sequence != index:
+                raise BenchmarkError("pipeline_detection_identity_mismatch")
+            submitted = self.pose.submit(pose, detected, self.size, self.threshold, fast)
+            self.pose_requests += 1
+            # First request has no predecessor; omit that sample rather than inventing 0.
+            return None if last_pose_end is None else (submitted-last_pose_end)/1e6
+
         iterator = iter(frames)
         def read_frame():
             self.check()
@@ -248,10 +274,12 @@ class StagePipeline:
         self.detector.submit(detect, first)
         del first
         for index in range(count):
-            detected = self.detector.receive()
-            if detected.frame.identity.sequence != index:
-                raise BenchmarkError("pipeline_detection_identity_mismatch")
-            self.pose.submit(pose, detected, self.size, self.threshold, fast)
+            if prestarted is None:
+                detected = self.detector.receive()
+                submit_gap = submit_pose(detected, index)
+            else:
+                detected, submit_gap = prestarted
+                prestarted = None
             if overlap and index+1 < count:
                 upcoming = read_frame()
                 self.detector.submit(detect, upcoming)
@@ -260,6 +288,21 @@ class StagePipeline:
             self.check()  # Do not emit after an observed later-frame failure.
             if packet.detected is not detected:
                 raise BenchmarkError("pipeline_pose_identity_mismatch")
+            last_pose_end = packet.completed_ns
+            if submit_gap is not None:
+                packet.times["pose_submit_gap_ms"] = submit_gap
+            # Admit no extra source frame and never wait here. In the common
+            # pose-bound case the next detection has already completed.
+            if advance_pose and index+1 < count:
+                ready, upcoming_detection = self.detector.take_ready()
+                if ready:
+                    next_gap = submit_pose(upcoming_detection, index+1)
+                    prestarted = (upcoming_detection, next_gap)
+                    self.ready_handoffs += 1
+                else:
+                    self.unready_handoffs += 1
+                del upcoming_detection
+                self.check()
             packet.times["result_residence_ms"] = (
                 time.perf_counter_ns()-packet.completed_ns)/1e6
             self.emitted_frames += 1
@@ -283,4 +326,10 @@ class StagePipeline:
                 "unemitted_read_frames": self.read_frames-self.emitted_frames,
                 "detector_cadence": "every_source_frame",
                 "cleanup": {"detector": self.detector.cleanup, "pose": self.pose.cleanup},
-                "native_hang_force_cancellation": False}
+                "native_hang_force_cancellation": False,
+                "pose_requests": self.pose_requests,
+                "unemitted_pose_requests": self.pose_requests-self.emitted_frames,
+                "ready_pose_handoff_enabled": self.advance_pose,
+                "ready_pose_handoffs": self.ready_handoffs,
+                "next_detection_not_ready": self.unready_handoffs,
+                "ready_handoff_waits_for_detector": False}

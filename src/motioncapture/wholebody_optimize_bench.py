@@ -28,7 +28,8 @@ from motioncapture.wholebody_stage_comparison import StageDifference, StageRefer
 from motioncapture.wholebody_stages import StagePipeline
 
 MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True),
-         "overlap-lut": (True, True)}
+         "overlap-lut": (True, True), "overlap-ready-lut": (True, True)}
+DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
 
 
 class Stats:
@@ -69,16 +70,23 @@ class Stats:
 def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
+    advance = mode == "overlap-ready-lut"
     report = {"mode": mode, "status": "running", "scope": "full_file" if count == len(probe.pts)
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
               "same_provider_in_all_arms": True,
+              "pose_handoff": "ready_before_verification" if advance else "after_verification",
               "timing_scope": {"loop": "all-frame unpaced service incl verification; no GUI",
-                               "frame_work_ms": "sum of host-measured stage wall times; NOT latency",
+                               "frame_work_ms": (
+                                   "sum of host-measured stage wall times; NOT latency"),
                                "submit_to_pose_completion_ms": "host detector submit to pose end",
                                "source_to_photon_measured": False,
-                               "initial_recipe_check_in_loop": fast}}
+                               "initial_recipe_check_in_loop": fast,
+                               "pose_submit_gap_ms": (
+                                   "prior pose completion to next submission; N-1"),
+                               "verified_output_interval_ms": (
+                                   "successive validation completions; N-1")}}
     stats, steady = Stats(), Stats()
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
     new_reference = StageReference(count) if reference is None else None
@@ -86,6 +94,7 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     pipeline = decoder = None
     phase, completed = "source_integrity", None
     loop_start = loop_end = None
+    previous_verified_ns = None
     try:
         if sha256(args.input) != probe.sha256:
             raise BenchmarkError("source_changed_before_pass")
@@ -101,8 +110,10 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                 report["setup_ms"] = (time.perf_counter_ns()-started)/1e6
                 phase = "process"
                 loop_start = time.perf_counter_ns()
+                handoff_options = {"advance_pose": True} if advance else {}
                 for packet in pipeline.packets(decoder, count, overlap=overlap, fast=fast,
-                                               verify_eof=count == len(probe.pts)):
+                                               verify_eof=count == len(probe.pts),
+                                               **handoff_options):
                     frame = packet.detected.frame
                     began = time.perf_counter_ns()
                     if new_reference is not None:
@@ -115,7 +126,12 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                     boxes_digest.update(np.asarray(packet.detected.boxes, dtype="<f4").tobytes())
                     pixels_digest.update(identity)
                     pixels_digest.update(memoryview(np.ascontiguousarray(frame.image_bgr)))
-                    packet.times["verification_ms"] = (time.perf_counter_ns()-began)/1e6
+                    verified_ns = time.perf_counter_ns()
+                    packet.times["verification_ms"] = (verified_ns-began)/1e6
+                    if previous_verified_ns is not None:
+                        packet.times["verified_output_interval_ms"] = (
+                            verified_ns-previous_verified_ns)/1e6
+                    previous_verified_ns = verified_ns
                     stats.add(packet)
                     if frame.identity.sequence >= 60:
                         steady.add(packet)
@@ -147,7 +163,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                   last_completed=completed,
                   pipeline=pipeline.snapshot() if pipeline is not None else None,
                   decoder_cleanup=("owner_released"
-                                   if decoder is not None and decoder._capture is None else "unknown"),
+                                   if decoder is not None and decoder._capture is None
+                                   else "unknown"),
                   predictions_sha256=digest.hexdigest() if stats.frames else None,
                   detector_predictions_sha256=boxes_digest.hexdigest() if stats.frames else None,
                   pixels_sha256=pixels_digest.hexdigest() if stats.frames else None,
@@ -181,6 +198,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
                           "audio_processed": False, "observations": "bounded_RAM_only"}}
     phase = "inspect"
     try:
+        if not args.input.is_file():
+            raise BenchmarkError("input_video_missing")
         probe = inspector(args.input)
         report["source"] = probe.summary()
         report["runtime"] = {"python": platform.python_version(), "platform": platform.platform(),
@@ -197,8 +216,10 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
                            allow_cpu=args.allow_cpu_partitions, threads=args.ort_threads)
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
-        plan = [*MODES, *reversed(MODES)]
-        if args.suite == "pipeline":
+        plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
+        if args.suite == "handoff":
+            plan = ["overlap-lut", "overlap-ready-lut", "overlap-ready-lut", "overlap-lut"]
+        elif args.suite == "pipeline":
             plan = ["sequential-lut", "overlap-lut", "overlap-lut", "sequential-lut"]
         elif args.suite == "normalize":
             plan = ["sequential-reference", "sequential-lut",
@@ -215,6 +236,7 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
             "verification_pixel_hash_in_all_loops": True,
+            "ready_handoff_policy": "only_if_next_detector_already_done; no extra source admission",
             "comparison_to_previous_loop_fps_requires_same_observer_work": True}
         checkpoint(args.output, ".manifest", report)
         if args.diagnose_from:
@@ -251,7 +273,14 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             raise BenchmarkError("source_changed_at_end")
         report["all_pass_prediction_hashes_equal"] = (
             len(report["runs"]) == len(plan) and bool(plan)
+            and all(r["status"] == "completed" for r in report["runs"])
             and len({r["predictions_sha256"] for r in report["runs"]}) == 1)
+        for name, key in (("all_pass_pixel_hashes_equal", "pixels_sha256"),
+                          ("all_pass_detector_hashes_equal", "detector_predictions_sha256")):
+            report[name] = (len(report["runs"]) == len(plan) and bool(plan)
+                            and all(r["status"] == "completed" for r in report["runs"])
+                            and all(r.get(key) is not None for r in report["runs"])
+                            and len({r[key] for r in report["runs"]}) == 1)
     except BaseException as exc:
         report["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
         report["error"] = {"phase": phase, "type": type(exc).__name__,
@@ -273,7 +302,8 @@ def parser():
     p.add_argument("--max-frames", type=int, default=900)
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
-    p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics"),
+    p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
+                                       "handoff"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)
