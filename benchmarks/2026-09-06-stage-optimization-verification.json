@@ -1,0 +1,52 @@
+{
+  "status": "contract_tests_passed_native_acceptance_pending",
+  "base_commit": "dfb7b12fdee10352fc3f7b409c6acaf4d1a3bdbd",
+  "changed_existing_files": 0,
+  "tests": {
+    "passed": 76,
+    "new_tests": 36,
+    "existing_tests": 40,
+    "scope": "verified local dependency subset; not the full repository or uncommitted user source",
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_assets.py tests/test_wholebody_onnx.py tests/test_wholebody_bench.py tests/test_recording.py tests/test_recording_bench.py tests/test_wholebody_optimization.py",
+    "final_new_test_rerun_after_metadata_edits": 36
+  },
+  "runtime": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5",
+    "opencv_threads": 4
+  },
+  "python_3_12_syntax": "passed_during_preparation",
+  "python_3_12_runtime": "not_available",
+  "ruff": "not_run_unavailable",
+  "native_onnx_inference": "not_run_runtime_install_unresolved",
+  "native_m5_coreml": "not_available",
+  "full_repository_suite": "not_run",
+  "uncommitted_user_source": "not_available_not_overwritten",
+  "test_model_calls": "explicit_synthetic_doubles_only",
+  "real_test_components": [
+    "OpenCV affine and normalization",
+    "FFmpeg VFR fixture PTS and EOF",
+    "event-controlled stage overlap and ownership",
+    "checkpoint file publication and source checks"
+  ],
+  "local_pixel_kernel": {
+    "matched_inputs": 2700,
+    "median_reference_ms": 1.0542944766666666,
+    "median_lookup_ms": 0.6058010955555555,
+    "time_reduction_percent": 42.53966904285604,
+    "golden_model_replay": false
+  },
+  "tested_core_git_blobs": {
+    "src/motioncapture/wholebody_fast_input.py": "2ffd2a42cfea75da49807e1eef773739acc3451d",
+    "src/motioncapture/wholebody_stages.py": "1a19fbb5906ff08079b76258dc3a19bdaea080e3",
+    "src/motioncapture/wholebody_boundary_probe.py": "49c62f19f72b2753d2d25b981bb7482beb7de6d2",
+    "src/motioncapture/wholebody_stage_comparison.py": "c13cec5d4961a495ab4ca2cf151123ce8d759af0",
+    "tests/test_wholebody_optimization.py": "5bd5b5380637651bf260beaa689e94ee81efd82c"
+  },
+  "performance_optimization_complete": false,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false
+}

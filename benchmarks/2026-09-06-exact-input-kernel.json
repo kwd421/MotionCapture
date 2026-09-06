@@ -1,0 +1,39 @@
+{
+  "scope": "preprocessing_only; synthetic_fixed_ROI; NOT tracking inference",
+  "source_sha256": "982bed047178c8c526f81d394f659e7402f0a2cf1dd620d0d85320bac27ea2c6",
+  "selected_frames_per_round": 900,
+  "pts_used_for_model": false,
+  "model_calls": 0,
+  "roi": "fixed central source rectangle, NOT detector output",
+  "runtime": {
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5",
+    "opencv_threads": 4
+  },
+  "actual_model_inference": false,
+  "rounds": [
+    {
+      "reference": {"mean_ms": 1.0542944766666666, "p95_ms": 1.4789789500000001},
+      "lookup": {"mean_ms": 0.6058010955555555, "p95_ms": 0.9346412}
+    },
+    {
+      "reference": {"mean_ms": 1.10800213, "p95_ms": 1.5404897},
+      "lookup": {"mean_ms": 0.6503784322222222, "p95_ms": 0.9593491}
+    },
+    {
+      "reference": {"mean_ms": 1.0105660866666666, "p95_ms": 1.4593938499999999},
+      "lookup": {"mean_ms": 0.5891302166666667, "p95_ms": 0.8880266499999999}
+    }
+  ],
+  "byte_equal_samples": 2700,
+  "median_round_mean_ms": {
+    "reference": 1.0542944766666666,
+    "lookup": 0.6058010955555555
+  },
+  "kernel_reduction_percent": 42.53966904285604,
+  "input_matches_supplied_m5_golden_sha256": false,
+  "supplied_m5_golden_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+  "reason_scope_limited": "Mounted pixels have a different file hash. This is pixel-kernel validation, NOT golden model replay."
+}
