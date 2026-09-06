@@ -1,0 +1,73 @@
+{
+  "scope": "whole-body ONNX candidate preparation; NOT pretrained inference performance",
+  "base_commit": "669e7c1af6f381413ac9d819aeae17c6f34c9f9f",
+  "environment": {
+    "os": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "opencv": "4.13.0"
+  },
+  "tests": {
+    "status": "passed",
+    "total": 40,
+    "new_slice_tests": 21,
+    "existing_reader_runner_tests": 19,
+    "real_infrastructure": [
+      "OpenCV affine/letterbox/NMS",
+      "FFmpeg-generated VFR video",
+      "existing OpenCV/FFmpeg PTS-validated decoder",
+      "atomic report writes"
+    ],
+    "synthetic_boundaries": [
+      "all network predictions",
+      "ONNX/ORT session test doubles",
+      "CoreML provider selection and profiling fixture events"
+    ],
+    "output": "........................................                                 [100%]\n40 passed in 2.28s\n"
+  },
+  "syntax": {
+    "python_3_12_grammar": "passed",
+    "files": 6
+  },
+  "not_verified": [
+    "actual Python 3.12 execution",
+    "Ruff",
+    "entire repository tests",
+    "official weight binary downloads and schemas",
+    "real pretrained ONNX inference",
+    "CoreML on Apple Silicon",
+    "ANE/GPU per-operator hardware dispatch",
+    "Windows runtime",
+    "M1/M5 end-to-end speed or quality",
+    "sustained live 60 FPS"
+  ],
+  "weight_enrollment": "explicit first-download TOFU, no publisher hash authenticated here",
+  "commercial_release_cleared": false,
+  "actual_user_video_revalidation_attempt": {
+    "status": "not_completed",
+    "tool_timeout_seconds": 60,
+    "scope": "full file probe/decoder only; no model inference requested",
+    "claimed_validated_frame_count": null
+  },
+  "publishing": {
+    "remote_commit": null,
+    "remote_push": false,
+    "reason": "Current GitHub tool discovery provides read operations, no writes"
+  },
+  "source_sha256": {
+    "src/motioncapture/wholebody_bench.py": "0a1c545e8455f76ff9b44e45b408a7e1329b7914103a4ba1183321de2477a81a",
+    "src/motioncapture/wholebody_catalog.py": "df10690b94a15ea955d0b5ae2259d229908d08bb811379e0314719556dc67f16",
+    "src/motioncapture/wholebody_onnx.py": "9d00c4e5593ce676401767bae98e1e6ca81474134b5737d1ce0208f52a71f698",
+    "tests/test_wholebody_assets.py": "ff59419f88c2fb8f869c94356a1fef137ade5f9ca83a19b3c19ed03431c82fde",
+    "tests/test_wholebody_bench.py": "d3c692e977d77cad9e0acc7d1db3255aab2e8f0cb62081d0577fbbd4c0d5c15a",
+    "tests/test_wholebody_onnx.py": "b4b5c8fff9b9b56b5c74680112e177753f4841cea30dda2346f714889f3d709a"
+  },
+  "patch_validation": {
+    "adds_files_only": true,
+    "existing_file_edits": 0,
+    "applied_against_available_base_files": true,
+    "new_file_bytes_equal": true,
+    "new_files": 13,
+    "full_repository_reconstruction": false
+  }
+}

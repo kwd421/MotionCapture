@@ -1,0 +1,4 @@
+# Isolated optional benchmark dependencies, not a replacement for the uv lock.
+# Reproducible selected versions, not a claim that these are the newest releases.
+onnxruntime==1.22.1
+onnx==1.18.0
