@@ -5,6 +5,7 @@ Only stable Person2D and recorded frame fields cross this boundary.
 """
 from __future__ import annotations
 
+import hashlib
 import struct
 
 import numpy as np
@@ -14,13 +15,14 @@ from motioncapture.wholebody_onnx import PARTS
 
 
 class StageReference:
-    def __init__(self, count):
+    def __init__(self, count, *, frame_hashes=False):
         self.xy = np.full((count, 133, 2), np.nan, np.float64)
         self.valid = np.zeros((count, 133), np.bool_)
         self.people = np.full(count, -1, np.int16)
         self.pts = np.zeros(count, np.int64)
         self.clock = None
         self.predictions_sha256 = None
+        self.frame_hashes = np.empty((count, 32), np.uint8) if frame_hashes else None
 
     def store(self, frame, people):
         identity = frame.identity
@@ -30,6 +32,10 @@ class StageReference:
             raise BenchmarkError("invalid_reference_sequence")
         if self.clock is not None and self.clock != clock:
             raise BenchmarkError("reference_source_changed")
+        if self.frame_hashes is not None:
+            digest = hashlib.sha256()
+            update_digest(digest, frame, people)
+            self.frame_hashes[i] = np.frombuffer(digest.digest(), np.uint8)
         self.clock = clock
         self.people[i], self.pts[i] = len(people), identity.pts
         if len(people) == 1:
@@ -43,6 +49,9 @@ class StageDifference:
         self.only_candidate = dict.fromkeys(PARTS, 0)
         self.checked = self.unavailable = self.ambiguous = 0
         self.worst = []
+        self.hash_checked = self.hash_changed = self.hash_multi_checked = 0
+        self.hash_multi_changed = 0
+        self.first_hash_changes = []
 
     def add(self, reference, frame, people):
         i = frame.identity.sequence
@@ -53,6 +62,19 @@ class StageDifference:
                 (frame.identity.source_id, frame.identity.time_base)):
             raise BenchmarkError("reference_identity_mismatch")
         self.checked += 1
+        if reference.frame_hashes is not None:
+            digest = hashlib.sha256()
+            update_digest(digest, frame, people)
+            changed = digest.digest() != reference.frame_hashes[i].tobytes()
+            multi = reference.people[i] > 1 or len(people) > 1
+            self.hash_checked += 1
+            self.hash_changed += int(changed)
+            self.hash_multi_checked += int(multi)
+            self.hash_multi_changed += int(multi and changed)
+            if changed and len(self.first_hash_changes) < 16:
+                self.first_hash_changes.append({"sequence": i, "pts": frame.identity.pts,
+                                               "reference_people": int(reference.people[i]),
+                                               "candidate_people": len(people)})
         if reference.people[i] > 1 or len(people) > 1:
             self.ambiguous += 1
             return
@@ -89,7 +111,14 @@ class StageDifference:
                 "reference_only_point_observations": self.only_reference,
                 "candidate_only_point_observations": self.only_candidate,
                 "worst_frames": self.worst, "coordinate_delta_lower_is_better": True,
-                "accuracy_verified": False}
+                "accuracy_verified": False,
+                "per_frame_predictions": {
+                    "status": "compared" if self.hash_checked else "not_requested_or_no_samples",
+                    "checked_frames": self.hash_checked, "changed_frames": self.hash_changed,
+                    "multi_person_frames_checked": self.hash_multi_checked,
+                    "multi_person_frames_changed": self.hash_multi_changed,
+                    "first_changes": self.first_hash_changes,
+                    "scope": "all slots, scores, validity and PTS; bitwise, not actor accuracy"}}
 
 
 def update_digest(digest, frame, people):

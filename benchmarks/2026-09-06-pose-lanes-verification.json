@@ -1,0 +1,61 @@
+{
+  "base_commit": "f376d022ddbf22844e7ca09040909698c4b4114f",
+  "status": "targeted_contract_tests_passed_native_dualpose_pending",
+  "tests": {
+    "passed": 149,
+    "new_cases": 21,
+    "new_suite_additional_runs": 3,
+    "baseline_targeted_before_edits": 106,
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_wholebody_pose_lanes.py tests/test_wholebody_pts_replay.py tests/test_wholebody_native_normalization.py tests/test_wholebody_handoff.py tests/test_wholebody_optimization.py tests/test_wholebody_assets.py tests/test_wholebody_onnx.py tests/test_wholebody_bench.py tests/test_recording.py tests/test_recording_bench.py"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+    "opencv": "4.13.0",
+    "numpy": "2.3.5"
+  },
+  "real_components": [
+    "dedicated stage owners and event/barrier-controlled two-lane execution",
+    "OpenCV original and LUT crop/normalization/SimCC",
+    "FFmpeg/OpenCV VFR decoding",
+    "real CLI paced ABBA/checkpoint and failure paths"
+  ],
+  "explicit_test_doubles": [
+    "input-dependent neural sessions, not actual ONNX/CoreML inference",
+    "controlled clock in inherited replay tests"
+  ],
+  "python312_syntax": "passed six changed Python files",
+  "python312_runtime": "unavailable_not_run",
+  "ruff": "unavailable; offline tool attempt failed",
+  "full_repository_suite": "not_run; only matched targeted sources reconstructed",
+  "native_mac_coreml_inference": "not_run",
+  "new_performance_or_memory_improvement_measured": false,
+  "r4_read_only_aggregate_checks": 272,
+  "r4_aggregate_check_failures": 0,
+  "r4_backlog_ms_max": [
+    816.167861,
+    481.073527
+  ],
+  "optimization_complete": false,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false,
+  "known_open": [
+    "target-device latency and memory cost of auxiliary pose session",
+    "actual GPU/ANE dispatch",
+    "crop-sensitive pose outliers",
+    "multi-person actor identity and ground truth",
+    "live capture/display and M1/Windows performance"
+  ],
+  "changed_files_git_blobs": {
+    "src/motioncapture/wholebody_stages.py": "bde62d7a40168049defe05865ad7e5794d60a17d",
+    "src/motioncapture/wholebody_optimize_bench.py": "c18c845a7195f9605653fb8b70a9f72c61347d6c",
+    "src/motioncapture/wholebody_replay.py": "e74e6c3724a846b97c64fe4999f88fcc778a532f",
+    "src/motioncapture/wholebody_stage_comparison.py": "364d29560f10f4b01fb1650b5a17ba3fcbe70fe3",
+    "tests/test_wholebody_pose_lanes.py": "7526e703982ed0d338484cd249a9edcfc4ccaa9a",
+    "tests/test_wholebody_optimization.py": "d0e290dc290ffe162e2f79ed58c5b91eeaf88259",
+    "specs/wholebody-pose-lanes.md": "824d0e5834e883b141ecf745521c774813a2873b",
+    "benchmarks/2026-09-06-r4-review-pose-lanes.md": "03a3c02eea34739a7c03432932fc0f8bf044a7cd"
+  },
+  "snapshot_scope": "Imported file-runner dependencies reconstructed from supplied artifacts and fetched source; Git blob IDs matched f376d022 lineage. This is not a full repository checkout or verification of user uncommitted code."
+}

@@ -1,7 +1,8 @@
 """Bounded detector-next/pose-current pipeline; no skipped or reused observations.
 
 Both sequential and overlap modes use the same dedicated stage owners. One
-pending detector and one pending pose at most. Decoding remains caller-owned.
+request per model owner; an opt-in auxiliary pose owner handles disjoint people
+of the SAME frame. Source admission is unchanged. Decoding remains caller-owned.
 A native call cannot be forcibly cancelled; shutdown waits for it and never
 claims cleanup while a model still owns a running call.
 """
@@ -11,7 +12,7 @@ import threading
 import time
 from collections.abc import Callable, Iterable
 from concurrent.futures import Future, ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import partial
 from typing import Any
 
@@ -208,6 +209,56 @@ def pose(session, submitted, detected, size, threshold, fast, kernel="numpy"):
     return Posed(detected, people, times, tuple(per_person), end)
 
 
+def pose_parallel(session, submitted, detected, size, threshold, fast, kernel, auxiliary):
+    """Two same-frame lanes; retain every detector slot in its original order.
+
+    Only the primary pose worker touches auxiliary submit/receive. Its caller
+    must join the primary before auxiliary close. No concurrent use of a session.
+    """
+    if len(detected.boxes) < 2:
+        return pose(session, submitted, detected, size, threshold, fast, kernel)
+    started = time.perf_counter_ns()
+    primary_input = replace(detected, boxes=detected.boxes[::2])
+    auxiliary_input = replace(detected, boxes=detected.boxes[1::2])
+    auxiliary.submit(pose, auxiliary_input, size, threshold, fast, kernel)
+    try:
+        primary = pose(session, submitted, primary_input, size, threshold, fast, kernel)
+    except BaseException as original:
+        # Drain the admitted native job before propagating; no orphan or retry.
+        try:
+            auxiliary.receive()
+        except BaseException as secondary:
+            original.add_note(f"Auxiliary pose failure: {type(secondary).__name__}")
+        raise
+    join_started = time.perf_counter_ns()
+    other = auxiliary.receive()  # A selected auxiliary failure is NOT a serial fallback.
+    join_ms = (time.perf_counter_ns() - join_started) / 1e6
+    if primary.detected is not primary_input or other.detected is not auxiliary_input:
+        raise BenchmarkError("pose_lane_identity_mismatch")
+    people, per_person = [None] * len(detected.boxes), [None] * len(detected.boxes)
+    for offset, lane in enumerate((primary, other)):
+        expected = len(detected.boxes[offset::2])
+        if len(lane.people) != expected or len(lane.per_person_ms) != expected:
+            raise BenchmarkError("pose_lane_count_mismatch")
+        people[offset::2] = lane.people
+        per_person[offset::2] = lane.per_person_ms
+    ended = time.perf_counter_ns()
+    times = {**detected.times,
+             **{key: primary.times[key] + other.times[key]
+                for key in ("pose_pre_ms", "pose_inference_ms", "pose_post_ms")},
+             "pose_stage_ms": (ended - started) / 1e6,
+             "pose_queue_ms": (started - submitted) / 1e6,
+             "detector_to_pose_wait_ms": (started - detected.completed_ns) / 1e6,
+             "decode_read_ms": detected.frame.decode_ms,
+             "submit_to_pose_completion_ms": (ended - detected.submitted_ns) / 1e6,
+             "pose_primary_lane_stage_ms": primary.times["pose_stage_ms"],
+             "pose_auxiliary_lane_stage_ms": other.times["pose_stage_ms"],
+             "pose_auxiliary_join_ms": join_ms}
+    times["frame_work_ms"] = (detected.frame.decode_ms + times["detector_stage_ms"]
+                              + times["pose_stage_ms"])
+    return Posed(detected, people, times, tuple(per_person), ended)
+
+
 @dataclass
 class StagePipeline:
     detector_factory: Callable[[], Any]
@@ -216,6 +267,8 @@ class StagePipeline:
     threshold: float = .3
     normalization_kernel: str = "numpy"
     pacer: SourcePacer | None = None
+    pose_lanes: int = 1
+    auxiliary_pose: StageOwner | None = field(default=None, init=False)
     detector: StageOwner = field(init=False)
     pose: StageOwner = field(init=False)
     metadata: dict = field(default_factory=dict, init=False)
@@ -230,12 +283,22 @@ class StagePipeline:
     def __post_init__(self):
         if self.normalization_kernel not in {"numpy", "opencv"}:
             raise BenchmarkError("unknown_normalization_kernel")
+        if type(self.pose_lanes) is not int or self.pose_lanes not in (1, 2):
+            raise BenchmarkError("unsupported_pose_lane_count")
         self.detector = StageOwner(self.detector_factory, "wholebody-detector")
         self.pose = StageOwner(self.pose_factory, "wholebody-pose")
 
     def __enter__(self):
         try:
             self.metadata = {"detector": self.detector.open(), "pose": self.pose.open()}
+            if self.pose_lanes == 2:
+                self.auxiliary_pose = StageOwner(self.pose_factory, "wholebody-pose-auxiliary")
+                self.metadata["auxiliary_pose"] = self.auxiliary_pose.open()
+            self.metadata["pose_execution"] = {
+                "native_sessions": self.pose_lanes,
+                "assignment": "even_odd_detector_slots" if self.pose_lanes == 2 else "serial",
+                "scope": "within_one_source_frame; slot_is_not_actor_id",
+                "native_parallel_speedup_verified": False}
         except BaseException as exc:
             self.__exit__(type(exc), exc, None)
             raise
@@ -246,7 +309,10 @@ class StagePipeline:
         if self.pacer is not None and (exc is not None or self.read_frames > self.emitted_frames):
             self.pacer.cancel()
         errors = []
-        for owner in (self.detector, self.pose):
+        # Primary may be inside auxiliary.receive(); join it before closing aux.
+        for owner in (self.detector, self.pose, self.auxiliary_pose):
+            if owner is None:
+                continue
             try:
                 owner.close()
             except BaseException as failure:
@@ -263,6 +329,8 @@ class StagePipeline:
     def check(self):
         self.detector.check()
         self.pose.check()
+        if self.auxiliary_pose is not None:
+            self.auxiliary_pose.check()
 
     def packets(self, frames: Iterable[RecordedFrame], count: int, *, overlap: bool,
                 fast: bool, verify_eof: bool = False, advance_pose: bool = False):
@@ -280,7 +348,12 @@ class StagePipeline:
             arguments = (detected, self.size, self.threshold, fast)
             if self.normalization_kernel != "numpy":
                 arguments += (self.normalization_kernel,)
-            submitted = self.pose.submit(pose, *arguments)
+            if self.auxiliary_pose is None:
+                submitted = self.pose.submit(pose, *arguments)
+            else:
+                submitted = self.pose.submit(
+                    pose_parallel, detected, self.size, self.threshold, fast,
+                    self.normalization_kernel, self.auxiliary_pose)
             self.pose_requests += 1
             # First request has no predecessor; omit that sample rather than inventing 0.
             return None if last_pose_end is None else (submitted-last_pose_end)/1e6
@@ -352,12 +425,16 @@ class StagePipeline:
         self.check()
 
     def snapshot(self):
+        cleanup = {"detector": self.detector.cleanup, "pose": self.pose.cleanup}
+        if self.auxiliary_pose is not None:
+            cleanup["auxiliary_pose"] = self.auxiliary_pose.cleanup
         return {"read_frames": self.read_frames, "emitted_frames": self.emitted_frames,
-                "max_outstanding_per_stage": 1, "model_stages": 2,
+                "max_outstanding_per_stage": 1, "model_stages": 1 + self.pose_lanes,
+                "pose_lanes": self.pose_lanes, "frame_parallel_pose": False,
                 "intentional_frame_skips": 0,
                 "unemitted_read_frames": self.read_frames-self.emitted_frames,
                 "detector_cadence": "every_source_frame",
-                "cleanup": {"detector": self.detector.cleanup, "pose": self.pose.cleanup},
+                "cleanup": cleanup,
                 "native_hang_force_cancellation": False,
                 "pose_requests": self.pose_requests,
                 "unemitted_pose_requests": self.pose_requests-self.emitted_frames,

@@ -31,7 +31,8 @@ from motioncapture.wholebody_stages import StagePipeline
 
 MODES = {"sequential-reference": (False, False), "sequential-lut": (False, True),
          "overlap-lut": (True, True), "overlap-ready-lut": (True, True),
-         "overlap-ready-cvlut": (True, True), "source-pts-ready-cvlut": (True, True)}
+         "overlap-ready-cvlut": (True, True), "source-pts-ready-cvlut": (True, True),
+         "source-pts-dualpose-cvlut": (True, True)}
 DEFAULT_MODES = ("sequential-reference", "sequential-lut", "overlap-lut")
 
 
@@ -73,15 +74,16 @@ class Stats:
 def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
-    paced = mode == "source-pts-ready-cvlut"
-    advance = mode in {"overlap-ready-lut", "overlap-ready-cvlut", "source-pts-ready-cvlut"}
-    kernel = "opencv" if mode in {"overlap-ready-cvlut", "source-pts-ready-cvlut"} else "numpy"
+    paced = mode in {"source-pts-ready-cvlut", "source-pts-dualpose-cvlut"}
+    lanes = 2 if mode == "source-pts-dualpose-cvlut" else 1
+    advance = paced or mode in {"overlap-ready-lut", "overlap-ready-cvlut"}
+    kernel = "opencv" if paced or mode == "overlap-ready-cvlut" else "numpy"
     replay_ages = ReplayAges(count) if paced else None
     report = {"mode": mode, "status": "running", "scope": "full_file" if count == len(probe.pts)
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
-              "same_provider_in_all_arms": True,
+              "same_provider_in_all_arms": True, "pose_lanes": lanes,
               "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": "ready_before_verification" if advance else "after_verification",
@@ -91,6 +93,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                    "sum of host-measured stage wall times; NOT latency"),
                                "submit_to_pose_completion_ms": "host detector submit to pose end",
                                "source_to_photon_measured": False,
+                               "pose_inference_ms": "sum of all person calls; may overlap",
+                               "pose_stage_ms": "elapsed wall time for ALL people in frame",
                                "initial_recipe_check_in_loop": fast,
                                "pose_submit_gap_ms": (
                                    "prior pose completion to next submission; N-1"),
@@ -99,7 +103,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
     stats, steady = Stats(), Stats()
     cadence = OutputCadence(count, probe.pts[0])
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
-    new_reference = StageReference(count) if reference is None else None
+    new_reference = (StageReference(count, frame_hashes=args.suite == "pose-parallel")
+                     if reference is None else None)
     comparison = StageDifference()
     pipeline = decoder = None
     phase, completed = "source_integrity", None
@@ -113,6 +118,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         kernel_options = {"normalization_kernel": kernel} if kernel != "numpy" else {}
         if paced:
             kernel_options["pacer"] = SourcePacer(count)
+        if lanes != 1:
+            kernel_options["pose_lanes"] = lanes
         pipeline = pipeline_factory(*factories, size=(ASSETS[args.model].shape[3],
                                                       ASSETS[args.model].shape[2]),
                                     **kernel_options)
@@ -148,7 +155,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                     previous_verified_ns = verified_ns
                     if replay_ages is not None:
                         replay_observer_started = time.perf_counter_ns()
-                        replay_ages.add(frame.identity, packet.detected.source_release, verified_ns)
+                        replay_ages.add(frame.identity, packet.detected.source_release, verified_ns,
+                                        people=len(packet.people),
+                                        pose_stage_ms=packet.times["pose_stage_ms"])
                         packet.times["replay_observer_ms"] = (
                             time.perf_counter_ns()-replay_observer_started)/1e6
                     cadence_started = time.perf_counter_ns()
@@ -179,6 +188,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         report["error"] = {"phase": phase, "type": type(exc).__name__,
                            "code": getattr(exc, "code", None), "last_completed": completed}
         new_reference = None
+    if pipeline is not None:
+        # Retain preflights completed before an auxiliary constructor failed.
+        report.setdefault("backend", pipeline.metadata)
     duration = (loop_end-loop_start)/1e9 if loop_start is not None else None
     ok = report["status"] == "completed"
     report.update(loop_s=duration,
@@ -250,7 +262,10 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
         factories = (factory("yolox-tiny", args.detector_provider),
                      factory(args.model, args.pose_provider))
         plan = [*DEFAULT_MODES, *reversed(DEFAULT_MODES)]
-        if args.suite == "paced":
+        if args.suite == "pose-parallel":
+            plan = ["source-pts-ready-cvlut", "source-pts-dualpose-cvlut",
+                    "source-pts-dualpose-cvlut", "source-pts-ready-cvlut"]
+        elif args.suite == "paced":
             plan = ["overlap-ready-cvlut", "source-pts-ready-cvlut",
                     "source-pts-ready-cvlut", "overlap-ready-cvlut"]
         elif args.suite == "native-normalize":
@@ -271,6 +286,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "max_frames": args.max_frames, "target_fps": 60, "warmup_frames": 60,
             "decoder_every_original_pts": True, "detector_cadence": "every_source_frame",
             "maximum_people": 8, "max_pending_each_stage": 1,
+            "same_frame_pose_lane_limit": 2 if args.suite == "pose-parallel" else 1,
+            "per_frame_prediction_hashes": args.suite == "pose-parallel",
             "detector_threshold": .5, "nms_threshold": .45, "keypoint_threshold": .3,
             "person_crop_padding": 1.25, "pose_input_hw": list(ASSETS[args.model].shape[2:]),
             "ort_threads": args.ort_threads, "decode_threads": args.decode_threads,
@@ -346,7 +363,7 @@ def parser():
     p.add_argument("--decode-threads", type=int, default=0)
     p.add_argument("--ort-threads", type=int, default=4)
     p.add_argument("--suite", choices=("optimization", "pipeline", "normalize", "diagnostics",
-                                       "handoff", "native-normalize", "paced"),
+                                       "handoff", "native-normalize", "paced", "pose-parallel"),
                    default="optimization")
     p.add_argument("--diagnose-from", type=Path)
     p.add_argument("--output", type=Path, required=True)

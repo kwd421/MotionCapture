@@ -203,7 +203,10 @@ def test_runner_real_vfr_all_frames_pts_hashes_and_cleanup(tiny_vfr, tmp_path, m
     assert row["all_frames"]["frames"] == len(probe.pts)
     assert tuple(bank.pts) == probe.pts
     assert row["pipeline"]["read_frames"] == row["pipeline"]["emitted_frames"] == 6
-    assert row["pipeline"]["cleanup"] == {"detector": "owner_released", "pose": "owner_released"}
+    expected_cleanup = {"detector": "owner_released", "pose": "owner_released"}
+    if mode == "source-pts-dualpose-cvlut":
+        expected_cleanup["auxiliary_pose"] = "owner_released"
+    assert row["pipeline"]["cleanup"] == expected_cleanup
     assert row["last_completed"]["pts"] == probe.pts[-1]
     assert str(tiny_vfr) not in json.dumps(row)
     assert row["ground_truth_accuracy_verified"] is False

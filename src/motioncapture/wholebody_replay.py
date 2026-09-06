@@ -131,8 +131,10 @@ class ReplayAges:
         self._previous_due = self._previous_verified = self._last_pts = None
         self.ages, self.lateness = Samples(), Samples()
         self.windows = {}
+        self.by_people, self.worst = {}, []
 
-    def add(self, identity, release: Release, verified_ns: int) -> None:
+    def add(self, identity, release: Release, verified_ns: int, *, people=None,
+            pose_stage_ms=None) -> None:
         clock = (identity.source_id, identity.stream_id, identity.time_base)
         if (identity.sequence != self.frames or self.frames >= self.limit
                 or not isinstance(identity.time_base, Fraction) or identity.time_base <= 0
@@ -144,12 +146,24 @@ class ReplayAges:
                 or (self._previous_verified is not None
                     and verified_ns <= self._previous_verified)):
             raise BenchmarkError("invalid_replay_age_observation")
+        if ((people is not None and (type(people) is not int or not 0 <= people <= 8))
+                or (pose_stage_ms is not None and (not math.isfinite(pose_stage_ms)
+                                                   or pose_stage_ms < 0))):
+            raise BenchmarkError("invalid_replay_workload")
         if self._first is None:
             self._first, self._clock = identity.pts, clock
         age = (verified_ns - release.due_ns) / 1e6
         late = (release.released_ns - release.due_ns) / 1e6
         self.ages.add(age)
         self.lateness.add(late)
+        if people is not None:
+            self.by_people.setdefault(str(people), Samples()).add(age)
+        if len(self.worst) < 16 or age > self.worst[-1]["source_age_ms"]:
+            self.worst.append({"sequence": identity.sequence, "pts": identity.pts,
+                               "people_at_output": people, "source_age_ms": age,
+                               "release_lateness_ms": late, "pose_stage_ms": pose_stage_ms})
+            self.worst.sort(key=lambda row: row["source_age_ms"], reverse=True)
+            del self.worst[16:]
         bucket = int((identity.pts - self._first) * identity.time_base // 10)
         self.windows.setdefault(bucket, Samples()).add(age)
         self._last_age = age
@@ -165,6 +179,10 @@ class ReplayAges:
             "source_age_ms": _age_summary(self.ages),
             "detector_release_lateness_ms": _age_summary(self.lateness),
             "last_source_age_ms": self._last_age,
+            "source_age_by_ending_person_count": {
+                key: _age_summary(value) for key, value in self.by_people.items()},
+            "worst_source_ages": self.worst,
+            "workload_scope": "ending frame; backlog may originate in earlier frames",
             "source_windows": [{"start_s": key * 10, "end_s": (key + 1) * 10,
                                 "observed_frames": len(value.data),
                                 "source_age_ms": _age_summary(value)}
