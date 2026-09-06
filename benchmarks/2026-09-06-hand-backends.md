@@ -17,9 +17,10 @@ Three alternatives were examined:
 1. Simply select Python `Delegate.GPU`: the official Python BaseOptions reference
    documents Ubuntu-limited GPU support. Not a verified macOS switch for the
    installed 0.10.31 wheel. Do not silently convert failure back to CPU.
-2. Core ML / ONNX: viable later backend candidates, but the `.task` is a complete
-   detector/ROI/tracking/landmark pipeline, not a converted model with a proven
-   equivalent end-to-end adapter. No conversion or ANE speedup is claimed here.
+2. Core ML / ONNX: viable later backend candidates, but converting model weights
+   alone does not reproduce the surrounding MediaPipe detector/ROI/tracking/
+   landmark pipeline. The task bundle and its executing graph are distinct. No
+   equivalent end-to-end adapter, conversion or ANE speedup is claimed here.
 3. MediaPipe Web GPU: selected controlled experiment. Its official API accepts
    the same task bundle and GPU selection. The bridge lets native Pose/Face stay
    fixed, while a Web CPU control separates web/runtime/transport costs from a
