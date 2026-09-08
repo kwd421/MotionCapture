@@ -72,7 +72,9 @@ class RecordingProbe:
         if any(float(x) % 360 != 0 for x in rotation):
             raise ValueError("Rotated recordings require an explicit orientation adapter")
         pts = tuple(x["pts"] for x in frames)  # Missing PTS is not synthesized.
-        if any(type(x) is not int for x in pts) or any(b <= a for a, b in zip(pts, pts[1:])):
+        if any(type(x) is not int for x in pts) or any(
+            b <= a for a, b in zip(pts, pts[1:], strict=False)
+        ):
             raise ValueError("Decoded PTS must strictly increase")
         width, height = int(stream["width"]), int(stream["height"])
         if width <= 0 or height <= 0:
@@ -92,7 +94,7 @@ class RecordingProbe:
 
     def summary(self) -> dict:
         intervals = np.asarray([float((b - a) * self.time_base * 1000)
-                                for a, b in zip(self.pts, self.pts[1:])])
+                                for a, b in zip(self.pts, self.pts[1:], strict=False)])
         return {
             "sha256": self.sha256, "dimensions": [self.width, self.height],
             "codec": self.codec, "frames": len(self.pts), "duration_s": self.duration_s,
@@ -102,7 +104,8 @@ class RecordingProbe:
             "pts_span_fps": (len(self.pts) - 1) / float(
                 (self.pts[-1] - self.pts[0]) * self.time_base),
             "interval_ms": dict(zip(("min", "p50", "p95", "p99", "max"),
-                                    map(float, np.quantile(intervals, [0, .5, .95, .99, 1])))),
+                                    map(float, np.quantile(intervals, [0, .5, .95, .99, 1])),
+                                    strict=True)),
             "timestamp_kind": "ffprobe_integer_pts_and_rational_time_base",
             "sensor_exposure_uniqueness_verified": False,
         }

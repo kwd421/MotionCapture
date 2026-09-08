@@ -1,0 +1,3 @@
+# Explicit isolated runtime experiment. Original requirements retain 1.22.1.
+onnxruntime==1.29.0
+onnx==1.18.0

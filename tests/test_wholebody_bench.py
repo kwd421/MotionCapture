@@ -132,6 +132,44 @@ def test_control_plan_and_research_acknowledgement(tmp_path):
     assert not config.output.exists()
 
 
+def test_detector_plan_pairs_two_detector_paths_with_one_fixed_pose_path():
+    plan = b.make_detector_plan(['dwpose-m'], ['coreml-all'], ['cpu', 'coreml-all'],
+                                True, False)
+    assert plan == [
+        ('dwpose-m', 'cpu', 'coreml-all'),
+        ('dwpose-m', 'coreml-all', 'coreml-all'),
+        ('dwpose-m', 'coreml-all', 'coreml-all'),
+        ('dwpose-m', 'cpu', 'coreml-all'),
+    ]
+    with pytest.raises(BenchmarkError, match='one_pose_provider'):
+        b.make_detector_plan(['dwpose-m'], ['cpu', 'coreml-all'], ['cpu', 'coreml-all'],
+                             False, False)
+
+
+def test_detector_boxes_and_person_count_stratification_are_reported():
+    frame = NS(identity=NS(sequence=0, pts=7))
+    person = Person2D(np.ones((133, 2)), np.ones(133), np.ones(133, np.bool_))
+    bank = b.ReferenceBank(1)
+    boxes = np.asarray([[10, 10, 30, 30]], np.float32)
+    bank.store(frame, [person], boxes)
+    comparison = b.Disagreement()
+    comparison.add(bank, frame, [person], boxes + [1, 2, 1, 2])
+    summary = comparison.summary()
+    assert summary['detector']['checked_frames'] == 1
+    assert summary['detector']['count_mismatch_frames'] == 0
+    assert summary['detector']['matched_box_iou']['samples'] == 1
+    assert summary['parts']['body']['matched_points'] == 17
+
+    stats = b.ObservationStats()
+    stats.add([person, person], {
+        'pose_inference_ms': 4.0,
+        '_pose_person_inference_ms': (2.0, 2.0),
+    })
+    grouped = stats.summary(1000 / 60)['pose_by_detected_people']['2']
+    assert grouped['frames'] == 1 and grouped['person_observations'] == 2
+    assert grouped['pose_per_person_call_ms']['samples'] == 2
+
+
 def test_execute_checkpoints_survive_later_failed_arm_and_no_clobber(clip, tmp_path, monkeypatch):
     video, probe = clip
     config = args(video, tmp_path / 'bench.json', '--models', 'dwpose-m',
@@ -175,3 +213,60 @@ def test_native_control_retains_existing_observation_contract(monkeypatch, tmp_p
     assert seen[0][1]['frame_limit'] == 900
     assert record['capabilities']['face_blendshapes'] is True
     assert record['not_feature_equivalent_to_133point_candidates'] is True
+
+
+def test_native_interrupt_keeps_prefix_and_stops_entire_plan(clip, tmp_path, monkeypatch):
+    from motioncapture import recording_bench
+    from motioncapture.contracts import LandmarkResult, LandmarkTimings
+
+    video, probe = clip
+    config = args(video, tmp_path / 'interrupted.json', '--native-control',
+                  '--models', 'dwpose-m', '--providers', 'cpu')
+    closed = []
+
+    class Tracker:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            closed.append(True)
+
+        def process_recorded(self, frame):
+            if frame.identity.sequence == 2:
+                raise KeyboardInterrupt()
+            return NS(identity=frame.identity, result=LandmarkResult(*([()] * 8)),
+                      timings=LandmarkTimings(*([0.] * 7)))
+
+    monkeypatch.setattr(recording_bench, '_make_tracker', lambda *_: Tracker())
+    monkeypatch.setattr(b, 'candidate_pass', lambda *_: pytest.fail('Arm after interruption'))
+    assert b.execute(config) == 130
+    report = json.loads(config.output.read_text())
+    assert report['status'] == 'interrupted' and len(report['runs']) == 1
+    arm = report['runs'][0]
+    assert arm['status'] == 'interrupted' and arm['all_frames']['frames'] == 2
+    assert arm['current_frame']['pts'] == probe.pts[2]
+    assert arm['last_completed_frame']['sequence'] == 1
+    assert arm['tracker_cleanup_complete'] and arm['decoder_cleanup_complete']
+    assert closed == [True]
+    assert len(list(tmp_path.glob('interrupted.arm-*.json'))) == 1
+
+
+def test_onnx_interrupt_stops_plan_and_returns_130(clip, tmp_path, monkeypatch):
+    video, _ = clip
+    config = args(video, tmp_path / 'interrupted.json', '--models', 'dwpose-m',
+                  '--providers', 'cpu', 'coreml-all', '--abba')
+
+    class InterruptedEstimator(FakeEstimator):
+        def process(self, image):
+            if self.calls == 2:
+                raise KeyboardInterrupt()
+            return super().process(image)
+
+    real_pass = b.candidate_pass
+    monkeypatch.setattr(b, 'candidate_pass',
+                        lambda *a: real_pass(*a, estimator_factory=InterruptedEstimator))
+    assert b.execute(config) == 130
+    report = json.loads(config.output.read_text())
+    assert report['status'] == 'interrupted' and len(report['runs']) == 1
+    assert report['runs'][0]['all_frames']['frames'] == 2
+    assert len(FakeEstimator.instances) == 1 and FakeEstimator.instances[0].closed

@@ -7,6 +7,7 @@ from fractions import Fraction
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
 
 from motioncapture import wholebody_boundary_probe as diagnostics
 from motioncapture import wholebody_fast_input as fast
@@ -15,7 +16,6 @@ from motioncapture.recording import RecordedFrame, RecordedIdentity, inspect_rec
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_onnx import pose_tensor
 from motioncapture.wholebody_stages import StageOwner, StagePipeline
-from test_recording import tiny_vfr  # noqa: F401
 
 
 def heads(index=192):

@@ -43,16 +43,20 @@ def main():
         ("inference wall mean ms", ("latency", "stages", "inference_wall", "mean_ms")),
         ("preview mean ms", ("latency", "stages", "preview_composition", "mean_ms")),
         ("receive-to-preview mean ms", ("latency", "stages", "host_post_receive_total", "mean_ms")),
-        ("receive-to-preview maximum ms", ("latency", "stages", "host_post_receive_total", "maximum_ms")),
+        ("receive-to-preview maximum ms",
+         ("latency", "stages", "host_post_receive_total", "maximum_ms")),
         ("event pump mean ms", ("performance", "additional_stages", "event_pump", "mean_ms")),
-        ("result residence mean ms", ("performance", "additional_stages", "result_residence", "mean_ms")),
-        ("receive-to-preview p95 upper ms", ("performance", "stage_distributions", "host_post_receive_total", "p95_upper_ms")),
+        ("result residence mean ms",
+         ("performance", "additional_stages", "result_residence", "mean_ms")),
+        ("receive-to-preview p95 upper ms",
+         ("performance", "stage_distributions", "host_post_receive_total", "p95_upper_ms")),
     ):
         print(f"{label} | {fmt(get(baseline, *path))} | {fmt(get(candidate, *path))}")
     warnings = []
     for name, data in (("baseline", baseline), ("candidate", candidate)):
         capture = data.get("capture") or {}
-        print(f"\n{name}: status={data.get('terminal_status')}, capture_accounting={accounting(data)}, cleanup={capture.get('cleanup_complete')}")
+        print(f"\n{name}: status={data.get('terminal_status')}, "
+              f"capture_accounting={accounting(data)}, cleanup={capture.get('cleanup_complete')}")
         count = capture.get("captured")
         replaced = capture.get("replaced")
         if count and replaced is not None:
@@ -71,7 +75,8 @@ def main():
             warnings.append(f"Comparison metadata unknown: {'.'.join(path)}")
         elif left != right:
             warnings.append(f"Comparison settings differ: {'.'.join(path)}")
-    print("\nNo automatic accuracy or sensor-to-display latency claim. Live gestures, visibility, temperature and framing must be controlled separately.")
+    print("\nNo automatic accuracy or sensor-to-display latency claim. "
+          "Live gestures, visibility, temperature and framing must be controlled separately.")
     for warning in warnings:
         print(f"WARNING: {warning}")
 

@@ -139,6 +139,9 @@ def decode_people(output: np.ndarray, ratio: float, threshold: float = .5,
         np.float32)
 
 
+RESEARCH_ORT_VERSIONS = frozenset({"1.22.1", "1.29.0"})
+
+
 def provider_plan(name: str, available: list[str], *, allow_cpu: bool) -> tuple[list, str]:
     if name not in PROVIDERS:
         raise BenchmarkError("unknown_provider")
@@ -189,8 +192,8 @@ class OrtModel:
         import onnx
         import onnxruntime as ort
 
-        if ort.__version__ != "1.22.1":
-            raise BenchmarkError("requires_onnxruntime_1_22_1")
+        if ort.__version__ not in RESEARCH_ORT_VERSIONS:
+            raise BenchmarkError("unsupported_research_onnxruntime_version")
         providers, expected = provider_plan(provider, ort.get_available_providers(),
                                              allow_cpu=allow_cpu)
         graph = onnx.load(str(path), load_external_data=False)
@@ -256,6 +259,7 @@ class OrtModel:
                 placement = profile_placement(json.loads(Path(profile).read_text()),
                                                 expected, allow_cpu)
                 self.metadata = {
+                    "onnxruntime_version": ort.__version__,
                     "requested": provider, "requested_providers": providers,
                     "registered_providers": effective,
                     "reported_options": self.session.get_provider_options(),
@@ -283,25 +287,36 @@ class OrtModel:
 
 
 class WholebodyEstimator:
-    def __init__(self, root: Path, model: str, provider: str, *, allow_cpu: bool = False,
-                 threads: int = 4, keypoint_threshold: float = .3, max_people: int = 8,
-                 session_factory=OrtModel):
+    def __init__(self, root: Path, model: str, provider: str, *, detector_provider: str = "cpu",
+                 allow_cpu: bool = False, threads: int = 4, keypoint_threshold: float = .3,
+                 max_people: int = 8, session_factory=OrtModel):
         self.detector = self.pose = None
         self.metadata = {}
+        self.last_detector_boxes = None
+        self.last_pose_person_inference_ms = None
         self.keypoint_threshold, self.max_people = keypoint_threshold, max_people
         if not np.isfinite(keypoint_threshold) or keypoint_threshold < 0 or max_people < 1:
             raise BenchmarkError("invalid_estimator_limits")
         if model not in ASSETS or ASSETS[model].kind != "simcc133":
             raise BenchmarkError("unknown_pose_model")
+        if provider not in PROVIDERS:
+            raise BenchmarkError("unknown_provider")
+        if detector_provider not in PROVIDERS:
+            raise BenchmarkError("unknown_detector_provider")
         paths = {key: verify_asset(root, key) for key in ("yolox-tiny", model)}
         try:
-            # Keep the common detector explicitly on CPU to isolate pose acceleration.
-            self.detector = session_factory(paths["yolox-tiny"][0], ASSETS["yolox-tiny"].shape,
-                                            "cpu", threads=threads)
+            detector_kwargs = {"threads": threads}
+            if detector_provider != "cpu":
+                detector_kwargs["allow_cpu"] = allow_cpu
+            self.detector = session_factory(
+                paths["yolox-tiny"][0], ASSETS["yolox-tiny"].shape, detector_provider,
+                **detector_kwargs)
             self.pose = session_factory(paths[model][0], ASSETS[model].shape, provider,
                                         threads=threads, allow_cpu=allow_cpu)
             self.size = (ASSETS[model].shape[3], ASSETS[model].shape[2])
             self.metadata = {
+                "detector_provider": detector_provider,
+                "pose_provider": provider,
                 "detector": self.detector.metadata, "pose": self.pose.metadata,
                 "assets": {k: receipt for k, (_, receipt) in paths.items()},
                 "recipe": "yolox-raw-coco-person/opencv-nms/bgr-rtmlib-simcc-mean-v1",
@@ -339,6 +354,7 @@ class WholebodyEstimator:
                  "detector_post_ms": (t3 - t2) / 1e6,
                  "pose_pre_ms": 0., "pose_inference_ms": 0., "pose_post_ms": 0.}
         people = []
+        per_person_inference_ms = []
         for bbox in boxes:
             began = time.perf_counter_ns()
             tensor, center, scale = pose_tensor(image, bbox, self.size)
@@ -350,8 +366,15 @@ class WholebodyEstimator:
             times["pose_pre_ms"] += (a - began) / 1e6
             times["pose_inference_ms"] += (b - a) / 1e6
             times["pose_post_ms"] += (c - b) / 1e6
+            per_person_inference_ms.append((b - a) / 1e6)
         # No person means no pose call, NEVER a synthetic full-image bbox.
         times["wholebody_service_ms"] = (time.perf_counter_ns() - start) / 1e6
+        # Copies prevent a caller from observing mutable runtime-owned arrays.  The
+        # benchmark reads these diagnostics immediately after this sequential call;
+        # they stay outside the numeric timing map so existing callers retain its
+        # float-only contract.
+        self.last_detector_boxes = np.asarray(boxes, dtype=np.float32).copy()
+        self.last_pose_person_inference_ms = tuple(per_person_inference_ms)
         return people, times
 
     def close(self):

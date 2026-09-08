@@ -22,7 +22,10 @@ from motioncapture.recording import RecordedFrame
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_fast_input import check_recipe, fast_pose_tensor
 from motioncapture.wholebody_onnx import (
-    decode_people, decode_pose, detector_tensor, pose_tensor,
+    decode_people,
+    decode_pose,
+    detector_tensor,
+    pose_tensor,
 )
 from motioncapture.wholebody_replay import Release, ReplayCancelled, SourcePacer
 

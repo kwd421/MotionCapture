@@ -96,7 +96,8 @@ class MediaPipeLandmarkTracker:
     @property
     def provider_name(self) -> str:
         if self._hand_task_factory is not None:
-            hand_provider = self._hands.provider_name if self._hands is not None else "not initialized"
+            hand_provider = (self._hands.provider_name
+                             if self._hands is not None else "not initialized")
             return (f"MediaPipe 0.10.31 CPU Pose/Face; Hands={hand_provider}; "
                     f"{self.task_scheduling} tasks")
         return f"{self.provider_base_name}; {self.task_scheduling} tasks"

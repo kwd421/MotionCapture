@@ -15,6 +15,9 @@ frame. This is an isolated research benchmark, not a live-pipeline change.
 - Batch-2 is a second static specialization of the same ONNX file. Failure is
   terminal; it never retries as two batch-1 calls.
 - This lab does not change the current ready-handoff ALL/ALL reference path.
+- Cleanup attempts all created model owners. A cleanup failure cannot leave a
+  completed status or zero exit code; an earlier primary failure is preserved.
+  Interrupted runs return 130 and other failures return 2.
 
 The published export config declares the pose batch dimension dynamic, and the
 current downloaded model already reports a symbolic `batch` binding in batch-1

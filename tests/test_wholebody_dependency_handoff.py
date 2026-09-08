@@ -10,6 +10,9 @@ from fractions import Fraction
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_compute_policy import arguments, fixture_runtime
+from test_wholebody_handoff import Session, frames, install_controlled_ops
 
 from motioncapture import wholebody_optimize_bench as bench
 from motioncapture import wholebody_stages as stages
@@ -17,9 +20,6 @@ from motioncapture.recording import RecordedFrame, RecordedIdentity, inspect_rec
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_replay import SourcePacer
 from motioncapture.wholebody_stage_comparison import update_digest
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_compute_policy import arguments, fixture_runtime
-from test_wholebody_handoff import Session, frames, install_controlled_ops
 
 
 @pytest.mark.parametrize("deferred", [False, True])

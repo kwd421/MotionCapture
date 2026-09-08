@@ -36,6 +36,7 @@ class FixedRatePacer:
         self._identity_clock = None
         self._first_pts = self._last_pts = None
         self._last_clock = self._last_due = None
+        self._first_released_ns = self._last_released_ns = None
         self.released = 0
         self.pending_sequence = None
 
@@ -81,6 +82,9 @@ class FixedRatePacer:
             raise ReplayCancelled()
         self.released += 1
         self._last_pts, self._last_due = identity.pts, due
+        if self._first_released_ns is None:
+            self._first_released_ns = now
+        self._last_released_ns = now
         self.pending_sequence = None
         return Release(due, now, (now - began) / 1e6)
 
@@ -104,6 +108,14 @@ class FixedRatePacer:
                 (self.released - 1) * 1e9 / (self._last_due - self._epoch)
                 if self.released > 1 and self._last_due > self._epoch else None),
             "original_pts_span_s": source_span,
+            "observed_release_span_s": (
+                (self._last_released_ns - self._first_released_ns) / 1e9
+                if self._first_released_ns is not None else None),
+            "observed_release_rate_hz": (
+                (self.released - 1) * 1e9 / (self._last_released_ns - self._first_released_ns)
+                if self.released > 1 and self._last_released_ns > self._first_released_ns
+                else None),
+            "observed_rate_scope": "first_to_last_actual_detector_worker_release",
             "source_time_base": (str(self._identity_clock[2])
                                  if self._identity_clock is not None else None),
             "source_pts_preserved": True,

@@ -8,13 +8,13 @@ from fractions import Fraction
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_handoff import Session
 
 from motioncapture import wholebody_optimize_bench as bench
 from motioncapture.recording import RecordedIdentity, inspect_recording
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_replay import Release, ReplayAges
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_handoff import Session
 
 
 def arguments(video, directory, *extra):
@@ -80,14 +80,17 @@ def test_plan_is_orthogonal_immutable_and_inherits_legacy_budget(tmp_path):
 @pytest.mark.parametrize("value", [True, 0, 65])
 def test_invalid_pose_budget_is_not_replaced(value):
     with pytest.raises(BenchmarkError, match="pose_thread_budget"):
-        bench.ExecutionArm("source-pts-ready-cvlut", "coreml-all", "coreml-ane", value).pose_threads(4)
+        bench.ExecutionArm(
+            "source-pts-ready-cvlut", "coreml-all", "coreml-ane", value).pose_threads(4)
 
 
 @pytest.mark.parametrize("extra", [
     ["--detector-provider", "cpu"], ["--pose-provider", "coreml-ane"],
     ["--ort-threads", "2"], ["--diagnose-from", "unused.json"],
 ])
-def test_conflicting_overrides_fail_before_assets_and_sessions(tiny_vfr, tmp_path, monkeypatch, extra):
+def test_conflicting_overrides_fail_before_assets_and_sessions(
+    tiny_vfr, tmp_path, monkeypatch, extra,
+):
     args = arguments(tiny_vfr, tmp_path, *extra)
     instances = install(monkeypatch, tmp_path)
     assert bench.execute(args) == 2
@@ -147,7 +150,9 @@ def test_real_vfr_six_arms_session_options_counts_hashes_and_trace(tiny_vfr, tmp
     ("thread_metadata", "pose_execution_thread_metadata_mismatch"),
     ("provider_metadata", "compute_policy_session_metadata_mismatch"),
 ])
-def test_selected_candidate_failure_is_terminal_no_retry(tiny_vfr, tmp_path, monkeypatch, fault, code):
+def test_selected_candidate_failure_is_terminal_no_retry(
+    tiny_vfr, tmp_path, monkeypatch, fault, code,
+):
     args = arguments(tiny_vfr, tmp_path)
     instances = install(monkeypatch, tmp_path, fault=fault)
     assert bench.execute(args) == 2

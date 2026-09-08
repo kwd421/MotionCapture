@@ -5,10 +5,10 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
 
 from motioncapture import recording_bench as bench
 from motioncapture.recording import inspect_recording
-from test_recording import tiny_vfr  # noqa: F401
 
 
 def test_summary_missing_and_zero_are_distinct():

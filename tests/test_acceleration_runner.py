@@ -2,12 +2,12 @@
 from types import SimpleNamespace as NS
 
 import pytest
+from test_recorded_tracker_clock import tracker as tracker
+from test_recording import tiny_vfr as tiny_vfr
 
 from motioncapture import hand_acceleration_bench as experiment
 from motioncapture import recording_bench as bench
 from motioncapture.recording import inspect_recording
-from test_recording import tiny_vfr  # noqa: F401
-from test_recorded_tracker_clock import tracker  # noqa: F401
 
 
 def test_explicit_prefix_stops_at_exact_requested_count(tiny_vfr, tmp_path):

@@ -15,7 +15,11 @@ from motioncapture.recording import RecordedDecoder
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_fast_input import array_hash, crop_geometry, normalize
 from motioncapture.wholebody_onnx import (
-    PARTS, decode_people, decode_pose, detector_tensor, pose_tensor,
+    PARTS,
+    decode_people,
+    decode_pose,
+    detector_tensor,
+    pose_tensor,
 )
 
 

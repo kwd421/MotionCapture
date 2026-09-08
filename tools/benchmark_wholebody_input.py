@@ -11,8 +11,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from motioncapture.wholebody_catalog import sha256
 from motioncapture.recording_bench import write_report
+from motioncapture.wholebody_catalog import sha256
 from motioncapture.wholebody_fast_input import fast_pose_tensor
 from motioncapture.wholebody_onnx import pose_tensor
 
@@ -69,7 +69,8 @@ def main():
         if seen != target:
             raise ValueError("Frame count mismatch")
         result["rounds"].append({k: {"mean_ms": statistics.mean(v),
-                                    "p95_ms": float(np.quantile(v, .95))} for k, v in values.items()})
+                                    "p95_ms": float(np.quantile(v, .95))}
+                                for k, v in values.items()})
     medians = {k: statistics.median(r[k]["mean_ms"] for r in result["rounds"])
                for k in ("reference", "lookup")}
     result["median_round_mean_ms"] = medians

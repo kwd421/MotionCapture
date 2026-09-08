@@ -21,6 +21,13 @@ recording reader, using in-process ONNX Runtime rather than browser transport.
   Reject absent CoreML EP, provider substitution and zero CoreML nodes in the
   bounded preflight profile. CoreML compute-unit selection does NOT prove ANE
   or GPU dispatch. No automatic retry or model substitution.
+- Detector and pose providers are independently selected. The default detector
+  remains explicit CPU. A detector-provider comparison accepts two detector
+  providers with one fixed pose provider and, with `--abba`, runs A/B/B/A while
+  keeping the model, input, thresholds, resolution and every-source-frame
+  policy fixed. Detector box/count disagreement is reported geometrically and
+  does not create persistent actor identities. Pose timing is stratified by
+  detected-person count and records each individual pose call when available.
 - Official download URLs are catalogued. No upstream full-file SHA-256 was
   available for these archives during preparation. `fetch --research-only`
   explicitly enrolls first-download hashes in a local lock (TOFU, NOT publisher
@@ -33,6 +40,8 @@ recording reader, using in-process ONNX Runtime rather than browser transport.
 - Output never overwrites an existing file. A failed arm retains its processed
   prefix, current PTS, failure phase and cleanup evidence. Other arms may be
   independently attempted; overall status is not completed if any failed.
+  Ctrl-C preserves the interrupted arm's partial record, stops the plan before
+  another arm starts, and returns exit code 130, including in native controls.
 - Sampling and counts are not accuracy. Common 133-point outputs may be compared
   between providers against each model's first CPU pass; no cross-schema hash
   equality requirement against MediaPipe. Multi-person correspondence is not
@@ -45,3 +54,6 @@ recording reader, using in-process ONNX Runtime rather than browser transport.
 3. Real OpenCV geometry tests plus deterministic orchestration/provider tests.
 4. Native ONNX/M1/M5/Windows and actual pretrained quality remain separate gates.
 5. No changes to live defaults, existing model weights or previous benchmarks.
+6. A detector-provider comparison records both provider selections, detector
+   count/box changes, and person-count-stratified pose timing without writing
+   raw boxes or landmarks to the report.

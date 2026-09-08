@@ -11,8 +11,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from motioncapture.browser_hands import (BrowserHandError, BrowserHandLab,
-                                        BrowserHandTask, parse_hand_result)
+from motioncapture.browser_hands import (
+    BrowserHandError,
+    BrowserHandLab,
+    BrowserHandTask,
+    parse_hand_result,
+)
 
 
 def request(lab, path, data=None, *, token=None, client="fixture-client", origin=None):

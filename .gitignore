@@ -13,3 +13,6 @@ sessions/
 # Third-party avatar binaries are fetched locally and retain their own licenses.
 assets/avatars/live2d/haru/
 assets/avatars/vrm/seed-san/
+
+# Local phone/camera bench inputs (large binaries).
+benchmarks/inputs/

@@ -5,14 +5,14 @@ import urllib.error
 from types import SimpleNamespace
 
 import pytest
+from test_browser_hands import next_message, request
+from test_hand_comparison import frame, result
+from test_recording import tiny_vfr as tiny_vfr
 
 from motioncapture import recording_bench as bench
 from motioncapture.browser_hands import BrowserHandError, BrowserHandLab
 from motioncapture.hand_comparison import HandReference
 from motioncapture.recording import inspect_recording
-from test_browser_hands import next_message, request
-from test_hand_comparison import frame, result
-from test_recording import tiny_vfr  # noqa: F401
 
 
 def test_failure_keeps_delivered_request_and_sampled_stage_after_pending_is_cleared():

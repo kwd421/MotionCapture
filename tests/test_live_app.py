@@ -6,10 +6,10 @@ import threading
 from types import SimpleNamespace
 
 import pytest
+from test_live_pipeline import FakeCapture, FakeTracker
 
 from motioncapture import live_app, preview
 from motioncapture.errors import InferenceError
-from test_live_pipeline import FakeCapture, FakeTracker
 
 
 @pytest.fixture

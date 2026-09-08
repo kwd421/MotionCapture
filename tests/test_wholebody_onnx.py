@@ -126,7 +126,10 @@ def test_coreml_selection_and_profile_reject_silent_cpu(monkeypatch):
         w.provider_plan('coreml-all', available, allow_cpu=False)
 
 
-def test_session_initialization_rejects_substitution_before_any_inference(monkeypatch, tmp_path):
+@pytest.mark.parametrize("runtime_version", ["1.22.1", "1.29.0"])
+def test_session_initialization_rejects_substitution_before_any_inference(
+    monkeypatch, tmp_path, runtime_version
+):
     """Synthetic ORT/protobuf boundary; not a native ONNX test."""
     order = []
 
@@ -156,7 +159,8 @@ def test_session_initialization_rejects_substitution_before_any_inference(monkey
         def run(self, *a):
             pytest.fail('Substituted provider must never run inference')
 
-    ort = NS(__version__='1.22.1', get_available_providers=lambda: ['CoreMLExecutionProvider'],
+    ort = NS(__version__=runtime_version,
+             get_available_providers=lambda: ['CoreMLExecutionProvider'],
              SessionOptions=Options, ExecutionMode=NS(ORT_SEQUENTIAL=0), InferenceSession=Session)
     monkeypatch.setitem(sys.modules, 'onnxruntime', ort)
     monkeypatch.setattr(w.platform, 'system', lambda: 'Darwin')
@@ -196,4 +200,65 @@ def test_real_codec_chain_with_scripted_onnx_outputs(monkeypatch, tmp_path):
     assert all(v >= 0 for v in timings.values())
     assert engine.metadata['detector_cadence'] == 'every_source_frame'
     assert np.all(source == 123)
+    engine.close()
+
+
+def test_detector_provider_is_independently_selected(monkeypatch, tmp_path):
+    monkeypatch.setattr(w, 'verify_asset', lambda root, key: (tmp_path / key, {}))
+    providers = []
+
+    class Session:
+        def __init__(self, path, shape, provider, **kwargs):
+            providers.append((path.name, provider, kwargs.get('allow_cpu')))
+            self.shape = shape
+            self.metadata = {'fixture_only': True, 'provider': provider}
+
+        def run(self, tensor):
+            if self.shape == (1, 3, 416, 416):
+                raw = np.zeros((1, 3549, 85), np.float32)
+                raw[0, 0, :6] = [26, 26, np.log(20), np.log(20), .9, .9]
+                return [raw]
+            return list(heads())
+
+        def close(self):
+            pass
+
+    engine = w.WholebodyEstimator(tmp_path, 'dwpose-m', 'coreml-all',
+                                  detector_provider='coreml-all', allow_cpu=True,
+                                  session_factory=Session)
+    assert providers == [('yolox-tiny', 'coreml-all', True), ('dwpose-m', 'coreml-all', True)]
+    assert engine.metadata['detector_provider'] == 'coreml-all'
+    assert engine.metadata['pose_provider'] == 'coreml-all'
+    people, timings = engine.process(np.zeros((416, 416, 3), np.uint8))
+    assert len(people) == 1 and all(isinstance(value, float) for value in timings.values())
+    assert len(engine.last_pose_person_inference_ms) == 1
+    engine.close()
+
+
+def test_per_person_inference_diagnostics_cover_each_detected_box(monkeypatch, tmp_path):
+    monkeypatch.setattr(w, 'verify_asset', lambda root, key: (tmp_path / key, {}))
+
+    class Session:
+        def __init__(self, path, shape, provider, **kwargs):
+            self.shape = shape
+            self.metadata = {'fixture_only': True}
+
+        def run(self, tensor):
+            if self.shape == (1, 3, 416, 416):
+                raw = np.zeros((1, 3549, 85), np.float32)
+                raw[0, 0, :6] = [10, 10, np.log(10), np.log(10), .9, .9]
+                raw[0, 1, :6] = [30, 30, np.log(10), np.log(10), .9, .9]
+                return [raw]
+            return list(heads())
+
+        def close(self):
+            pass
+
+    engine = w.WholebodyEstimator(tmp_path, 'dwpose-m', 'cpu', session_factory=Session)
+    people, timings = engine.process(np.zeros((416, 416, 3), np.uint8))
+    assert len(people) == 2
+    assert engine.last_detector_boxes.shape == (2, 4)
+    assert len(engine.last_pose_person_inference_ms) == 2
+    assert all(value >= 0 for value in engine.last_pose_person_inference_ms)
+    assert all(value >= 0 for value in timings.values())
     engine.close()

@@ -16,7 +16,7 @@ import cv2
 import numpy as np
 
 from motioncapture.contracts import Landmark
-from motioncapture.preview import _Topology, _draw
+from motioncapture.preview import _draw, _Topology
 
 
 def fixture(count, seed):

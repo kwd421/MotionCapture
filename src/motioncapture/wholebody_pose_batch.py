@@ -15,7 +15,12 @@ from pathlib import Path
 import numpy as np
 
 from motioncapture.wholebody_catalog import BenchmarkError
-from motioncapture.wholebody_onnx import OrtModel, profile_placement, provider_plan
+from motioncapture.wholebody_onnx import (
+    RESEARCH_ORT_VERSIONS,
+    OrtModel,
+    profile_placement,
+    provider_plan,
+)
 
 
 class Batch2OrtModel:
@@ -30,8 +35,8 @@ class Batch2OrtModel:
         import onnx
         import onnxruntime as ort
 
-        if ort.__version__ != "1.22.1":
-            raise BenchmarkError("requires_onnxruntime_1_22_1")
+        if ort.__version__ not in RESEARCH_ORT_VERSIONS:
+            raise BenchmarkError("unsupported_research_onnxruntime_version")
         providers, expected = provider_plan(provider, ort.get_available_providers(),
                                              allow_cpu=allow_cpu)
         graph = onnx.load(str(path), load_external_data=False)
@@ -99,6 +104,7 @@ class Batch2OrtModel:
                 placement = profile_placement(json.loads(Path(profile).read_text()),
                                                 expected, allow_cpu)
                 self.metadata = {
+                    "onnxruntime_version": ort.__version__,
                     "requested": provider, "requested_providers": providers,
                     "registered_providers": effective,
                     "reported_options": self.session.get_provider_options(),

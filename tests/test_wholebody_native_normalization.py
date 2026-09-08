@@ -7,6 +7,8 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_handoff import Session, frames
 
 from motioncapture import wholebody_fast_input as fast
 from motioncapture import wholebody_optimize_bench as bench
@@ -15,8 +17,6 @@ from motioncapture.wholebody_cadence import OutputCadence
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_onnx import pose_tensor
 from motioncapture.wholebody_stages import StagePipeline
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_handoff import Session, frames
 
 
 @pytest.mark.parametrize("shape", [(1, 256), (256, 192), (288, 384)])
@@ -133,8 +133,11 @@ def test_bad_cadence_observation_never_mutates_completed_prefix():
 def test_native_pipeline_exact_n_no_mutation_and_owner_close():
     instances = []
     def factory(kind):
-        s = Session(kind); instances.append(s); return s
-    incoming = list(frames(4)); source_hashes = [fast.array_hash(f.image_bgr) for f in incoming]
+        s = Session(kind)
+        instances.append(s)
+        return s
+    incoming = list(frames(4))
+    source_hashes = [fast.array_hash(f.image_bgr) for f in incoming]
     with StagePipeline(lambda: factory("detector"), lambda: factory("pose"),
                        normalization_kernel="opencv") as pipeline:
         output = list(pipeline.packets(incoming, 3, overlap=True, fast=True, advance_pose=True))
@@ -147,7 +150,8 @@ def test_native_pipeline_exact_n_no_mutation_and_owner_close():
 
 def test_real_vfr_full_abba_hash_and_cadence_counts(tiny_vfr, tmp_path, monkeypatch):
     args = bench.parser().parse_args([str(tiny_vfr), "--research-only", "--max-frames", "0",
-                                     "--suite", "native-normalize", "--output", str(tmp_path/"x.json")])
+                                     "--suite", "native-normalize", "--output",
+                                     str(tmp_path/"x.json")])
     monkeypatch.setattr(bench, "verify_asset", lambda root, key: (tmp_path/key, {"fixture": True}))
     seen = []
     def invoke(args, probe, mode, factories, reference):

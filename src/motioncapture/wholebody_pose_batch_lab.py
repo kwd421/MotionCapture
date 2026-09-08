@@ -24,7 +24,12 @@ from motioncapture.recording_bench import Samples, _source_revision, write_repor
 from motioncapture.wholebody_catalog import ASSETS, BenchmarkError, sha256, verify_asset
 from motioncapture.wholebody_fast_input import fast_pose_tensor
 from motioncapture.wholebody_onnx import (
-    PARTS, OrtModel, decode_people, decode_pose, detector_tensor, profile_placement,
+    PARTS,
+    OrtModel,
+    decode_people,
+    decode_pose,
+    detector_tensor,
+    profile_placement,
     provider_plan,
 )
 
@@ -122,10 +127,13 @@ class BatchOrtModel:
                 self.output_names = [o.name for o in self.session.get_outputs()]
                 output = self.run(np.zeros(shape, np.float32))
                 wanted = sorted([(2, 133, shape[3] * 2), (2, 133, shape[2] * 2)])
-                if sorted(v.shape for v in output) != wanted or any(not np.isfinite(v).all() for v in output):
+                if sorted(v.shape for v in output) != wanted or any(
+                    not np.isfinite(v).all() for v in output
+                ):
                     raise BenchmarkError("batch2_preflight_output_schema_mismatch")
                 profile = self.session.end_profiling()
-                placement = profile_placement(json.loads(Path(profile).read_text()), expected, allow_cpu)
+                placement = profile_placement(
+                    json.loads(Path(profile).read_text()), expected, allow_cpu)
                 self.metadata = {
                     "requested": provider, "requested_providers": providers,
                     "registered_providers": effective,
@@ -142,7 +150,8 @@ class BatchOrtModel:
                 raise
 
     def run(self, tensor):
-        if self.session is None or tensor.dtype != np.float32 or tensor.ndim != 4 or tensor.shape[0] != 2:
+        if (self.session is None or tensor.dtype != np.float32
+                or tensor.ndim != 4 or tensor.shape[0] != 2):
             raise BenchmarkError("invalid_batch2_pose_input")
         return self.session.run(self.output_names, {self.input_name: tensor})
 
@@ -209,7 +218,9 @@ def execute(args):
                     for box in boxes[:2]:
                         value, center, scale = fast_pose_tensor(frame.image_bgr, box, size,
                                                                 kernel="opencv")
-                        tensors.append(value); centers.append(center); scales.append(scale)
+                        tensors.append(value)
+                        centers.append(center)
+                        scales.append(scale)
                     pair = np.ascontiguousarray(np.concatenate(tensors, axis=0), dtype=np.float32)
                     reference_people = None
                     for mode in ("serial", "batch", "batch", "serial"):
@@ -236,7 +247,8 @@ def execute(args):
                             digest.update(person.valid.tobytes())
                     pair_observations += 1
                 if (frame.identity.sequence + 1) % 1000 == 0:
-                    print(f"pose-batch-lab: {frame.identity.sequence + 1}/{len(probe.pts)}", flush=True)
+                    print(f"pose-batch-lab: {frame.identity.sequence + 1}/{len(probe.pts)}",
+                          flush=True)
         if sha256(args.input) != probe.sha256:
             raise BenchmarkError("source_changed_during_lab")
         serial_summary, batch_summary = serial_ms.summary(1000/60), batch_ms.summary(1000/60)
@@ -264,10 +276,19 @@ def execute(args):
     finally:
         for model in (batch, serial, detector):
             if model is not None:
-                try: model.close()
+                try:
+                    model.close()
                 except BaseException as cleanup:
                     report.setdefault("cleanup_errors", []).append(type(cleanup).__name__)
+                    if report["status"] == "completed":
+                        report["status"] = (
+                            "interrupted" if isinstance(cleanup, KeyboardInterrupt) else "failed")
+                        report["error"] = {"phase": "model_cleanup",
+                                           "type": type(cleanup).__name__,
+                                           "code": getattr(cleanup, "code", None)}
         write_report(args.output, report)
+    if report["status"] == "interrupted":
+        return 130
     return 0 if report["status"] == "completed" else 2
 
 

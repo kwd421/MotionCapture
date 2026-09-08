@@ -7,14 +7,14 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_handoff import Session, frames
 
 from motioncapture import wholebody_optimize_bench as bench
 from motioncapture.recording import inspect_recording
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_onnx import Person2D, provider_plan
 from motioncapture.wholebody_stage_comparison import StageDifference, StageReference
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_handoff import Session, frames
 
 
 def arguments(video, directory, *extra):
@@ -72,7 +72,9 @@ def test_immutable_fixed_plan_and_real_provider_option_mapping(tmp_path, monkeyp
     ["--detector-provider", "cpu"], ["--pose-provider", "coreml-gpu"],
     ["--diagnose-from", "unused.json"],
 ])
-def test_conflicting_overrides_fail_before_model_creation(tiny_vfr, tmp_path, monkeypatch, override):
+def test_conflicting_overrides_fail_before_model_creation(
+    tiny_vfr, tmp_path, monkeypatch, override,
+):
     args = arguments(tiny_vfr, tmp_path, *override)
     instances = fixture_runtime(monkeypatch, tmp_path)
     assert bench.execute(args) == 2
@@ -99,7 +101,8 @@ def test_real_vfr_six_arms_factories_manifest_cleanup_and_hashes(tiny_vfr, tmp_p
     assert result["accuracy_verified"] is False
     for index, row in enumerate(rows):
         arm = result["configuration"]["execution_arm_plan"][index]
-        started = json.loads(args.output.with_name(f"result.arm-{index+1:02d}.started.json").read_text())
+        started = json.loads(
+            args.output.with_name(f"result.arm-{index+1:02d}.started.json").read_text())
         assert all(started[k] == arm[k] for k in arm)
         assert row["execution_arm"] == arm
         assert row["backend"]["detector"]["requested"] == arm["detector_provider"]

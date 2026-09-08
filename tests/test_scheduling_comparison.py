@@ -9,11 +9,11 @@ from types import ModuleType, SimpleNamespace
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
 
 from motioncapture import recording_bench as bench
 from motioncapture.contracts import Blendshape, Landmark, LandmarkResult, LandmarkTimings
 from motioncapture.recording import RecordedFrame, RecordedIdentity
-from test_recording import tiny_vfr  # noqa: F401
 
 
 def observation(x=0.25, visibility=None):

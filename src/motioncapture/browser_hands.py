@@ -349,7 +349,8 @@ class BrowserHandLab:
                             self.reply(404)
                             return
                     self.reply(200, b"{}")
-                except (ValueError, TypeError, json.JSONDecodeError, TimeoutError, BrowserHandError):
+                except (ValueError, TypeError, json.JSONDecodeError,
+                        TimeoutError, BrowserHandError):
                     owner.fail("invalid_browser_protocol")
                     self.reply(400)
                     self.close_connection = True
@@ -399,7 +400,8 @@ class BrowserHandLab:
                 if "error" in response:
                     known = {"webgl2_unavailable", "gpu_renderer_unavailable",
                              "unverified_or_software_gpu", "invalid_open",
-                             "invalid_detect_state", "invalid_close_state", "browser_gpu_context_lost"}
+                             "invalid_detect_state", "invalid_close_state",
+                             "browser_gpu_context_lost"}
                     detail = response["error"]
                     code = detail.get("code") if isinstance(detail, dict) else None
                     code = code if code in known else "browser_task_failed"

@@ -279,14 +279,16 @@ def execute(args) -> int:
         phase = "final_integrity"
         if sha256(args.input) != probe.sha256:
             raise BenchmarkError("source_changed_at_end")
-        complete = len(report["runs"]) == 4 and all(r["status"] == "completed" for r in report["runs"])
+        complete = len(report["runs"]) == 4 and all(
+            r["status"] == "completed" for r in report["runs"])
         report["all_pass_pixel_hashes_equal"] = complete and len(
             {r["pixels_sha256"] for r in report["runs"]}) == 1
         report["all_pass_detector_hashes_equal"] = complete and len(
             {r["detector_predictions_sha256"] for r in report["runs"]}) == 1
         report["all_pass_prediction_hashes_equal"] = complete and len(
             {r["predictions_sha256"] for r in report["runs"]}) == 1
-        batch_rows = [r for r in report["runs"] if r.get("execution_arm", {}).get("pose_execution") == "batch2"]
+        batch_rows = [r for r in report["runs"]
+                      if r.get("execution_arm", {}).get("pose_execution") == "batch2"]
         comparisons = [r.get("provider_disagreement", {}).get("per_frame_predictions", {})
                        for r in batch_rows]
         box_comparisons = [r.get("provider_disagreement", {}).get("per_frame_detector_boxes", {})

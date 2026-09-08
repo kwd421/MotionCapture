@@ -43,7 +43,7 @@ class Samples:
                     "p99_ms": None, "max_ms": None, "over_budget": None}
         q = np.quantile(a, [.5, .95, .99, 1])
         return {"samples": len(a), "mean_ms": float(a.mean()),
-                **dict(zip(("p50_ms", "p95_ms", "p99_ms", "max_ms"), map(float, q))),
+                **dict(zip(("p50_ms", "p95_ms", "p99_ms", "max_ms"), map(float, q), strict=True)),
                 "over_budget": int(np.count_nonzero(a > budget_ms))}
 
 
@@ -189,7 +189,8 @@ def _frame_location(identity):
 
 
 def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
-             result_observer=None, frame_limit: int = 0, failure_record: dict | None = None) -> dict:
+             result_observer=None, frame_limit: int = 0,
+             failure_record: dict | None = None) -> dict:
     if type(frame_limit) is not int or frame_limit < 0:
         raise ValueError("Invalid explicit prefix frame limit")
     target_frames = min(frame_limit, len(probe.pts)) if frame_limit else len(probe.pts)
@@ -211,7 +212,8 @@ def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
                 cleanup, "tracker")) if inference else None
             compose = _make_preview(args.preview) if inference else None
             decoder = stack.enter_context(_record_cleanup(
-                RecordedDecoder(args.input, probe, threads=args.decode_threads), cleanup, "decoder"))
+                RecordedDecoder(args.input, probe, threads=args.decode_threads),
+                cleanup, "decoder"))
             setup_ms = (time.perf_counter_ns() - setup_started) / 1_000_000
             loop_started = time.perf_counter_ns()
             phase = "decode"
@@ -273,7 +275,9 @@ def run_pass(args, probe: RecordingProbe, *, tracker_factory=None,
                     break
             phase = "verify_frame_count"
             loop_s = (time.perf_counter_ns() - loop_started) / 1e9
-            if whole.frames != target_frames or (target_frames == len(probe.pts) and not decoder.complete):
+            if whole.frames != target_frames or (
+                target_frames == len(probe.pts) and not decoder.complete
+            ):
                 raise ValueError("Incomplete recording benchmark")
             actual_threads = decoder.actual_threads
             phase = "cleanup"

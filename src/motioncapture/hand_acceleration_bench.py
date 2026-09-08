@@ -72,9 +72,10 @@ def run(args):
     try:
         if baseline._installed("mediapipe") != "0.10.31":
             raise RuntimeError("Pinned MediaPipe 0.10.31 required")
+        import mediapipe as mp
+
         from motioncapture.landmarkers import MediaPipeLandmarkTracker
         from motioncapture.model_assets import MODEL_ASSETS, require_models
-        import mediapipe as mp
 
         models = require_models(args.model_dir)
         report["models"] = [{"key": x.key, "sha256": x.sha256} for x in MODEL_ASSETS]
@@ -126,7 +127,8 @@ def run(args):
                         hand_task_factory=make_hand if hand_backend != "native" else None)
 
                 def observe(
-                    frame, result, pair=comparison, current_pass=pass_index, current_backend=backend,
+                    frame, result, pair=comparison, current_pass=pass_index,
+                    current_backend=backend,
                 ):
                     if pair is None:
                         reference.record(frame, result)
@@ -134,7 +136,8 @@ def run(args):
                         pair.observe(frame, result)
                     if frame.identity.sequence % 300 == 0:
                         print(json.dumps({"pass": current_pass + 1, "backend": current_backend,
-                                          "frame": frame.identity.sequence, "total": n}), flush=True)
+                                          "frame": frame.identity.sequence, "total": n}),
+                              flush=True)
 
                 pass_args = argparse.Namespace(
                     **vars(args), mode="track", task_scheduling="parallel",
@@ -179,7 +182,8 @@ def run(args):
             natives = [r["predictions_sha256"] for r in report["runs"]
                        if r["backend"] == "native"]
             report["native_reference_repeat_equal"] = len(natives) >= 2 and len(set(natives)) == 1
-            report["performance_comparable"] = all(r["performance_comparable"] for r in report["runs"])
+            report["performance_comparable"] = all(
+                r["performance_comparable"] for r in report["runs"])
         report["status"], report["stage"] = "completed", "finished"
         report["browser_diagnostics"] = lab.snapshot()
     except BaseException as exc:

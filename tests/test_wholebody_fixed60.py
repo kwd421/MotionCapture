@@ -1,14 +1,14 @@
+import math
 from dataclasses import replace
 from fractions import Fraction
-import math
 
 import pytest
 
+from motioncapture import wholebody_pose_batch_60hz_lab as lab
 from motioncapture.recording import RecordedIdentity
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_fixed_rate import FixedRatePacer
-from motioncapture.wholebody_replay import ReplayCancelled, SourcePacer
-from motioncapture import wholebody_pose_batch_60hz_lab as lab
+from motioncapture.wholebody_replay import ReplayAges, ReplayCancelled, SourcePacer
 
 
 class Clock:
@@ -121,6 +121,7 @@ def test_strict_summary_requires_two_complete_lossless_60hz_runs():
                 "source_pacing": {
                     "frames_skipped": 0, "configured_rate_hz": 60.0,
                     "scheduled_source_rate_hz": 60.0,
+                    "observed_release_rate_hz": 59.9,
                 },
             },
             "replay_ages": {
@@ -133,8 +134,56 @@ def test_strict_summary_requires_two_complete_lossless_60hz_runs():
             },
         }
     result = lab._strict_summary([row(80, 20, 0), row(90, 22, 0)])
-    assert result["file_replay_exercised_at_fixed_60hz"]
+    assert result["full_file_replayed_with_60hz_schedule"]
     assert result["all_frames_preserved"]
-    assert result["configured_and_observed_release_rate_60hz"]
+    assert result["configured_release_schedule_60hz"]
+    assert result["observed_release_rate_hz"] == [59.9, 59.9]
     assert result["over_100ms_frames"] == [0, 0]
     assert result["live_camera_60fps_verified"] is False
+
+
+def test_slow_actual_releases_are_not_reported_as_observed_60hz():
+    clock = Clock()
+    pacer = FixedRatePacer(61, clock=clock.now, waiter=clock.wait)
+    ages = ReplayAges(61)
+    epoch = clock.ns
+    for i in range(61):
+        clock.ns = epoch + i * 100_000_000  # Controlled 10Hz throughput.
+        frame_id = identity(i, i, Fraction(1, 60))
+        release = pacer.wait(frame_id)
+        ages.add(frame_id, release, release.released_ns + 1_000_000)
+    row = {
+        "status": "completed", "scope": "full_file",
+        "execution_arm": {"release_schedule": "fixed_60hz"},
+        "pipeline": {
+            "read_frames": 61, "emitted_frames": 61, "pose_requests": 61,
+            "intentional_frame_skips": 0, "unemitted_read_frames": 0,
+            "unemitted_pose_requests": 0, "source_pacing": pacer.summary(),
+        },
+        "replay_ages": ages.summary(),
+    }
+    result = lab._strict_summary([row, row])
+    assert result["configured_release_schedule_60hz"]
+    assert result["observed_release_rate_hz"] == [10.0, 10.0]
+    assert result["last_source_age_ms"] == [5001.0, 5001.0]
+    assert "configured_and_observed_release_rate_60hz" not in result
+    assert "file_replay_exercised_at_fixed_60hz" not in result
+
+
+def test_one_release_keeps_observed_rate_unknown_and_summary_valid():
+    clock = Clock()
+    pacer = FixedRatePacer(1, clock=clock.now, waiter=clock.wait)
+    assert pacer.summary()["observed_release_rate_hz"] is None
+    frame_id = identity(0, 0)
+    release = pacer.wait(frame_id)
+    ages = ReplayAges(1)
+    ages.add(frame_id, release, release.released_ns + 1_000_000)
+    row = {
+        "status": "completed", "scope": "explicit_prefix",
+        "execution_arm": {"release_schedule": "fixed_60hz"},
+        "pipeline": {"source_pacing": pacer.summary()}, "replay_ages": ages.summary(),
+    }
+    result = lab._strict_summary([row, row])
+    assert result["observed_release_rate_hz"] == [None, None]
+    assert not result["configured_release_schedule_60hz"]
+    assert not result["full_file_replayed_with_60hz_schedule"]

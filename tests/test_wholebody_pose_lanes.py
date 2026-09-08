@@ -9,6 +9,9 @@ from fractions import Fraction
 
 import numpy as np
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_handoff import Session
+from test_wholebody_optimization import boxes
 
 from motioncapture import wholebody_optimize_bench as bench
 from motioncapture.recording import RecordedFrame, RecordedIdentity, inspect_recording
@@ -16,9 +19,6 @@ from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_replay import Release, ReplayAges, SourcePacer
 from motioncapture.wholebody_stage_comparison import StageDifference, StageReference, update_digest
 from motioncapture.wholebody_stages import StagePipeline
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_handoff import Session
-from test_wholebody_optimization import boxes
 
 
 class FingerprintModel(Session):

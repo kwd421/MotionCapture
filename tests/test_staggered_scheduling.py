@@ -5,8 +5,8 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
-
-from test_recorded_tracker_clock import recorded, tracker  # noqa: F401
+from test_recorded_tracker_clock import recorded
+from test_recorded_tracker_clock import tracker as tracker
 
 
 @pytest.mark.parametrize("first", ["pose", "hands"])

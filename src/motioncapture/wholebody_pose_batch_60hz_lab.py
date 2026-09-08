@@ -26,7 +26,6 @@ from motioncapture.wholebody_pose_batch_pipeline_lab import (
 )
 from motioncapture.wholebody_replay import SourcePacer
 
-
 PLAN = ("source_pts_batch2", "fixed60_batch2", "fixed60_batch2", "source_pts_batch2")
 
 
@@ -60,9 +59,11 @@ def _label_row(row: dict, label: str) -> None:
         row["replay_ages"]["scope"] = (
             "fixed-60Hz scheduled file release to validation complete; not photon latency")
         row["output_cadence"]["scope"] = (
-            "host validation completions grouped by ORIGINAL source PTS; input release is fixed 60Hz")
+            "host validation completions grouped by ORIGINAL source PTS; "
+            "input release is fixed 60Hz")
         row["output_cadence"]["interval_budget_note"] = (
-            "Original PTS are preserved for identity/reporting but do not drive this arm's release. "
+            "Original PTS are preserved for identity/reporting "
+            "but do not drive this arm's release. "
             "Inspect replay source-age and fixed-rate pacer summary for backlog.")
 
 
@@ -79,17 +80,22 @@ def _strict_summary(rows: list[dict]) -> dict:
         and row["pipeline"]["unemitted_pose_requests"] == 0
         and row["pipeline"]["source_pacing"]["frames_skipped"] == 0
         for row in fixed)
-    rate_exact = completed and all(
-        row["pipeline"]["source_pacing"].get("configured_rate_hz") == 60.0
-        and abs(row["pipeline"]["source_pacing"].get("scheduled_source_rate_hz", 0) - 60.0)
-        < 1e-5
-        for row in fixed)
+    schedules = [row["pipeline"]["source_pacing"] for row in fixed
+                 if row.get("pipeline") is not None]
+    rate_exact = completed and len(schedules) == 2 and all(
+        schedule.get("configured_rate_hz") == 60.0
+        and schedule.get("scheduled_source_rate_hz") is not None
+        and abs(schedule["scheduled_source_rate_hz"] - 60.0) < 1e-5
+        for schedule in schedules)
     return {
         "runs": len(fixed),
         "all_completed": completed,
         "all_full_file": full_file,
         "all_frames_preserved": preserved,
-        "configured_and_observed_release_rate_60hz": rate_exact,
+        "configured_release_schedule_60hz": rate_exact,
+        "observed_release_rate_hz": [
+            row["pipeline"]["source_pacing"].get("observed_release_rate_hz")
+            if row.get("pipeline") is not None else None for row in fixed],
         "source_pts_rewritten": False,
         "hardware_camera_emulated": False,
         "source_age_mean_ms": [row["replay_ages"]["source_age_ms"]["mean_ms"] for row in fixed],
@@ -100,7 +106,7 @@ def _strict_summary(rows: list[dict]) -> dict:
         "over_100ms_frames": [
             row["replay_ages"]["source_age_ms"]["threshold_exceedances"]["100.0"]
             for row in fixed],
-        "file_replay_exercised_at_fixed_60hz": completed and preserved and rate_exact,
+        "full_file_replayed_with_60hz_schedule": completed and preserved and rate_exact,
         "live_camera_60fps_verified": False,
         "display_latency_verified": False,
         "latency_acceptance_threshold_predeclared": False,
@@ -113,7 +119,7 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass) -> int:
     if any(args.output.parent.glob(args.output.stem + ".*.json")):
         raise BenchmarkError("checkpoint_prefix_already_exists")
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "experiment": "same_frame_batch2_fixed60_replay_v1",
         "status": "running",
         "runs": [],
@@ -123,7 +129,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass) -> int:
         "commercial_release_cleared": False,
         "plan": list(PLAN),
         "comparison_scope": (
-            "same batch2 detector/model/provider/PTS/ready-handoff; only host release schedule differs"),
+            "same batch2 detector/model/provider/PTS/ready-handoff; "
+            "only host release schedule differs"),
         "fixed_rate_is_camera_emulation": False,
         "source_pts_rewritten": False,
         "privacy": {"frames_written": False, "coordinates_written": False,

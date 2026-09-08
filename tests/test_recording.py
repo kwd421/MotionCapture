@@ -72,7 +72,7 @@ def tiny_vfr(tmp_path):
 
 def test_real_ffmpeg_and_opencv_preserve_variable_pts_and_pixels(tiny_vfr):
     probe = inspect_recording(tiny_vfr)
-    assert len(set(b - a for a, b in zip(probe.pts, probe.pts[1:]))) > 1
+    assert len(set(b - a for a, b in zip(probe.pts, probe.pts[1:], strict=False))) > 1
     with RecordedDecoder(tiny_vfr, probe, threads=1) as decoder:
         frames = list(decoder)
         assert decoder.complete
@@ -81,7 +81,7 @@ def test_real_ffmpeg_and_opencv_preserve_variable_pts_and_pixels(tiny_vfr):
     first = frames[0].image_bgr.copy()
     with RecordedDecoder(tiny_vfr, probe, threads=4) as decoder:
         second = list(decoder)
-    for a, b in zip(frames, second):
+    for a, b in zip(frames, second, strict=True):
         np.testing.assert_array_equal(a.image_bgr, b.image_bgr)
     np.testing.assert_array_equal(frames[0].image_bgr, first)
 

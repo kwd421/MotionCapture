@@ -27,7 +27,8 @@ class HandReference:
                 raise ValueError("Incomplete image/world hand pair")
             if image:
                 present[slot] = True
-                values[slot] = [[p.x, p.y, p.z, w.x, w.y, w.z] for p, w in zip(image, world, strict=True)]
+                values[slot] = [[p.x, p.y, p.z, w.x, w.y, w.z]
+                                for p, w in zip(image, world, strict=True)]
                 if not np.isfinite(values[slot]).all():
                     raise ValueError("Nonfinite hand reference")
         return present, values

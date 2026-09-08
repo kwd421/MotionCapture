@@ -8,14 +8,14 @@ from dataclasses import replace
 from fractions import Fraction
 
 import pytest
+from test_recording import tiny_vfr as tiny_vfr
+from test_wholebody_handoff import Session, frames
 
 from motioncapture import wholebody_optimize_bench as bench
 from motioncapture.recording import RecordedFrame, RecordedIdentity, inspect_recording
 from motioncapture.wholebody_catalog import BenchmarkError
 from motioncapture.wholebody_replay import Release, ReplayAges, ReplayCancelled, SourcePacer
 from motioncapture.wholebody_stages import StagePipeline
-from test_recording import tiny_vfr  # noqa: F401
-from test_wholebody_handoff import Session, frames
 
 
 class Clock:
@@ -173,7 +173,8 @@ def test_early_stop_or_native_failure_wakes_wait_and_keeps_primary_error(fail_po
     else:
         pipeline = consume()
         assert pipeline.snapshot()["unemitted_read_frames"] == 1
-        assert pipeline.snapshot()["cleanup"] == {"detector": "owner_released", "pose": "owner_released"}
+        assert pipeline.snapshot()["cleanup"] == {
+            "detector": "owner_released", "pose": "owner_released"}
     assert pacer.cancelled and pacer.released == 1
     assert all(model.closed_on == model.created_on for model in made)
 
