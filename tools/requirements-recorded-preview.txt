@@ -1,0 +1,3 @@
+# Explicit optional SDL display experiment; core dependencies stay unchanged.
+-r requirements-wholebody.txt
+pygame-ce==2.5.8

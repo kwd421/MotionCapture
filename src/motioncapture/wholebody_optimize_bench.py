@@ -153,7 +153,8 @@ class Stats:
                                          for n, group in self.by_count.items()}}
 
 
-def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline):
+def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=StagePipeline,
+             packet_consumer=None):
     count = min(args.max_frames or len(probe.pts), len(probe.pts))
     overlap, fast = MODES[mode]
     deferred = mode == "source-pts-dependent-cvlut"
@@ -167,7 +168,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
               else "explicit_prefix", "requested_frames": count, "error": None,
               "capabilities": CAPABILITIES, "live_60fps_verified": False,
               "ground_truth_accuracy_verified": False, "cleanup_errors": [],
-              "same_provider_in_all_arms": args.suite not in CROSS_POLICY_SUITES, "pose_lanes": lanes,
+              "same_provider_in_all_arms": args.suite not in CROSS_POLICY_SUITES,
+              "pose_lanes": lanes,
               "source_pacing": "original_pts" if paced else "unpaced",
               "normalization_kernel": kernel if fast else "reference_arithmetic",
               "pose_handoff": ("detector_dependency_before_verification" if deferred
@@ -190,6 +192,9 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                                "verified_output_interval_ms": (
                                    "successive validation completions; N-1")}}
     stats, steady = Stats(), Stats()
+    if packet_consumer is not None:
+        report["timing_scope"]["loop"] = "file inference, verification and selected packet consumer"
+        report["packet_consumer"] = "selected; called once per validated frame on caller thread"
     cadence = OutputCadence(count, probe.pts[0])
     digest, boxes_digest, pixels_digest = hashlib.sha256(), hashlib.sha256(), hashlib.sha256()
     new_reference = (StageReference(count, frame_hashes=args.suite in FRAME_HASH_SUITES)
@@ -217,7 +222,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
             report["backend"] = pipeline.metadata
             if args.suite in CROSS_POLICY_SUITES | {"dependency-handoff"}:
                 if (pipeline.metadata.get("detector", {}).get("requested") != args.detector_provider
-                        or pipeline.metadata.get("pose", {}).get("requested") != args.pose_provider):
+                        or pipeline.metadata.get("pose", {}).get("requested")
+                        != args.pose_provider):
                     raise BenchmarkError("compute_policy_session_metadata_mismatch")
             if args.suite == "pose-execution":
                 expected_pose_threads = getattr(args, "pose_intra_op_threads", args.ort_threads)
@@ -273,6 +279,10 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
                         steady.add(packet)
                     completed = {"sequence": frame.identity.sequence, "pts": frame.identity.pts,
                                  "time_base": str(frame.identity.time_base)}
+                    if packet_consumer is not None:
+                        phase = "packet_consumer"
+                        packet_consumer(packet)
+                        phase = "process"
                     if stats.frames % 300 == 0:
                         print(f"{mode}: {stats.frames}/{count}", flush=True)
                     del packet, frame
@@ -328,7 +338,8 @@ def run_pass(args, probe, mode, factories, reference=None, pipeline_factory=Stag
         report["output_cadence"]["scope"] = (
             "source-PTS-paced host validation completions; not camera/display deadlines")
         report["output_cadence"]["interval_budget_note"] = (
-            "Legacy 16.67ms counters are NOT replay deadline misses; source PTS may differ from 60Hz. "
+            "Legacy 16.67ms counters are NOT replay deadline misses; "
+            "source PTS may differ from 60Hz. "
             "Inspect scheduled-source ages and release lateness for backlog.")
     if new_reference is not None:
         new_reference.predictions_sha256 = digest.hexdigest()
@@ -405,7 +416,8 @@ def execute(args, *, inspector=inspect_recording, pass_runner=run_pass):
             "verification_pixel_hash_in_all_loops": True,
             "output_cadence_source_window_seconds": 10,
             "cadence_observer_in_all_loops": True,
-            "pacing_policy": ("per-arm source_pacing; original_pts uses fixed detector-worker epoch; "
+            "pacing_policy": ("per-arm source_pacing; "
+                              "original_pts uses fixed detector-worker epoch; "
                               "no drops or rebases"),
             "ready_handoff_policy": "only_if_next_detector_already_done; no extra source admission",
             "dependency_handoff_policy": "pose worker awaits admitted detector; selected mode only",

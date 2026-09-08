@@ -12,9 +12,11 @@ validated tracking upgrade or a 60 FPS release. No live defaults change.**
 | `rtmw-m` | 256 x 192 | 133 2D points | RTMW medium comparison |
 | `rtmw-l` | 256 x 192 | 133 2D points | Higher-capacity quality/speed comparison |
 
-All use the same official **YOLOX-tiny COCO 416 x 416 person detector on CPU**.
+All use the same official **YOLOX-tiny COCO 416 x 416 person detector**; CPU is
+the explicit default and detector CoreML is available only when selected.
 Detector, NMS, affine crops, normalization, pose calls and output decoding are
-included in frame service time. The pose provider is independently selected.
+included in frame service time. Detector and pose providers are independently
+selected.
 All detected people are processed (a declared capacity of eight); more than eight
 is an error, not a silently truncated success. This is NOT persistent multi-actor tracking.
 
@@ -141,7 +143,9 @@ None means GPU-only/ANE-only, and selecting it does not prove hardware dispatch.
 
 Default is **strict ORT partitioning**: reject CPU EP nodes in the pose graph,
 missing CoreML, provider substitution and zero observed CoreML node executions.
-The explicitly CPU detector and Python/OpenCV work remain CPU in every mode.
+The legacy pose-provider comparison keeps the detector explicitly on CPU; the
+separate detector comparison above may explicitly select CoreML for that model.
+Python/OpenCV geometry and decoding work remain CPU.
 Input symbols are bound to the catalog's fixed shape before compilation.
 
 Some valid CoreML graphs need small CPU partitions. To deliberately test that
@@ -151,6 +155,28 @@ execution in the preflight profile; a CPU-only run cannot be labelled CoreML.
 The raw ORT trace is temporary and discarded after its provider counts are
 extracted. It uses a synthetic tensor, not capture data, and does not verify
 CoreML's internal per-operator GPU/ANE dispatch.
+
+## Detector versus pose provider comparison
+
+The default detector remains explicit CPU. To compare the detector path without
+changing the DWPose pose path, select two detector providers and one fixed pose
+provider. `--abba` makes the arm order A/B/B/A:
+
+```bash
+uv run --with-requirements tools/requirements-wholebody.txt \
+  python -m motioncapture.wholebody_bench run \
+  "$HOME/Downloads/20260906_030954.mp4" \
+  --models dwpose-m --providers coreml-all \
+  --detector-providers cpu coreml-all --allow-cpu-partitions --abba \
+  --max-frames 900 --research-only \
+  --output sessions/dwpose-detector-coreml-abba.json
+```
+
+Both the detector and pose sessions have their own explicit provider metadata
+and placement preflight. The report also includes detector prediction hashes,
+person-count distributions, pose timing grouped by detected-person count and
+per-person pose-call samples. Box comparison uses bounded-RAM greedy IoU
+pairing only; raw boxes, actor IDs and landmarks are not written.
 
 Remove `--max-frames 900` for the full clip after initial checks. ABBA reduces
 simple order effects but does not control thermals/power/background work. Review
@@ -196,6 +222,26 @@ uv run pytest tests/test_wholebody_assets.py tests/test_wholebody_onnx.py \
 uv run ruff check src/motioncapture/wholebody*.py tests/test_wholebody*.py
 ```
 
+## Recorded whole-body preview
+
+For the later native recorded-preview slice, see
+[recorded preview verification](benchmarks/2026-09-08-recorded-preview.md).
+The preparation-only verification section above does not describe these later runs.
+
+```bash
+uv run --with-requirements tools/requirements-wholebody.txt \
+  python -m motioncapture.wholebody_recorded_preview \
+  benchmarks/inputs/macbook-720p30-20260905T175716Z.mp4 \
+  --provider coreml-all --allow-cpu-partitions --research-only \
+  --output sessions/my-recorded-preview.json
+```
+
+The window labels file mode and 2D estimates. Esc/Q/window close stops the run.
+Each validated frame is sent through a bounded FIFO; slow display does not drop
+frames. Add `--snapshot-frame 300` only to explicitly save that annotated frame.
+Use a new report name for every run. This path has no persistent actor IDs,
+calibrated 3D, retargeting or facial blendshape output.
+
 ## Primary research sources
 
 - DWPose models/code: https://github.com/IDEA-Research/DWPose
@@ -206,3 +252,36 @@ uv run ruff check src/motioncapture/wholebody*.py tests/test_wholebody*.py
 - CoreML EP options/support: https://onnxruntime.ai/docs/execution-providers/CoreML-ExecutionProvider.html
 - ONNX Runtime 1.22.1 distribution: https://pypi.org/project/onnxruntime/1.22.1/
 - YOLOX official ONNX export: https://github.com/Megvii-BaseDetection/YOLOX/blob/main/tools/export_onnx.py
+
+Recorded preview optimization candidates (explicit selection):
+
+```sh
+uv run --with-requirements tools/requirements-recorded-preview.txt \
+  python -m motioncapture.wholebody_recorded_preview INPUT.mp4 \
+  --provider coreml-all --allow-cpu-partitions --research-only \
+  --opencv-threads 1 --display-backend sdl \
+  --output sessions/UNIQUE-sdl-preview.json
+```
+
+`opencv` remains the default display. SDL is an optional pygame-ce window with
+no automatic backend substitution. Both paths submit every validated frame.
+`--opencv-threads` sets a process-wide OpenCV budget before starting workers;
+omitting it retains the runtime default. Schema 2 reports the selected display,
+actual driver, OpenCV budget and `display_submit_and_event_pump_ms`; submission
+rate and event-return age do not measure physical display refresh or photon latency.
+See `benchmarks/2026-09-08-optimization-audit.md` for comparisons and limitations.
+
+Original-model ONNX Runtime 1.29.0 experiment:
+
+```sh
+uv run --with-requirements tools/requirements-wholebody-ort129.txt \
+  python -m motioncapture.wholebody_recorded_preview INPUT.mp4 \
+  --provider coreml-all --allow-cpu-partitions --research-only \
+  --expected-ort-version 1.29.0 --opencv-threads 1 \
+  --output sessions/UNIQUE-ort129-preview.json
+```
+
+The expected version is checked before reading the source or creating models.
+Both native model specializations record the actual runtime. The original
+requirements and default expected version remain 1.22.1. This is a separately
+selected research candidate, not an automatic runtime upgrade or accuracy claim.
