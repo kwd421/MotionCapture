@@ -1,0 +1,24 @@
+Uninstalled 1 package in 6ms
+Installed 1 package in 3ms
+2026-09-08 17:18:05.682 Python[74303:13594239] 2026-09-08 17:18:05.682063 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+2026-09-08 17:18:05.682 Python[74303:13594239] 2026-09-08 17:18:05.682786 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:18:05.685 Python[74303:13594239] 2026-09-08 17:18:05.685662 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:18:05.686 Python[74303:13594239] 2026-09-08 17:18:05.686449 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:18:05.687 Python[74303:13594239] 2026-09-08 17:18:05.687449 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:18:05.688 Python[74303:13594239] 2026-09-08 17:18:05.688002 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:18:05.688 Python[74303:13594239] 2026-09-08 17:18:05.688992 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:18:05.689 Python[74303:13594239] 2026-09-08 17:18:05.689570 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708368 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708442 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708468 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708491 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708512 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708532 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708551 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:18:05.708 Python[74303:13594239] 2026-09-08 17:18:05.708570 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+{"name": "macbook-paced", "frames": 600, "elapsed_s": 20.03020491602365, "last_age_ms": 26.693709}
+{"name": "macbook-paced", "frames": 1200, "elapsed_s": 40.03653654101072, "last_age_ms": 33.014}
+{"name": "macbook-paced", "frames": 1800, "elapsed_s": 60.042945875029545, "last_age_ms": 39.435292}
+{"name": "macbook-paced", "frames": 2400, "elapsed_s": 80.03639045800082, "last_age_ms": 32.874584}
+{"name": "macbook-paced", "frames": 3000, "elapsed_s": 100.49288608302595, "last_age_ms": 489.365125}
+{"name": "macbook-paced", "status": "completed", "frames": 3599, "frames_per_s": 29.988637283248377, "final_age_ms": 41.8355}

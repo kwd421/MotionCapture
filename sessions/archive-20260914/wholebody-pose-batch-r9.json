@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "experiment": "same_frame_pose_batch2_feasibility_v1",
+  "status": "completed",
+  "error": null,
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false,
+  "scope": "first_two_detected_slots_on_multi-person_frames; isolated pose kernel",
+  "privacy": "no frames/tensors/coordinates written",
+  "source": {
+    "sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+    "dimensions": [
+      1920,
+      1080
+    ],
+    "codec": "hevc",
+    "frames": 6442,
+    "duration_s": 108.5003,
+    "time_base": "1/90000",
+    "start_pts": 0,
+    "first_pts": 0,
+    "last_pts": 9763528,
+    "declared_average_rate": "12884000/217001",
+    "pts_span_fps": 59.37300533167928,
+    "interval_ms": {
+      "min": 8.511111111111111,
+      "p50": 16.855555555555554,
+      "p95": 16.866666666666667,
+      "p99": 16.877777777777776,
+      "max": 25.2
+    },
+    "timestamp_kind": "ffprobe_integer_pts_and_rational_time_base",
+    "sensor_exposure_uniqueness_verified": false
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "source": {
+      "revision": "a7b3d994e04d7ba0e4ec4ed37ebd585d064ca6d3",
+      "dirty": true,
+      "python_sources_sha256": "c4c0f8e02862ea2af0dc1713c58b420809864854ba806733d18cab0ad4ab4466"
+    }
+  },
+  "assets": {
+    "yolox-tiny": {
+      "schema_version": 1,
+      "asset": {
+        "key": "yolox-tiny",
+        "url": "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_tiny.onnx",
+        "shape": [
+          1,
+          3,
+          416,
+          416
+        ],
+        "kind": "yolox_raw_coco80",
+        "evidence": "https://github.com/Tau-J/rtmlib/blob/03a1693e59e4f7cd84582c0fb30459b3bf18ad42/README.md",
+        "training": "COCO",
+        "code_license": "Apache-2.0",
+        "weights_and_data_clearance": "unreviewed",
+        "publisher_sha256": null
+      },
+      "catalog_sha256": "663d63d72ad163477d7fa8f82328c8b84f1c57f8d842540d5d5797961ad7fa60",
+      "download_sha256": "427cc366d34e27ff7a03e2899b5e3671425c262ea2291f88bb942bc1cc70b0f7",
+      "archive_member": null,
+      "model_sha256": "427cc366d34e27ff7a03e2899b5e3671425c262ea2291f88bb942bc1cc70b0f7",
+      "hash_authority": "first_download_TOFU",
+      "publisher_authentication_verified": false,
+      "research_only_acknowledged": true,
+      "commercial_release_cleared": false
+    },
+    "dwpose-m": {
+      "schema_version": 1,
+      "asset": {
+        "key": "dwpose-m",
+        "url": "https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728.zip",
+        "shape": [
+          1,
+          3,
+          256,
+          192
+        ],
+        "kind": "simcc133",
+        "evidence": "https://github.com/Tau-J/rtmlib/blob/03a1693e59e4f7cd84582c0fb30459b3bf18ad42/README.md",
+        "training": "COCO-WholeBody + UBody",
+        "code_license": "Apache-2.0",
+        "weights_and_data_clearance": "unreviewed",
+        "publisher_sha256": null
+      },
+      "catalog_sha256": "663d63d72ad163477d7fa8f82328c8b84f1c57f8d842540d5d5797961ad7fa60",
+      "download_sha256": "a4e4d56e9dc043e2171c73f5918f334509a47fde60182c1961370c7160334ac0",
+      "archive_member": "20230831/rtmpose_onnx/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728/end2end.onnx",
+      "model_sha256": "94ca58fa2d6c4530b6957ac9548084ebc2fa27ed71e4e01f0b73844306ed01a6",
+      "hash_authority": "first_download_TOFU",
+      "publisher_authentication_verified": false,
+      "research_only_acknowledged": true,
+      "commercial_release_cleared": false
+    }
+  },
+  "backend": {
+    "detector": {
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ],
+        "CPUExecutionProvider"
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": true,
+      "dynamic_dimension_bindings": {},
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 1
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        1,
+        3,
+        416,
+        416
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 380.684583,
+      "preflight_source": "synthetic zero tensor; not measured tracking",
+      "profiling_during_timed_pass": false
+    },
+    "serial_pose": {
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ],
+        "CPUExecutionProvider"
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": true,
+      "dynamic_dimension_bindings": {
+        "batch": 1
+      },
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 7,
+          "CPUExecutionProvider": 6
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        1,
+        3,
+        256,
+        192
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 634.140584,
+      "preflight_source": "synthetic zero tensor; not measured tracking",
+      "profiling_during_timed_pass": false
+    },
+    "batch2_pose": {
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ],
+        "CPUExecutionProvider"
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": true,
+      "dynamic_dimension_bindings": {
+        "batch": 2
+      },
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 7,
+          "CPUExecutionProvider": 6
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        2,
+        3,
+        256,
+        192
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 2970.747334,
+      "preflight_source": "synthetic batch2 zero tensor; not tracking"
+    }
+  },
+  "result": {
+    "frames_scanned": 6442,
+    "multi_person_frames": 131,
+    "pair_observations": 131,
+    "abba_runs_per_pair": 4,
+    "serial_pair_ms": {
+      "samples": 262,
+      "mean_ms": 15.384701045801528,
+      "p50_ms": 12.2504585,
+      "p95_ms": 30.854766949999995,
+      "p99_ms": 35.67133527,
+      "max_ms": 37.705,
+      "over_budget": 54
+    },
+    "batch2_pair_ms": {
+      "samples": 262,
+      "mean_ms": 10.796818736641221,
+      "p50_ms": 8.5070205,
+      "p95_ms": 22.568806249999998,
+      "p99_ms": 25.97044776,
+      "max_ms": 28.16,
+      "over_budget": 36
+    },
+    "mean_pair_speedup": 1.4249290852304843,
+    "coordinate_disagreement": {
+      "body": {
+        "matched": 2116,
+        "sum_pixels": 12.250423431396484,
+        "max_pixels": 6.125211715698242,
+        "above_1px": 2,
+        "above_10px": 0,
+        "reference_only_valid": 0,
+        "candidate_only_valid": 0,
+        "mean_pixels": 0.005789425062096637
+      },
+      "feet": {
+        "matched": 918,
+        "sum_pixels": 24.454895973205566,
+        "max_pixels": 6.243644714355469,
+        "above_1px": 4,
+        "above_10px": 0,
+        "reference_only_valid": 0,
+        "candidate_only_valid": 0,
+        "mean_pixels": 0.02663932023225007
+      },
+      "face": {
+        "matched": 4490,
+        "sum_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0,
+        "reference_only_valid": 0,
+        "candidate_only_valid": 0,
+        "mean_pixels": 0.0
+      },
+      "left_hand": {
+        "matched": 1764,
+        "sum_pixels": 8.635128021240234,
+        "max_pixels": 4.317564010620117,
+        "above_1px": 2,
+        "above_10px": 0,
+        "reference_only_valid": 0,
+        "candidate_only_valid": 0,
+        "mean_pixels": 0.004895197290952513
+      },
+      "right_hand": {
+        "matched": 2314,
+        "sum_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0,
+        "reference_only_valid": 0,
+        "candidate_only_valid": 0,
+        "mean_pixels": 0.0
+      }
+    },
+    "serial_output_sha256": "1778bf123ab876f28ca5213ed733805adc6e8f5b349e6bd05699f1bd1622e381",
+    "batch_output_sha256": "5619525fea357d8ee17c04e8adc0da0537498873e83fcde404e78890892e81d1",
+    "hashes_directly_comparable": false,
+    "hash_note": "serial and batch digests include different repeated-call ordering",
+    "detector_every_source_frame": true,
+    "future_frame_batching": false,
+    "ground_truth_accuracy_verified": false
+  }
+}

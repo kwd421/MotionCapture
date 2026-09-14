@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "session_id": "20260830T062329Z-2b60ed63",
+  "started_at": "2026-08-30T06:23:29.936571+00:00",
+  "finished_at": "2026-08-30T06:38:44.528500+00:00",
+  "duration_seconds": 914.591929,
+  "terminal_status": "interrupted",
+  "terminal_error": "KeyboardInterrupt",
+  "application": {
+    "name": "motioncapture",
+    "version": "0.1.0"
+  },
+  "runtime": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "python": "3.12.10",
+    "opencv": "4.14.0",
+    "mediapipe": "0.10.31",
+    "inference_provider": "MediaPipe 0.10.31 CPU (Pose + Hands + Face)"
+  },
+  "models": [
+    {
+      "key": "pose",
+      "name": "pose_landmarker_full_float16_v1",
+      "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+    },
+    {
+      "key": "hands",
+      "name": "hand_landmarker_float16_v1",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    },
+    {
+      "key": "face",
+      "name": "face_landmarker_float16_v1",
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+    }
+  ],
+  "mode": {
+    "capture": "live_local_camera",
+    "geometry": "monocular_2d_landmarks",
+    "preview_mirrored": true,
+    "calibrated_3d": false,
+    "retargeting": false
+  },
+  "camera_request": {
+    "index": 0,
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0
+  },
+  "camera_observation": {
+    "backend": "AVFoundation",
+    "index": 0,
+    "width": 1280,
+    "height": 720,
+    "nominal_fps": 30.0,
+    "timestamp_provenance": "host_receive_monotonic"
+  },
+  "frames": 6121,
+  "mean_inference_ms": 103.43201061215494,
+  "mean_processing_fps": 6.692602247969323,
+  "detection_totals": {
+    "pose_frames": 5946,
+    "face_frames": 5786,
+    "left_hand_frames": 410,
+    "right_hand_frames": 397
+  },
+  "privacy": {
+    "raw_frames_recorded": false,
+    "landmarks_recorded": false
+  }
+}

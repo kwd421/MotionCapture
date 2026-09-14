@@ -1,0 +1,6 @@
+"Python" ASN:0x0-0xbd4bd4:
+    bundleID="org.python.python"
+    bundle path="/Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app"
+    executable path="/Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python"
+    pid = 24778 token=[sess=100016 pid=24778 uid:501,501,501 g:20,20 pV:9749285] type="Foreground" flavor=3 Version="3.12.10" fileType="APPL" creator="PytX" Arch=ARM64
+    checkin time = now-ish 2026/09/08 18:08:57 ( 0.177148 seconds ago )

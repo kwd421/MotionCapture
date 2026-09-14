@@ -1,0 +1,47 @@
+{
+  "mode": "cpu",
+  "status": "completed",
+  "runtime": "1.29.0",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "model_sha256": "f717558094f57d7c9cd084d7981874dbcc3f08e7308501eb98c12844e2cce3b7",
+  "requested_providers": [
+    "CPUExecutionProvider"
+  ],
+  "scope": "synthetic preflight, not video or quality",
+  "registered_providers": [
+    "CPUExecutionProvider"
+  ],
+  "load_s": 0.22074779099784791,
+  "placement_events": {
+    "CPUExecutionProvider": 29300
+  },
+  "cpu_ops": {
+    "Cast": 1925,
+    "Transpose": 1500,
+    "NhwcFusedConv": 50,
+    "Div": 1950,
+    "Erf": 1550,
+    "Add": 3175,
+    "Mul": 4100,
+    "Conv": 2775,
+    "FusedConv": 3825,
+    "BatchNormalization": 1275,
+    "ReduceMean": 600,
+    "Reshape": 2775,
+    "Gemm": 900,
+    "Squeeze": 725,
+    "Split": 250,
+    "Sqrt": 400,
+    "Unsqueeze": 25,
+    "LayerNormalization": 300,
+    "MatMul": 400,
+    "ReduceMax": 200,
+    "Sub": 200,
+    "Exp": 200,
+    "ReduceSum": 200
+  },
+  "cold_ms": 47.78304201317951,
+  "warm_mean_ms": 42.61718115012627,
+  "warm_p95_ms": 43.25926422316115,
+  "elapsed_s": 1.6369927080231719
+}

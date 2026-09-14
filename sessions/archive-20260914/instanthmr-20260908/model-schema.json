@@ -1,0 +1,99 @@
+{
+  "ort": "1.29.0",
+  "inputs": [
+    {
+      "name": "image",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        3,
+        224,
+        224
+      ]
+    },
+    {
+      "name": "cliff_cond",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        3
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "mhr_params",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        204
+      ]
+    },
+    {
+      "name": "shape_params",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        45
+      ]
+    },
+    {
+      "name": "cam_trans",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        3
+      ]
+    },
+    {
+      "name": "joints_2d",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        70,
+        2
+      ]
+    },
+    {
+      "name": "joints_3d",
+      "dtype": 1,
+      "dims": [
+        "batch",
+        70,
+        3
+      ]
+    }
+  ],
+  "metadata": {},
+  "ops": [
+    "Add",
+    "BatchNormalization",
+    "Cast",
+    "Concat",
+    "Constant",
+    "ConstantOfShape",
+    "Conv",
+    "Div",
+    "Equal",
+    "Erf",
+    "Expand",
+    "Gather",
+    "Gemm",
+    "LayerNormalization",
+    "MatMul",
+    "Mod",
+    "Mul",
+    "ReduceMean",
+    "Relu",
+    "Reshape",
+    "Shape",
+    "Sigmoid",
+    "Slice",
+    "Softmax",
+    "Sqrt",
+    "Squeeze",
+    "Transpose",
+    "Unsqueeze",
+    "Where"
+  ]
+}

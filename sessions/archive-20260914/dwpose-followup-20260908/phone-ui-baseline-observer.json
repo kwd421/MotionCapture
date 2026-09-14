@@ -1,0 +1,1957 @@
+{
+  "activity": {
+    "selected": "off",
+    "started": false,
+    "ended": false,
+    "pyobjc": "12.2.2"
+  },
+  "hide_after": null,
+  "observations": [
+    {
+      "time_ns": 378460037555166,
+      "frames": 1,
+      "app_active": false,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8192
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 174.92283298633993
+    },
+    {
+      "time_ns": 378461191215083,
+      "frames": 60,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.37912498274818
+    },
+    {
+      "time_ns": 378462253593416,
+      "frames": 120,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.374958002008498
+    },
+    {
+      "time_ns": 378463338961208,
+      "frames": 180,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.275333018507808
+    },
+    {
+      "time_ns": 378464447165000,
+      "frames": 240,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.710334002505988
+    },
+    {
+      "time_ns": 378465431816583,
+      "frames": 300,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.876084005460143
+    },
+    {
+      "time_ns": 378466284936916,
+      "frames": 360,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.58295900374651
+    },
+    {
+      "time_ns": 378467131772250,
+      "frames": 420,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.242416014894843
+    },
+    {
+      "time_ns": 378467981976541,
+      "frames": 480,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.753792038187385
+    },
+    {
+      "time_ns": 378468932389625,
+      "frames": 540,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.273041975684464
+    },
+    {
+      "time_ns": 378469944907916,
+      "frames": 600,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.280167000833899
+    },
+    {
+      "time_ns": 378470957593041,
+      "frames": 660,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.041749993339181
+    },
+    {
+      "time_ns": 378471966733500,
+      "frames": 720,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.98737501585856
+    },
+    {
+      "time_ns": 378472979162208,
+      "frames": 780,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.202999998815358
+    },
+    {
+      "time_ns": 378473990718708,
+      "frames": 840,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.466291991993785
+    },
+    {
+      "time_ns": 378475001547291,
+      "frames": 900,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.385374961420894
+    },
+    {
+      "time_ns": 378476012719875,
+      "frames": 960,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.018749992828816
+    },
+    {
+      "time_ns": 378477023927166,
+      "frames": 1020,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.596249966416508
+    },
+    {
+      "time_ns": 378478048756541,
+      "frames": 1080,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 0,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.046124997548759
+    },
+    {
+      "time_ns": 378479256738333,
+      "frames": 1140,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.185374988708645
+    },
+    {
+      "time_ns": 378480627961125,
+      "frames": 1200,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.682292006909847
+    },
+    {
+      "time_ns": 378481574950583,
+      "frames": 1260,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.818333041854203
+    },
+    {
+      "time_ns": 378482418317791,
+      "frames": 1320,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.99858301738277
+    },
+    {
+      "time_ns": 378483262783166,
+      "frames": 1380,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.217958028893918
+    },
+    {
+      "time_ns": 378484102019708,
+      "frames": 1440,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.054541010409594
+    },
+    {
+      "time_ns": 378485107528750,
+      "frames": 1500,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.66570801474154
+    },
+    {
+      "time_ns": 378486119393458,
+      "frames": 1560,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.805874972604215
+    },
+    {
+      "time_ns": 378487129692208,
+      "frames": 1620,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.644249993376434
+    },
+    {
+      "time_ns": 378488140136625,
+      "frames": 1680,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.63504200708121
+    },
+    {
+      "time_ns": 378489149563666,
+      "frames": 1740,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.567832997068763
+    },
+    {
+      "time_ns": 378490162415416,
+      "frames": 1800,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.94216698827222
+    },
+    {
+      "time_ns": 378491173191708,
+      "frames": 1860,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.76924995565787
+    },
+    {
+      "time_ns": 378492182782916,
+      "frames": 1920,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.496333034709096
+    },
+    {
+      "time_ns": 378493193766625,
+      "frames": 1980,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.920917001087219
+    },
+    {
+      "time_ns": 378494205162666,
+      "frames": 2040,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.03862499864772
+    },
+    {
+      "time_ns": 378495216102166,
+      "frames": 2100,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.90195800922811
+    },
+    {
+      "time_ns": 378496228092125,
+      "frames": 2160,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.89508304418996
+    },
+    {
+      "time_ns": 378497237376625,
+      "frames": 2220,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.557624944951385
+    },
+    {
+      "time_ns": 378498248208125,
+      "frames": 2280,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.665999984368682
+    },
+    {
+      "time_ns": 378499259465166,
+      "frames": 2340,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.533583958633244
+    },
+    {
+      "time_ns": 378500269468750,
+      "frames": 2400,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.700540992431343
+    },
+    {
+      "time_ns": 378501280813791,
+      "frames": 2460,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.685374986380339
+    },
+    {
+      "time_ns": 378502292520625,
+      "frames": 2520,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.775583996903151
+    },
+    {
+      "time_ns": 378503302080916,
+      "frames": 2580,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.498125015757978
+    },
+    {
+      "time_ns": 378504312250333,
+      "frames": 2640,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.659666990861297
+    },
+    {
+      "time_ns": 378505323514750,
+      "frames": 2700,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.12683301512152
+    },
+    {
+      "time_ns": 378506334769291,
+      "frames": 2760,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.067082956898957
+    },
+    {
+      "time_ns": 378507346553625,
+      "frames": 2820,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.735083979554474
+    },
+    {
+      "time_ns": 378508357253291,
+      "frames": 2880,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.655833958182484
+    },
+    {
+      "time_ns": 378509369391458,
+      "frames": 2940,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.69504100875929
+    },
+    {
+      "time_ns": 378510378954166,
+      "frames": 3000,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.883457984775305
+    },
+    {
+      "time_ns": 378511388959875,
+      "frames": 3060,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.718125002924353
+    },
+    {
+      "time_ns": 378512401238375,
+      "frames": 3120,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.594209041912109
+    },
+    {
+      "time_ns": 378513411333875,
+      "frames": 3180,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.423875032458454
+    },
+    {
+      "time_ns": 378514421707625,
+      "frames": 3240,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.534999976400286
+    },
+    {
+      "time_ns": 378515433163708,
+      "frames": 3300,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.559041952248663
+    },
+    {
+      "time_ns": 378516442258041,
+      "frames": 3360,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.641375000588596
+    },
+    {
+      "time_ns": 378517455766208,
+      "frames": 3420,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.222250028979033
+    },
+    {
+      "time_ns": 378518466465208,
+      "frames": 3480,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.744666008278728
+    },
+    {
+      "time_ns": 378519477373958,
+      "frames": 3540,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.671708991751075
+    },
+    {
+      "time_ns": 378520489182625,
+      "frames": 3600,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.76687502488494
+    },
+    {
+      "time_ns": 378521498810750,
+      "frames": 3660,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.49899999331683
+    },
+    {
+      "time_ns": 378522508569083,
+      "frames": 3720,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.346332998480648
+    },
+    {
+      "time_ns": 378523519203708,
+      "frames": 3780,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.404417026322335
+    },
+    {
+      "time_ns": 378524530691916,
+      "frames": 3840,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.808458053972572
+    },
+    {
+      "time_ns": 378525539927208,
+      "frames": 3900,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.835499994456768
+    },
+    {
+      "time_ns": 378526556486041,
+      "frames": 3960,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.51033296668902
+    },
+    {
+      "time_ns": 378527552635416,
+      "frames": 4020,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.377458963077515
+    },
+    {
+      "time_ns": 378528563326875,
+      "frames": 4080,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.634000031743199
+    },
+    {
+      "time_ns": 378529555042666,
+      "frames": 4140,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 12.738040997646749
+    },
+    {
+      "time_ns": 378530559342583,
+      "frames": 4200,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.493584003299475
+    },
+    {
+      "time_ns": 378531559217000,
+      "frames": 4260,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.260875013656914
+    },
+    {
+      "time_ns": 378532556645250,
+      "frames": 4320,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.300166989210993
+    },
+    {
+      "time_ns": 378533569212958,
+      "frames": 4380,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.588083034846932
+    },
+    {
+      "time_ns": 378534581212541,
+      "frames": 4440,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.750832993537188
+    },
+    {
+      "time_ns": 378535592884000,
+      "frames": 4500,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.361207966227084
+    },
+    {
+      "time_ns": 378536605598708,
+      "frames": 4560,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.66570801474154
+    },
+    {
+      "time_ns": 378537619109083,
+      "frames": 4620,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.75320804072544
+    },
+    {
+      "time_ns": 378538629054875,
+      "frames": 4680,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.65220797015354
+    },
+    {
+      "time_ns": 378539641448625,
+      "frames": 4740,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.566499983426183
+    },
+    {
+      "time_ns": 378540656092333,
+      "frames": 4800,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.690499996300787
+    },
+    {
+      "time_ns": 378541664723208,
+      "frames": 4860,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.376249989960343
+    },
+    {
+      "time_ns": 378542680756791,
+      "frames": 4920,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.338582997675985
+    },
+    {
+      "time_ns": 378543689903708,
+      "frames": 4980,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.634208007715642
+    },
+    {
+      "time_ns": 378544702437291,
+      "frames": 5040,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.399249990470707
+    },
+    {
+      "time_ns": 378545714431583,
+      "frames": 5100,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.712375017348677
+    },
+    {
+      "time_ns": 378546724563666,
+      "frames": 5160,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.314209005329758
+    },
+    {
+      "time_ns": 378547738643666,
+      "frames": 5220,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.650916051119566
+    },
+    {
+      "time_ns": 378548751175500,
+      "frames": 5280,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 13.595333963166922
+    },
+    {
+      "time_ns": 378549767264791,
+      "frames": 5340,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.934792008716613
+    },
+    {
+      "time_ns": 378551071807458,
+      "frames": 5400,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.480499994941056
+    },
+    {
+      "time_ns": 378552306268958,
+      "frames": 5460,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.095375012606382
+    },
+    {
+      "time_ns": 378553301858083,
+      "frames": 5520,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.101665990892798
+    },
+    {
+      "time_ns": 378554271028333,
+      "frames": 5580,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.829875028226525
+    },
+    {
+      "time_ns": 378555386742333,
+      "frames": 5640,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.672417019028217
+    },
+    {
+      "time_ns": 378556519267625,
+      "frames": 5700,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.009208000265062
+    },
+    {
+      "time_ns": 378557574079625,
+      "frames": 5760,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 14.929041964933276
+    },
+    {
+      "time_ns": 378558602864583,
+      "frames": 5820,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.000084007624537
+    },
+    {
+      "time_ns": 378559940817000,
+      "frames": 5880,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 17.062125029042363
+    },
+    {
+      "time_ns": 378561300108916,
+      "frames": 5940,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 17.748459009453654
+    },
+    {
+      "time_ns": 378562625996000,
+      "frames": 6000,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 17.388665990438312
+    },
+    {
+      "time_ns": 378563863678500,
+      "frames": 6060,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 17.485500022303313
+    },
+    {
+      "time_ns": 378565162138375,
+      "frames": 6120,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.901416005566716
+    },
+    {
+      "time_ns": 378566480971416,
+      "frames": 6180,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.952582984231412
+    },
+    {
+      "time_ns": 378567748380166,
+      "frames": 6240,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.648582997731864
+    },
+    {
+      "time_ns": 378569072601833,
+      "frames": 6300,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 17.449208011385053
+    },
+    {
+      "time_ns": 378570282148250,
+      "frames": 6360,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 16.70783304143697
+    },
+    {
+      "time_ns": 378571446536875,
+      "frames": 6420,
+      "app_active": true,
+      "app_hidden": false,
+      "windows": [
+        {
+          "number": 16754,
+          "visible": true,
+          "miniaturized": false,
+          "occlusion_state": 8194
+        }
+      ],
+      "thermal_state": 1,
+      "low_power_mode": false,
+      "activity": "off",
+      "preview_call_ms": 15.948124986607581
+    }
+  ],
+  "observer_cost": "same frame callback in all arms; native sample only after >1s stall, at most twice",
+  "source_to_photon_verified": false
+}

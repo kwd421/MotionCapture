@@ -1,0 +1,74 @@
+{
+  "candidate": "models/wholebody/experiments/dwpose-m-hardsigmoid-slice/model.onnx",
+  "sha256": "aef31ca336ad6ff5c97c4c4c327c1f1f58f543905c49d5803b1470723fa06745",
+  "transformations": [
+    {
+      "name": "Split_233",
+      "attributes": {
+        "axis": 2,
+        "split": [
+          512,
+          512,
+          128
+        ]
+      }
+    },
+    {
+      "name": "Split_237",
+      "attributes": {
+        "axis": 2,
+        "split": [
+          1,
+          1
+        ]
+      }
+    }
+  ],
+  "cpu_outputs_equal_to_hardsigmoid_candidate": true,
+  "native": {
+    "requested": "coreml-all",
+    "requested_providers": [
+      [
+        "CoreMLExecutionProvider",
+        {
+          "ModelFormat": "MLProgram",
+          "MLComputeUnits": "ALL",
+          "RequireStaticInputShapes": "1",
+          "EnableOnSubgraphs": "0"
+        }
+      ]
+    ],
+    "registered_providers": [
+      "CoreMLExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "reported_options": {
+      "CPUExecutionProvider": {},
+      "CoreMLExecutionProvider": {}
+    },
+    "ort_cpu_partitions_explicitly_allowed": false,
+    "dynamic_dimension_bindings": {
+      "batch": 1
+    },
+    "placement": {
+      "node_execution_events": {
+        "CoreMLExecutionProvider": 1
+      },
+      "scope": "one_zero_tensor_preflight",
+      "coreml_internal_hardware_verified": false,
+      "ane_dispatch_verified": false
+    },
+    "input_shape": [
+      1,
+      3,
+      256,
+      192
+    ],
+    "intra_op_threads": 4,
+    "preflight_ms": 859.980667,
+    "preflight_source": "synthetic zero tensor; not measured tracking",
+    "profiling_during_timed_pass": false
+  },
+  "accuracy_verified": false,
+  "video_verified": false
+}

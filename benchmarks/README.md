@@ -37,15 +37,18 @@ experimental arm. The two 2026-09-08 follow-up reports include their 2026-09-09
 retries and are added together with this index. Historical statements such as
 "no commit/push" describe the experiment turn, not the later archival commit.
 
-This is **not a complete Git archive of every runnable experiment**. Production
-benchmark modules and many verification JSON files are tracked. Some temporary
-probe/controller scripts, native logs/profiles, per-run reports and visual
-comparisons remain only in ignored `sessions/` directories; their locations and
-selected hashes are described in the reports. A clean clone does not contain
-those scripts or artifacts. Private input videos, model weights and derived
-model binaries are excluded. Their existence locally is not remote backup.
+A later user-authorized archive now preserves **463 text artifacts** under
+[`sessions/archive-20260914/`](../sessions/archive-20260914/README.md): temporary
+probe/controller scripts, per-run JSON, native profiles and logs. Its manifest
+records original and archived hashes and path redactions. Originals remain
+untouched locally. Images/crops/plots, bytecode and filesystem metadata (42 files)
+are excluded, along with private input videos and model binaries outside sessions.
+A clean clone has the archived text evidence, but not every input required to
+rerun it; historical paths/dependencies may still need adaptation.
+
 No fresh performance run or source test run was performed for this documentation
-audit; commit history, referenced files and document contents were checked.
+and archival work. History, links, JSON/JSONL/Python parsing and archive hashes
+were checked; this is not new native-performance or accuracy verification.
 
 ## Record-to-commit lookup
 

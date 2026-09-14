@@ -1,0 +1,29 @@
+Uninstalled 1 package in 5ms
+Installed 1 package in 2ms
+2026-09-08 17:15:09.806 Python[72242:13586483] 2026-09-08 17:15:09.806636 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+2026-09-08 17:15:09.807 Python[72242:13586483] 2026-09-08 17:15:09.807338 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:15:09.810 Python[72242:13586483] 2026-09-08 17:15:09.810120 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:15:09.810 Python[72242:13586483] 2026-09-08 17:15:09.810634 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:15:09.811 Python[72242:13586483] 2026-09-08 17:15:09.811466 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:15:09.812 Python[72242:13586483] 2026-09-08 17:15:09.812065 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:15:09.812 Python[72242:13586483] 2026-09-08 17:15:09.812884 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:15:09.813 Python[72242:13586483] 2026-09-08 17:15:09.813393 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:15:09.830 Python[72242:13586483] 2026-09-08 17:15:09.830901 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:15:09.830 Python[72242:13586483] 2026-09-08 17:15:09.830954 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:15:09.830 Python[72242:13586483] 2026-09-08 17:15:09.830978 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:15:09.831 Python[72242:13586483] 2026-09-08 17:15:09.831001 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:15:09.831 Python[72242:13586483] 2026-09-08 17:15:09.831026 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:15:09.831 Python[72242:13586483] 2026-09-08 17:15:09.831051 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:15:09.831 Python[72242:13586483] 2026-09-08 17:15:09.831072 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:15:09.831 Python[72242:13586483] 2026-09-08 17:15:09.831092 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+{"name": "phone-paced", "frames": 600, "elapsed_s": 11.105959166947287, "last_age_ms": 999.663096}
+{"name": "phone-paced", "frames": 1200, "elapsed_s": 23.074475208995864, "last_age_ms": 2859.383458}
+{"name": "phone-paced", "frames": 1800, "elapsed_s": 34.221940791991074, "last_age_ms": 3898.046055}
+{"name": "phone-paced", "frames": 2400, "elapsed_s": 44.3686810839572, "last_age_ms": 3935.986513}
+{"name": "phone-paced", "frames": 3000, "elapsed_s": 54.538917124969885, "last_age_ms": 3997.43325}
+{"name": "phone-paced", "frames": 3600, "elapsed_s": 64.8010864169919, "last_age_ms": 4150.791638}
+{"name": "phone-paced", "frames": 4200, "elapsed_s": 75.31844999996247, "last_age_ms": 4597.363875}
+{"name": "phone-paced", "frames": 4800, "elapsed_s": 86.40079079195857, "last_age_ms": 5584.549819}
+{"name": "phone-paced", "frames": 5400, "elapsed_s": 96.53779316699365, "last_age_ms": 5600.865638}
+{"name": "phone-paced", "frames": 6000, "elapsed_s": 106.72084833396366, "last_age_ms": 5663.231541}
+{"name": "phone-paced", "status": "completed", "frames": 6442, "frames_per_s": 56.402868411397534, "final_age_ms": 5699.898263}

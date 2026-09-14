@@ -1,0 +1,5 @@
+Uninstalled 1 package in 6ms
+Installed 1 package in 3ms
+pygame-ce 2.5.8 (SDL 2.32.10, Python 3.12.10)
+{"display": {"backend": "sdl", "pygame_version": "2.5.8", "sdl_version": [2, 32, 10], "driver": "cocoa", "vsync_requested": false}, "pixels_equal": true, "quit_event_interrupts": true, "pump_ms_mean": 16.320154369747897, "pump_ms_p95": 20.857121199999998, "vsync_observed": false}
+display_owner_released

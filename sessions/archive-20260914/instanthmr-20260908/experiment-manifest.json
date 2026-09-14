@@ -1,0 +1,31 @@
+{
+  "scripts": [
+    {
+      "file": "check_sample.py",
+      "sha256": "4869be0ee73567d52c29e04f388a9c29018cf26504e7b530b4c944aabd57e2bc"
+    },
+    {
+      "file": "probe.py",
+      "sha256": "a2a3131f460429914feb48862b27e747d55aba9523531125f1311200a8581e16"
+    },
+    {
+      "file": "trial.py",
+      "sha256": "9f4c87f3ed62e5c3243ec88f386f1fe6d3e81bedb7ac78e9d30cc3d599652d3e"
+    },
+    {
+      "file": "upstream_inference.py",
+      "sha256": "f5cbec3365998c24c502a0744ae0e5bf26403f8f9d9ec1b9bb7e305b2b459931"
+    },
+    {
+      "file": "upstream_skeleton.py",
+      "sha256": "4725967e8668c266c05a3750f619c9ee2450a3883d63d1d56502b8fd8ba20095"
+    },
+    {
+      "file": "visual.py",
+      "sha256": "0cac3b2cb3eaf4963e41e272e200eb36d1e97f49406bd24276c5f54c3cbd13c4"
+    }
+  ],
+  "scope": "local bounded experiment sources, no raw coordinate files",
+  "upstream_revision": "dfa7a2daebca3c6d74b692c560546b828f493f62",
+  "model_revision": "3504446fc31e7f76fdb1cd7e463189e7cf0fdd0f"
+}

@@ -1,0 +1,19 @@
+{
+  "scope": "repeated real phone crop, models run separately; no pipeline speed claim",
+  "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+  "sequence": 300,
+  "results": {
+    "hmr": {
+      "mean_ms": 12.07241758,
+      "p95_ms": 15.86955015,
+      "max_ms": 17.288667,
+      "samples": 50
+    },
+    "detector": {
+      "mean_ms": 8.40919164,
+      "p95_ms": 10.7665686,
+      "max_ms": 11.606292,
+      "samples": 50
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "mode": "source-pts-dependent-cvlut",
+  "detector_provider": "coreml-all",
+  "pose_provider": "coreml-all",
+  "status": "started"
+}

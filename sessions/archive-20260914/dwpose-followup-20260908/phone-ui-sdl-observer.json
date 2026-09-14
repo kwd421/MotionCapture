@@ -1,0 +1,12 @@
+{
+  "activity": {
+    "selected": "off",
+    "started": false,
+    "ended": false,
+    "pyobjc": "12.2.2"
+  },
+  "hide_after": null,
+  "observations": [],
+  "observer_cost": "same frame callback in all arms; native sample only after >1s stall, at most twice",
+  "source_to_photon_verified": false
+}

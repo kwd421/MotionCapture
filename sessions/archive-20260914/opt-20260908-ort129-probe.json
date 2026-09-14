@@ -1,0 +1,42 @@
+{
+  "ort_version": "1.29.0",
+  "original_model_sha256": "94ca58fa2d6c4530b6957ac9548084ebc2fa27ed71e4e01f0b73844306ed01a6",
+  "rows": [
+    {
+      "batch": 1,
+      "requested_options": {
+        "ModelFormat": "MLProgram",
+        "MLComputeUnits": "ALL",
+        "RequireStaticInputShapes": "1",
+        "EnableOnSubgraphs": "0",
+        "ProfileComputePlan": "1"
+      },
+      "provider_events": {
+        "CoreMLExecutionProvider": 1
+      },
+      "cpu_ops": [],
+      "zero_inference_ms": 206.413042,
+      "scope": "cold synthetic preflight; not video performance",
+      "outputs_finite": true
+    },
+    {
+      "batch": 2,
+      "requested_options": {
+        "ModelFormat": "MLProgram",
+        "MLComputeUnits": "ALL",
+        "RequireStaticInputShapes": "1",
+        "EnableOnSubgraphs": "0",
+        "ProfileComputePlan": "1"
+      },
+      "provider_events": {
+        "CoreMLExecutionProvider": 1
+      },
+      "cpu_ops": [],
+      "zero_inference_ms": 124.406791,
+      "scope": "cold synthetic preflight; not video performance",
+      "outputs_finite": true
+    }
+  ],
+  "accuracy_verified": false,
+  "live_60fps_verified": false
+}

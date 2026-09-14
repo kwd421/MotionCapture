@@ -1,0 +1,62 @@
+[
+  {
+    "name": "rebench-20260909-phone-unpaced",
+    "old_fps": 55.54295754856736,
+    "new_fps": 59.001630768169484,
+    "final_age_ms": null,
+    "age": null,
+    "blender_sampled_peak_cpu": 2.0,
+    "thermal_states": [
+      0
+    ],
+    "cpu_s": 125.365223,
+    "rss_mib": 1294.625,
+    "prior_hashes_exact": true
+  },
+  {
+    "name": "rebench-20260909-phone-paced",
+    "old_fps": 56.402868411397534,
+    "new_fps": 58.26933865941017,
+    "final_age_ms": 2037.709639,
+    "age": {
+      "samples": 6442,
+      "mean_ms": 1518.590749563179,
+      "p50_ms": 1717.977958,
+      "p95_ms": 2280.4421436999996,
+      "p99_ms": 2319.77082046,
+      "max_ms": 2330.297792,
+      "over_budget": 6442
+    },
+    "blender_sampled_peak_cpu": 1.9,
+    "thermal_states": [
+      0,
+      1
+    ],
+    "cpu_s": 129.267136,
+    "rss_mib": 1370.46875,
+    "prior_hashes_exact": true
+  },
+  {
+    "name": "rebench-20260909-macbook-paced",
+    "old_fps": 29.988637283248377,
+    "new_fps": 29.990243410930965,
+    "final_age_ms": 36.009583,
+    "age": {
+      "samples": 3599,
+      "mean_ms": 37.3904208402334,
+      "p50_ms": 37.672167,
+      "p95_ms": 39.7246167,
+      "p99_ms": 41.56187384,
+      "max_ms": 58.21175,
+      "over_budget": 3599
+    },
+    "blender_sampled_peak_cpu": 2.1,
+    "thermal_states": [
+      0,
+      1
+    ],
+    "cpu_s": 68.81482,
+    "rss_mib": 1314.96875,
+    "prior_hashes_exact": true
+  }
+]

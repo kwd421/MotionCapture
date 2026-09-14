@@ -1,0 +1,33 @@
+{
+  "mode": "coreml-strict",
+  "status": "completed",
+  "runtime": "1.29.0",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "model_sha256": "f717558094f57d7c9cd084d7981874dbcc3f08e7308501eb98c12844e2cce3b7",
+  "requested_providers": [
+    [
+      "CoreMLExecutionProvider",
+      {
+        "ModelFormat": "MLProgram",
+        "MLComputeUnits": "ALL",
+        "RequireStaticInputShapes": "1",
+        "EnableOnSubgraphs": "0",
+        "ProfileComputePlan": "1"
+      }
+    ]
+  ],
+  "scope": "synthetic preflight, not video or quality",
+  "registered_providers": [
+    "CoreMLExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "load_s": 33.62922283296939,
+  "placement_events": {
+    "CoreMLExecutionProvider": 25
+  },
+  "cpu_ops": {},
+  "cold_ms": 1625.5054579814896,
+  "warm_mean_ms": 4.35128329845611,
+  "warm_p95_ms": 4.625085068983026,
+  "elapsed_s": 35.396235749998596
+}

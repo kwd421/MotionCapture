@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "mode": "recorded_file_2d_preview",
+  "status": "failed",
+  "error": {
+    "phase": "session_setup",
+    "type": "ModuleNotFoundError",
+    "code": null,
+    "last_completed": null
+  },
+  "cleanup_errors": [],
+  "privacy": {
+    "frames_written": false,
+    "coordinates_written": false,
+    "annotated_snapshots_explicitly_selected": [],
+    "audio_processed": false
+  },
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "runtime": {
+    "python": "3.12.10",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "source": {
+      "revision": "b4bb4b729ed5a4deeef5bd1bd668713f0316d1ce",
+      "dirty": true,
+      "python_sources_sha256": "2b7135d2ebd01ebab7dbe13a1ea92e22572598134d43e676a7cd2921666c59a1"
+    }
+  },
+  "source": {
+    "sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+    "dimensions": [
+      1920,
+      1080
+    ],
+    "codec": "hevc",
+    "frames": 6442,
+    "duration_s": 108.5003,
+    "time_base": "1/90000",
+    "start_pts": 0,
+    "first_pts": 0,
+    "last_pts": 9763528,
+    "declared_average_rate": "12884000/217001",
+    "pts_span_fps": 59.37300533167928,
+    "interval_ms": {
+      "min": 8.511111111111111,
+      "p50": 16.855555555555554,
+      "p95": 16.866666666666667,
+      "p99": 16.877777777777776,
+      "max": 25.2
+    },
+    "timestamp_kind": "ffprobe_integer_pts_and_rational_time_base",
+    "sensor_exposure_uniqueness_verified": false
+  },
+  "assets": {
+    "yolox-tiny": {
+      "schema_version": 1,
+      "asset": {
+        "key": "yolox-tiny",
+        "url": "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_tiny.onnx",
+        "shape": [
+          1,
+          3,
+          416,
+          416
+        ],
+        "kind": "yolox_raw_coco80",
+        "evidence": "https://github.com/Tau-J/rtmlib/blob/03a1693e59e4f7cd84582c0fb30459b3bf18ad42/README.md",
+        "training": "COCO",
+        "code_license": "Apache-2.0",
+        "weights_and_data_clearance": "unreviewed",
+        "publisher_sha256": null
+      },
+      "catalog_sha256": "663d63d72ad163477d7fa8f82328c8b84f1c57f8d842540d5d5797961ad7fa60",
+      "download_sha256": "427cc366d34e27ff7a03e2899b5e3671425c262ea2291f88bb942bc1cc70b0f7",
+      "archive_member": null,
+      "model_sha256": "427cc366d34e27ff7a03e2899b5e3671425c262ea2291f88bb942bc1cc70b0f7",
+      "hash_authority": "first_download_TOFU",
+      "publisher_authentication_verified": false,
+      "research_only_acknowledged": true,
+      "commercial_release_cleared": false
+    },
+    "dwpose-m": {
+      "schema_version": 1,
+      "asset": {
+        "key": "dwpose-m",
+        "url": "https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/onnx_sdk/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728.zip",
+        "shape": [
+          1,
+          3,
+          256,
+          192
+        ],
+        "kind": "simcc133",
+        "evidence": "https://github.com/Tau-J/rtmlib/blob/03a1693e59e4f7cd84582c0fb30459b3bf18ad42/README.md",
+        "training": "COCO-WholeBody + UBody",
+        "code_license": "Apache-2.0",
+        "weights_and_data_clearance": "unreviewed",
+        "publisher_sha256": null
+      },
+      "catalog_sha256": "663d63d72ad163477d7fa8f82328c8b84f1c57f8d842540d5d5797961ad7fa60",
+      "download_sha256": "a4e4d56e9dc043e2171c73f5918f334509a47fde60182c1961370c7160334ac0",
+      "archive_member": "20230831/rtmpose_onnx/rtmpose-m_simcc-ucoco_dw-ucoco_270e-256x192-c8b76419_20230728/end2end.onnx",
+      "model_sha256": "94ca58fa2d6c4530b6957ac9548084ebc2fa27ed71e4e01f0b73844306ed01a6",
+      "hash_authority": "first_download_TOFU",
+      "publisher_authentication_verified": false,
+      "research_only_acknowledged": true,
+      "commercial_release_cleared": false
+    }
+  },
+  "configuration": {
+    "provider": "coreml-all",
+    "allow_cpu_partitions": true,
+    "pose_batch_size": 2,
+    "pacing": "original_pts",
+    "preview": "display",
+    "model": "dwpose-m"
+  },
+  "replay_wall_s_including_setup_and_ui_drain": 0.264965375,
+  "run": {
+    "mode": "source-pts-ready-cvlut",
+    "status": "failed",
+    "scope": "explicit_prefix",
+    "requested_frames": 1200,
+    "error": {
+      "phase": "session_setup",
+      "type": "ModuleNotFoundError",
+      "code": null,
+      "last_completed": null
+    },
+    "capabilities": {
+      "schema": "COCO-WholeBody-133-2D",
+      "body_points": 17,
+      "foot_points": 6,
+      "face_points": 68,
+      "hand_points_each": 21,
+      "face_blendshapes": false,
+      "metric_3d": false,
+      "monocular_world_landmarks": false,
+      "bone_rotations": false,
+      "persistent_actor_identity": false
+    },
+    "live_60fps_verified": false,
+    "ground_truth_accuracy_verified": false,
+    "cleanup_errors": [],
+    "same_provider_in_all_arms": true,
+    "pose_lanes": 1,
+    "source_pacing": "original_pts",
+    "normalization_kernel": "opencv",
+    "pose_handoff": "ready_before_verification",
+    "timing_scope": {
+      "loop": "inference, verification, bounded preview enqueue; UI on caller",
+      "frame_work_ms": "sum of host-measured stage wall times; NOT latency",
+      "submit_to_pose_completion_ms": "host detector submit to pose end",
+      "source_to_photon_measured": false,
+      "pose_inference_ms": "sum of native pose-call wall times; one batch2 call covers two same-frame slots",
+      "pose_stage_ms": "elapsed wall time for ALL people in frame",
+      "pose_queue_ms": "submit to pose body; includes selected dependency",
+      "pose_dependency_wait_ms": "pose worker waits for admitted detector",
+      "pose_owner_dispatch_ms": "executor queue before dependency wait",
+      "initial_recipe_check_in_loop": true,
+      "pose_submit_gap_ms": "prior pose completion to next submission; N-1",
+      "verified_output_interval_ms": "successive validation completions; N-1"
+    },
+    "packet_consumer": "selected; called once per validated frame on caller thread",
+    "backend": {},
+    "host_process_cost": {
+      "process_cpu_s": null,
+      "mean_cpu_cores_during_loop": null,
+      "scope": "partial run; caught failure may include teardown",
+      "gpu_ane_time_measured": false,
+      "power_measured": false
+    },
+    "loop_s": null,
+    "unpaced_loop_fps": null,
+    "paced_loop_fps": null,
+    "replay_ages": {
+      "scope": "scheduled_file_frame_release_to_validation_complete; not photon latency",
+      "frames": 0,
+      "expected_frames": 1200,
+      "coverage": "partial",
+      "source_age_ms": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "threshold_exceedances": {
+          "33.333333333333336": 0,
+          "50.0": 0,
+          "100.0": 0
+        }
+      },
+      "stage_trace": {
+        "status": "not_selected"
+      },
+      "detector_release_lateness_ms": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "threshold_exceedances": {
+          "33.333333333333336": 0,
+          "50.0": 0,
+          "100.0": 0
+        }
+      },
+      "last_source_age_ms": null,
+      "source_age_by_ending_person_count": {},
+      "worst_source_ages": [],
+      "workload_scope": "ending frame; backlog may originate in earlier frames",
+      "source_windows": [],
+      "thresholds_are_diagnostics_not_acceptance_criteria": true,
+      "live_60fps_verified": false
+    },
+    "all_frames": {
+      "frames": 0,
+      "person_observations": 0,
+      "person_count_distribution": {},
+      "valid_point_observations": {
+        "body": 0,
+        "feet": 0,
+        "face": 0,
+        "left_hand": 0,
+        "right_hand": 0
+      },
+      "counts_are_accuracy": false,
+      "pose_count_timing_semantics": {
+        "frame_pose_ms": "sum of native pose-call wall times; batch2 call covers two detector slots",
+        "per_person_ms": "batch1 duration; batch2 duration divided equally for accounting only",
+        "elapsed_pose_stage_ms": "elapsed wall time for all people in frame",
+        "elapsed_detector_stage_ms": "elapsed detection wall time in same frame"
+      },
+      "stages": {},
+      "pose_by_person_count": {}
+    },
+    "steady_after_initial_frames": {
+      "frames": 0,
+      "person_observations": 0,
+      "person_count_distribution": {},
+      "valid_point_observations": {
+        "body": 0,
+        "feet": 0,
+        "face": 0,
+        "left_hand": 0,
+        "right_hand": 0
+      },
+      "counts_are_accuracy": false,
+      "pose_count_timing_semantics": {
+        "frame_pose_ms": "sum of native pose-call wall times; batch2 call covers two detector slots",
+        "per_person_ms": "batch1 duration; batch2 duration divided equally for accounting only",
+        "elapsed_pose_stage_ms": "elapsed wall time for all people in frame",
+        "elapsed_detector_stage_ms": "elapsed detection wall time in same frame"
+      },
+      "stages": {},
+      "pose_by_person_count": {}
+    },
+    "output_cadence": {
+      "frames": 0,
+      "expected_frames": 1200,
+      "coverage": "partial",
+      "time_base": null,
+      "scope": "source-PTS-paced host validation completions; not camera/display deadlines",
+      "source_windows": [],
+      "window_rate_definition": "(completions-1) / host first-to-last span in source bin",
+      "window_edge_intervals": "excluded within bins; included in global intervals",
+      "verified_intervals": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "over_budget": null
+      },
+      "intervals_by_ending_person_count": {},
+      "person_count_attribution": "ending frame workload; not isolated inference cost",
+      "longest_consecutive_over_60hz_interval_budget": 0,
+      "worst_intervals": [],
+      "interval_exceedances_are_dropped_frames": false,
+      "live_60fps_verified": false,
+      "interval_budget_note": "Legacy 16.67ms counters are NOT replay deadline misses; source PTS may differ from 60Hz. Inspect scheduled-source ages and release lateness for backlog."
+    },
+    "last_completed": null,
+    "pipeline": {
+      "read_frames": 0,
+      "emitted_frames": 0,
+      "max_outstanding_per_stage": 1,
+      "model_stages": 2,
+      "pose_lanes": 1,
+      "frame_parallel_pose": false,
+      "intentional_frame_skips": 0,
+      "unemitted_read_frames": 0,
+      "detector_cadence": "every_source_frame",
+      "cleanup": {
+        "detector": "unknown_after_constructor_failure",
+        "pose": "not_opened"
+      },
+      "native_hang_force_cancellation": false,
+      "pose_requests": 0,
+      "unemitted_pose_requests": 0,
+      "ready_pose_handoff_enabled": false,
+      "ready_pose_handoffs": 0,
+      "next_detection_not_ready": 0,
+      "ready_handoff_waits_for_detector": false,
+      "dependency_pose_handoff_enabled": false,
+      "dependency_pose_handoffs": 0,
+      "dependency_wait_owner": null,
+      "normalization_kernel": "opencv",
+      "source_pacing": {
+        "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+        "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+        "first_decode_in_source_age": false,
+        "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+        "expected_frames": 1200,
+        "released_frames": 0,
+        "pending_sequence": null,
+        "scheduled_source_span_s": null,
+        "scheduled_source_rate_hz": null,
+        "source_time_base": null,
+        "cancel_requested": true,
+        "clock_rebases": 0,
+        "frames_skipped": 0,
+        "wait_owner": "detector_worker_not_result_consumer",
+        "hardware_camera_emulated": false
+      },
+      "same_frame_pose_batch_size": 2,
+      "native_pose_sessions": 2,
+      "future_frame_pose_batching": false,
+      "batch2_failure_fallback": false
+    },
+    "decoder_cleanup": "unknown",
+    "predictions_sha256": null,
+    "detector_predictions_sha256": null,
+    "pixels_sha256": null,
+    "hash_scope": "completed_prefix",
+    "reference_hash_equal": null,
+    "provider_disagreement": {
+      "checked_frames": 0,
+      "reference_unavailable_frames": 0,
+      "ambiguous_multi_person_frames": 0,
+      "parts": {
+        "body": {
+          "matched_points": 0,
+          "mean_pixels": null,
+          "p95_pixels": null,
+          "p99_pixels": null,
+          "max_pixels": null,
+          "above_1px": 0,
+          "above_10px": 0
+        },
+        "feet": {
+          "matched_points": 0,
+          "mean_pixels": null,
+          "p95_pixels": null,
+          "p99_pixels": null,
+          "max_pixels": null,
+          "above_1px": 0,
+          "above_10px": 0
+        },
+        "face": {
+          "matched_points": 0,
+          "mean_pixels": null,
+          "p95_pixels": null,
+          "p99_pixels": null,
+          "max_pixels": null,
+          "above_1px": 0,
+          "above_10px": 0
+        },
+        "left_hand": {
+          "matched_points": 0,
+          "mean_pixels": null,
+          "p95_pixels": null,
+          "p99_pixels": null,
+          "max_pixels": null,
+          "above_1px": 0,
+          "above_10px": 0
+        },
+        "right_hand": {
+          "matched_points": 0,
+          "mean_pixels": null,
+          "p95_pixels": null,
+          "p99_pixels": null,
+          "max_pixels": null,
+          "above_1px": 0,
+          "above_10px": 0
+        }
+      },
+      "reference_only_point_observations": {
+        "body": 0,
+        "feet": 0,
+        "face": 0,
+        "left_hand": 0,
+        "right_hand": 0
+      },
+      "candidate_only_point_observations": {
+        "body": 0,
+        "feet": 0,
+        "face": 0,
+        "left_hand": 0,
+        "right_hand": 0
+      },
+      "worst_frames": [],
+      "coordinate_delta_lower_is_better": true,
+      "accuracy_verified": false,
+      "per_frame_detector_boxes": {
+        "checked_frames": 0,
+        "changed_frames": 0,
+        "count_mismatch_frames": 0,
+        "first_changes": [],
+        "scope": "ordered detector-slot float32 edges; not actor correspondence"
+      },
+      "per_frame_predictions": {
+        "status": "not_requested_or_no_samples",
+        "checked_frames": 0,
+        "changed_frames": 0,
+        "multi_person_frames_checked": 0,
+        "multi_person_frames_changed": 0,
+        "first_changes": [],
+        "scope": "all slots, scores, validity and PTS; bitwise, not actor accuracy"
+      },
+      "reference": "same-provider first completed arm; NOT truth"
+    },
+    "inference_status_before_preview_outcome": "failed",
+    "preview_handoff": {
+      "queue_capacity_packets": 1,
+      "queue_wait_ms": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "over_budget": null
+      },
+      "frames_replaced": 0,
+      "undisplayed_queued_packets_at_exit": 0,
+      "inference_owner_joined": true,
+      "policy": "bounded FIFO with backpressure; no dropping"
+    }
+  },
+  "preview": {
+    "submitted_frames": 0,
+    "requested_frames": 1200,
+    "cleanup": "not_opened",
+    "width_limit": 960,
+    "snapshots_written": [],
+    "snapshot_write_ms": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "mean_submission_rate_hz": null,
+    "compose_ms": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "imshow_and_event_pump_ms": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "submission_interval_ms": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "ui_return_ages": {
+      "scope": "scheduled file release to imshow/waitKey return; NOT photon latency",
+      "frames": 0,
+      "expected_frames": 1200,
+      "coverage": "partial",
+      "source_age_ms": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "threshold_exceedances": {
+          "33.333333333333336": 0,
+          "50.0": 0,
+          "100.0": 0
+        }
+      },
+      "stage_trace": {
+        "status": "not_selected"
+      },
+      "detector_release_lateness_ms": {
+        "samples": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null,
+        "max_ms": null,
+        "threshold_exceedances": {
+          "33.333333333333336": 0,
+          "50.0": 0,
+          "100.0": 0
+        }
+      },
+      "last_source_age_ms": null,
+      "source_age_by_ending_person_count": {},
+      "worst_source_ages": [],
+      "workload_scope": "ending frame; backlog may originate in earlier frames",
+      "source_windows": [],
+      "thresholds_are_diagnostics_not_acceptance_criteria": true,
+      "live_60fps_verified": false
+    },
+    "physical_display_timing_verified": false,
+    "valid_point_counts_are_accuracy": false
+  },
+  "process_peak_rss_bytes": 91832320,
+  "memory_scope": "process lifetime peak including model setup"
+}

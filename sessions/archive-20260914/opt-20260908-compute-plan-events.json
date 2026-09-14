@@ -1,0 +1,1105 @@
+[
+  [
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 4357,
+      "ts": 3,
+      "ph": "X",
+      "name": "model_loading_uri",
+      "args": {}
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 528380,
+      "ts": 4394,
+      "ph": "X",
+      "name": "session_initialization",
+      "args": {}
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 81723,
+      "ts": 532935,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_4329357720544876627_CoreML_4329357720544876627_0_0_kernel_time",
+      "args": {
+        "op_name": "4329357720544876627_CoreML_4329357720544876627_0",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "279",
+        "activation_size": "2076672",
+        "output_size": "1206660",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-1-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              3549,
+              85
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              3,
+              416,
+              416
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 81733,
+      "ts": 532933,
+      "ph": "X",
+      "name": "SequentialExecutor::Execute",
+      "args": {}
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 81744,
+      "ts": 532925,
+      "ph": "X",
+      "name": "model_run",
+      "args": {}
+    }
+  ],
+  [
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 8754,
+      "ts": 1,
+      "ph": "X",
+      "name": "model_loading_uri",
+      "args": {}
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 1090878,
+      "ts": 8781,
+      "ph": "X",
+      "name": "session_initialization",
+      "args": {}
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 10823,
+      "ts": 1099744,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_0_0_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_0",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "247",
+        "activation_size": "589824",
+        "output_size": "1180032",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              96,
+              64,
+              48
+            ]
+          },
+          {
+            "float": [
+              1,
+              96,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              3,
+              256,
+              192
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 5,
+      "ts": 1110572,
+      "ph": "X",
+      "name": "HardSigmoid_41_kernel_time",
+      "args": {
+        "op_name": "HardSigmoid",
+        "provider": "CPUExecutionProvider",
+        "node_index": "41",
+        "activation_size": "384",
+        "output_size": "384",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              96,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              96,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 11699,
+      "ts": 1110580,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_1_1_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_1",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "248",
+        "activation_size": "1180032",
+        "output_size": "590592",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              192,
+              32,
+              24
+            ]
+          },
+          {
+            "float": [
+              1,
+              192,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              96,
+              64,
+              48
+            ]
+          },
+          {
+            "float": [
+              1,
+              96,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 5,
+      "ts": 1122288,
+      "ph": "X",
+      "name": "HardSigmoid_98_kernel_time",
+      "args": {
+        "op_name": "HardSigmoid",
+        "provider": "CPUExecutionProvider",
+        "node_index": "98",
+        "activation_size": "768",
+        "output_size": "768",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              192,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              192,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 15134,
+      "ts": 1122296,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_2_2_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_2",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "249",
+        "activation_size": "590592",
+        "output_size": "296448",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              384,
+              16,
+              12
+            ]
+          },
+          {
+            "float": [
+              1,
+              384,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              192,
+              32,
+              24
+            ]
+          },
+          {
+            "float": [
+              1,
+              192,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 4,
+      "ts": 1137437,
+      "ph": "X",
+      "name": "HardSigmoid_155_kernel_time",
+      "args": {
+        "op_name": "HardSigmoid",
+        "provider": "CPUExecutionProvider",
+        "node_index": "155",
+        "activation_size": "1536",
+        "output_size": "1536",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              384,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              384,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 13784,
+      "ts": 1137444,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_3_3_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_3",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "250",
+        "activation_size": "296448",
+        "output_size": "150528",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              768,
+              8,
+              6
+            ]
+          },
+          {
+            "float": [
+              1,
+              768,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              384,
+              16,
+              12
+            ]
+          },
+          {
+            "float": [
+              1,
+              384,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 6,
+      "ts": 1151238,
+      "ph": "X",
+      "name": "HardSigmoid_200_kernel_time",
+      "args": {
+        "op_name": "HardSigmoid",
+        "provider": "CPUExecutionProvider",
+        "node_index": "200",
+        "activation_size": "3072",
+        "output_size": "3072",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              768,
+              1,
+              1
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              768,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 12050,
+      "ts": 1151248,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_4_4_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_4",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "251",
+        "activation_size": "150528",
+        "output_size": "749056",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              256
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              1152
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              768,
+              8,
+              6
+            ]
+          },
+          {
+            "float": [
+              1,
+              768,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 26,
+      "ts": 1163307,
+      "ph": "X",
+      "name": "Split_233_kernel_time",
+      "args": {
+        "op_name": "Split",
+        "provider": "CPUExecutionProvider",
+        "node_index": "228",
+        "activation_size": "612864",
+        "output_size": "612864",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              512
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              512
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              128
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              1152
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 188,
+      "ts": 1163336,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_5_5_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_5",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "252",
+        "activation_size": "68096",
+        "output_size": "136192",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              2,
+              128
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              128
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 7,
+      "ts": 1163528,
+      "ph": "X",
+      "name": "Split_237_kernel_time",
+      "args": {
+        "op_name": "Split",
+        "provider": "CPUExecutionProvider",
+        "node_index": "232",
+        "activation_size": "136192",
+        "output_size": "136192",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              1,
+              128
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              1,
+              128
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              2,
+              128
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Node",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 436,
+      "ts": 1163538,
+      "ph": "X",
+      "name": "CoreMLExecutionProvider_6749977853257161441_CoreML_6749977853257161441_6_6_kernel_time",
+      "args": {
+        "op_name": "6749977853257161441_CoreML_6749977853257161441_6",
+        "provider": "CoreMLExecutionProvider",
+        "node_index": "253",
+        "activation_size": "817152",
+        "output_size": "476672",
+        "thread_scheduling_stats": {
+          "main_thread": {
+            "thread_pool_name": "session-2-intra-op",
+            "thread_id": "0x1fb9e7540",
+            "block_size": [],
+            "core": -1,
+            "Distribution": 0,
+            "DistributionEnqueue": 0,
+            "Run": 0,
+            "Wait": 0,
+            "WaitRevoke": 0
+          },
+          "sub_threads": {
+            "0x16fc33000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fcbf000": {
+              "num_run": 0,
+              "core": -1
+            },
+            "0x16fd4b000": {
+              "num_run": 0,
+              "core": -1
+            }
+          }
+        },
+        "parameter_size": "0",
+        "output_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              384
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              512
+            ]
+          }
+        ],
+        "input_type_shape": [
+          {
+            "float": [
+              1,
+              133,
+              1,
+              128
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              1,
+              128
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              512
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              512
+            ]
+          },
+          {
+            "float": [
+              1,
+              133,
+              256
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 64237,
+      "ts": 1099742,
+      "ph": "X",
+      "name": "SequentialExecutor::Execute",
+      "args": {}
+    },
+    {
+      "cat": "Session",
+      "pid": 32775,
+      "tid": 12130192,
+      "dur": 64247,
+      "ts": 1099736,
+      "ph": "X",
+      "name": "model_run",
+      "args": {}
+    }
+  ]
+]

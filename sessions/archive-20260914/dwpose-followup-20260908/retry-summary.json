@@ -1,0 +1,767 @@
+[
+  {
+    "name": "retry-A1",
+    "status": "completed",
+    "frames": 6442,
+    "consumed": 6442,
+    "hz": 59.38751731417988,
+    "age": {
+      "samples": 6442,
+      "mean_ms": 87.16255095420676,
+      "p50_ms": 19.668784000000002,
+      "p95_ms": 666.39765165,
+      "p99_ms": 933.50735151,
+      "max_ms": 975.289013,
+      "threshold_exceedances": {
+        "33.333333333333336": 797,
+        "50.0": 782,
+        "100.0": 765
+      }
+    },
+    "last_age_ms": 15.326888,
+    "stages": {
+      "detector_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 7.720963011021422,
+        "p50_ms": 7.1485835,
+        "p95_ms": 11.898510099999998,
+        "p99_ms": 15.013104940000009,
+        "max_ms": 26.439417,
+        "over_budget": 16
+      },
+      "pose_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 7.446568373641726,
+        "p50_ms": 7.2658755,
+        "p95_ms": 11.866866349999992,
+        "p99_ms": 15.372762440000006,
+        "max_ms": 21.657208,
+        "over_budget": 38
+      },
+      "decode_read_ms": {
+        "samples": 6442,
+        "mean_ms": 1.3261907916796025,
+        "p50_ms": 0.9570205,
+        "p95_ms": 4.017889299999999,
+        "p99_ms": 7.859378590000002,
+        "max_ms": 54.00275,
+        "over_budget": 1
+      },
+      "verification_ms": {
+        "samples": 6442,
+        "mean_ms": 2.2685459615026393,
+        "p50_ms": 2.133,
+        "p95_ms": 3.0530649,
+        "p99_ms": 3.705271090000001,
+        "max_ms": 26.116917,
+        "over_budget": 1
+      }
+    },
+    "ui": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "cleanup": "not_opened",
+    "pipeline": {
+      "read_frames": 6442,
+      "emitted_frames": 6442,
+      "max_outstanding_per_stage": 1,
+      "model_stages": 2,
+      "pose_lanes": 1,
+      "frame_parallel_pose": false,
+      "intentional_frame_skips": 0,
+      "unemitted_read_frames": 0,
+      "detector_cadence": "every_source_frame",
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "native_hang_force_cancellation": false,
+      "pose_requests": 6442,
+      "unemitted_pose_requests": 0,
+      "ready_pose_handoff_enabled": true,
+      "ready_pose_handoffs": 154,
+      "next_detection_not_ready": 6287,
+      "ready_handoff_waits_for_detector": false,
+      "dependency_pose_handoff_enabled": false,
+      "dependency_pose_handoffs": 0,
+      "dependency_wait_owner": null,
+      "normalization_kernel": "opencv",
+      "source_pacing": {
+        "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+        "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+        "first_decode_in_source_age": false,
+        "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+        "expected_frames": 6442,
+        "released_frames": 6442,
+        "pending_sequence": null,
+        "scheduled_source_span_s": 108.483644445,
+        "scheduled_source_rate_hz": 59.37300533137523,
+        "source_time_base": "1/90000",
+        "cancel_requested": false,
+        "clock_rebases": 0,
+        "frames_skipped": 0,
+        "wait_owner": "detector_worker_not_result_consumer",
+        "hardware_camera_emulated": false
+      },
+      "same_frame_pose_batch_size": 2,
+      "native_pose_sessions": 2,
+      "future_frame_pose_batching": false,
+      "batch2_failure_fallback": false
+    },
+    "handoff": {
+      "queue_capacity_packets": 1,
+      "queue_wait_ms": {
+        "samples": 6442,
+        "mean_ms": 0.011297757373486497,
+        "p50_ms": 0.005292,
+        "p95_ms": 0.014664899999999991,
+        "p99_ms": 0.03450697000000001,
+        "max_ms": 27.778625,
+        "over_budget": 1
+      },
+      "frames_replaced": 0,
+      "undisplayed_queued_packets_at_exit": 0,
+      "inference_owner_joined": true,
+      "policy": "bounded FIFO with backpressure; no dropping"
+    },
+    "hashes": {
+      "pixels_sha256": "10fef157b30f7436b72afbb0b79ace0b4a5d40ae062e8068ddfdc590c1371628",
+      "detector_predictions_sha256": "e19ae1a217b78401e5f867795e2cda43516d3307b30c29456c44fbae87e9f9b6",
+      "predictions_sha256": "56f156a8f26dbdfba9bfb2015490db11a5344f3395dc59c8268a75a2e7f175c4"
+    },
+    "thermal_states": [
+      0
+    ],
+    "window_states": [
+      "[]"
+    ],
+    "sampled_process_peak_cpu": {
+      "Blender": 724.8,
+      "Python": 143.9,
+      "WindowServer": 47.6,
+      "com.apple.WebKit.WebContent": 23.2,
+      "SkyComputerUseService": 4.1,
+      "Safari": 4.2,
+      "com.apple.WebKit.GPU": 5.1,
+      "Google Chrome Helper (Renderer)": 4.9,
+      "mediaanalysisd": 2.5,
+      "Wallflow": 5.2,
+      "sysmond": 1.8,
+      "Activity Monitor": 1.4,
+      "TGOnDeviceInferenceProviderService": 22.5,
+      "launchd": 5.2,
+      "RunCatNeo": 5.8,
+      "deleted_helper": 3.4,
+      "codex": 8.7,
+      "mdworker_shared": 3.1,
+      "unicornprod": 68.0,
+      "ChatGPT": 1.3,
+      "deleted": 4.8,
+      "Google Chrome Helper": 1.5,
+      "coreaudiod": 1.1,
+      "Dock": 1.2,
+      "Steam Helper": 1.2,
+      "Codex (Renderer)": 4.1,
+      "backgroundtaskmanagementd": 2.2,
+      "trustd": 1.8,
+      "com.apple.WebKit.Networking": 31.7,
+      "LinearMouse": 2.7,
+      "amsaccountsd": 2.7,
+      "com.apple.DriverKit.AppleUserECM": 15.2
+    },
+    "cost": {
+      "process_cpu_s": 116.364638,
+      "mean_cpu_cores_during_loop": 1.0719213575105349,
+      "scope": "measured loop, all host process threads; setup excluded",
+      "gpu_ane_time_measured": false,
+      "power_measured": false
+    },
+    "rss_mib": 988.734375
+  },
+  {
+    "name": "retry-B1",
+    "status": "completed",
+    "frames": 6442,
+    "consumed": 6442,
+    "hz": 55.38633690333036,
+    "age": {
+      "samples": 6442,
+      "mean_ms": 2360.0305254299906,
+      "p50_ms": 1090.6734995000002,
+      "p95_ms": 8031.66261645,
+      "p99_ms": 8245.36513681,
+      "max_ms": 8303.931638,
+      "threshold_exceedances": {
+        "33.333333333333336": 5925,
+        "50.0": 5480,
+        "100.0": 5350
+      }
+    },
+    "last_age_ms": 8004.028763,
+    "stages": {
+      "detector_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 10.422724418658799,
+        "p50_ms": 10.3955005,
+        "p95_ms": 14.6135229,
+        "p99_ms": 16.583922720000004,
+        "max_ms": 50.497042,
+        "over_budget": 59
+      },
+      "pose_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 10.723484553399565,
+        "p50_ms": 11.165833,
+        "p95_ms": 15.644891999999999,
+        "p99_ms": 17.64706766000001,
+        "max_ms": 71.036834,
+        "over_budget": 124
+      },
+      "decode_read_ms": {
+        "samples": 6442,
+        "mean_ms": 3.0985326900031045,
+        "p50_ms": 1.905812,
+        "p95_ms": 7.820281249999999,
+        "p99_ms": 10.107958060000005,
+        "max_ms": 56.84175,
+        "over_budget": 7
+      },
+      "verification_ms": {
+        "samples": 6442,
+        "mean_ms": 2.8529511513505126,
+        "p50_ms": 2.892104,
+        "p95_ms": 3.7967833499999997,
+        "p99_ms": 5.042244840000007,
+        "max_ms": 45.437208,
+        "over_budget": 1
+      }
+    },
+    "ui": {
+      "samples": 6442,
+      "mean_ms": 13.473691088326607,
+      "p50_ms": 13.4442915,
+      "p95_ms": 14.3895295,
+      "p99_ms": 15.10226319,
+      "max_ms": 66.343333,
+      "over_budget": 14
+    },
+    "cleanup": "owner_released",
+    "pipeline": {
+      "read_frames": 6442,
+      "emitted_frames": 6442,
+      "max_outstanding_per_stage": 1,
+      "model_stages": 2,
+      "pose_lanes": 1,
+      "frame_parallel_pose": false,
+      "intentional_frame_skips": 0,
+      "unemitted_read_frames": 0,
+      "detector_cadence": "every_source_frame",
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "native_hang_force_cancellation": false,
+      "pose_requests": 6442,
+      "unemitted_pose_requests": 0,
+      "ready_pose_handoff_enabled": true,
+      "ready_pose_handoffs": 959,
+      "next_detection_not_ready": 5482,
+      "ready_handoff_waits_for_detector": false,
+      "dependency_pose_handoff_enabled": false,
+      "dependency_pose_handoffs": 0,
+      "dependency_wait_owner": null,
+      "normalization_kernel": "opencv",
+      "source_pacing": {
+        "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+        "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+        "first_decode_in_source_age": false,
+        "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+        "expected_frames": 6442,
+        "released_frames": 6442,
+        "pending_sequence": null,
+        "scheduled_source_span_s": 108.483644445,
+        "scheduled_source_rate_hz": 59.37300533137523,
+        "source_time_base": "1/90000",
+        "cancel_requested": false,
+        "clock_rebases": 0,
+        "frames_skipped": 0,
+        "wait_owner": "detector_worker_not_result_consumer",
+        "hardware_camera_emulated": false
+      },
+      "same_frame_pose_batch_size": 2,
+      "native_pose_sessions": 2,
+      "future_frame_pose_batching": false,
+      "batch2_failure_fallback": false
+    },
+    "handoff": {
+      "queue_capacity_packets": 1,
+      "queue_wait_ms": {
+        "samples": 6442,
+        "mean_ms": 0.5060699265755976,
+        "p50_ms": 0.0105,
+        "p95_ms": 3.348695499999998,
+        "p99_ms": 10.1500305,
+        "max_ms": 165.740875,
+        "over_budget": 3
+      },
+      "frames_replaced": 0,
+      "undisplayed_queued_packets_at_exit": 0,
+      "inference_owner_joined": true,
+      "policy": "bounded FIFO with backpressure; no dropping"
+    },
+    "hashes": {
+      "pixels_sha256": "10fef157b30f7436b72afbb0b79ace0b4a5d40ae062e8068ddfdc590c1371628",
+      "detector_predictions_sha256": "e19ae1a217b78401e5f867795e2cda43516d3307b30c29456c44fbae87e9f9b6",
+      "predictions_sha256": "56f156a8f26dbdfba9bfb2015490db11a5344f3395dc59c8268a75a2e7f175c4"
+    },
+    "thermal_states": [
+      0,
+      1
+    ],
+    "window_states": [
+      "[{'number': 17608, 'visible': True, 'miniaturized': False, 'occlusion_state': 8192}]",
+      "[{'number': 17608, 'visible': True, 'miniaturized': False, 'occlusion_state': 8194}]"
+    ],
+    "sampled_process_peak_cpu": {
+      "Python": 190.6,
+      "WindowServer": 56.6,
+      "com.apple.WebKit.WebContent": 77.8,
+      "Safari": 10.8,
+      "com.apple.WebKit.GPU": 12.6,
+      "SkyComputerUseService": 4.7,
+      "Google Chrome Helper (Renderer)": 2.9,
+      "Wallflow": 3.2,
+      "launchd": 2.4,
+      "MenuBarAgent": 2.2,
+      "Blender": 718.6,
+      "unicornprod": 19.4,
+      "codex": 17.5,
+      "mds_stores": 10.5,
+      "Codex (Renderer)": 27.1,
+      "dasd": 8.1,
+      "notifyd": 4.3,
+      "contextstored": 2.7,
+      "Activity Monitor": 8.5,
+      "loginwindow": 2.2,
+      "launchservicesd": 1.9,
+      "sysmond": 9.0,
+      "CursorUIViewService": 8.5,
+      "WindowManager": 4.3,
+      "coreaudiod": 2.5,
+      "Discord Helper (Renderer)": 1.4,
+      "com.apple.WebKit.Networking": 1.3,
+      "com.apple.DriverKit.AppleUserECM": 6.3,
+      "cloudd": 5.8,
+      "osascript": 19.3,
+      "trustd": 3.0,
+      "backgroundtaskmanagementd": 3.4,
+      "spotlightknowledged.updater": 3.1,
+      "rustc": 69.8,
+      "mds": 5.2,
+      "mdworker_shared": 3.7
+    },
+    "cost": {
+      "process_cpu_s": 184.016678,
+      "mean_cpu_cores_during_loop": 1.5796752123489919,
+      "scope": "measured loop, all host process threads; setup excluded",
+      "gpu_ane_time_measured": false,
+      "power_measured": false
+    },
+    "rss_mib": 987.125
+  },
+  {
+    "name": "retry-B2",
+    "status": "completed",
+    "frames": 6442,
+    "consumed": 6442,
+    "hz": 59.431863769545544,
+    "age": {
+      "samples": 6442,
+      "mean_ms": 709.8475016615959,
+      "p50_ms": 156.623791,
+      "p95_ms": 2578.0456749,
+      "p99_ms": 2682.4648991100003,
+      "max_ms": 2721.97086,
+      "threshold_exceedances": {
+        "33.333333333333336": 4850,
+        "50.0": 3455,
+        "100.0": 3373
+      }
+    },
+    "last_age_ms": 29.507555,
+    "stages": {
+      "detector_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 9.007662212045949,
+        "p50_ms": 8.235375000000001,
+        "p95_ms": 13.594322599999998,
+        "p99_ms": 16.63010556,
+        "max_ms": 110.568083,
+        "over_budget": 64
+      },
+      "pose_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 9.057215178981682,
+        "p50_ms": 8.454521,
+        "p95_ms": 14.6588167,
+        "p99_ms": 17.020476470000002,
+        "max_ms": 62.46975,
+        "over_budget": 79
+      },
+      "decode_read_ms": {
+        "samples": 6442,
+        "mean_ms": 1.8126569290592982,
+        "p50_ms": 1.1983955,
+        "p95_ms": 7.2024441,
+        "p99_ms": 11.51043569,
+        "max_ms": 48.677458,
+        "over_budget": 12
+      },
+      "verification_ms": {
+        "samples": 6442,
+        "mean_ms": 2.526447320863086,
+        "p50_ms": 2.301875,
+        "p95_ms": 3.4958708499999998,
+        "p99_ms": 4.575356250000002,
+        "max_ms": 62.318042,
+        "over_budget": 6
+      }
+    },
+    "ui": {
+      "samples": 6442,
+      "mean_ms": 13.2172463020801,
+      "p50_ms": 13.061603999999999,
+      "p95_ms": 14.094303850000001,
+      "p99_ms": 14.755048500000001,
+      "max_ms": 41.469209,
+      "over_budget": 9
+    },
+    "cleanup": "owner_released",
+    "pipeline": {
+      "read_frames": 6442,
+      "emitted_frames": 6442,
+      "max_outstanding_per_stage": 1,
+      "model_stages": 2,
+      "pose_lanes": 1,
+      "frame_parallel_pose": false,
+      "intentional_frame_skips": 0,
+      "unemitted_read_frames": 0,
+      "detector_cadence": "every_source_frame",
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "native_hang_force_cancellation": false,
+      "pose_requests": 6442,
+      "unemitted_pose_requests": 0,
+      "ready_pose_handoff_enabled": true,
+      "ready_pose_handoffs": 695,
+      "next_detection_not_ready": 5746,
+      "ready_handoff_waits_for_detector": false,
+      "dependency_pose_handoff_enabled": false,
+      "dependency_pose_handoffs": 0,
+      "dependency_wait_owner": null,
+      "normalization_kernel": "opencv",
+      "source_pacing": {
+        "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+        "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+        "first_decode_in_source_age": false,
+        "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+        "expected_frames": 6442,
+        "released_frames": 6442,
+        "pending_sequence": null,
+        "scheduled_source_span_s": 108.483644445,
+        "scheduled_source_rate_hz": 59.37300533137523,
+        "source_time_base": "1/90000",
+        "cancel_requested": false,
+        "clock_rebases": 0,
+        "frames_skipped": 0,
+        "wait_owner": "detector_worker_not_result_consumer",
+        "hardware_camera_emulated": false
+      },
+      "same_frame_pose_batch_size": 2,
+      "native_pose_sessions": 2,
+      "future_frame_pose_batching": false,
+      "batch2_failure_fallback": false
+    },
+    "handoff": {
+      "queue_capacity_packets": 1,
+      "queue_wait_ms": {
+        "samples": 6442,
+        "mean_ms": 0.6181558880782366,
+        "p50_ms": 0.005792,
+        "p95_ms": 5.0424812499999945,
+        "p99_ms": 9.131564720000004,
+        "max_ms": 111.843959,
+        "over_budget": 2
+      },
+      "frames_replaced": 0,
+      "undisplayed_queued_packets_at_exit": 0,
+      "inference_owner_joined": true,
+      "policy": "bounded FIFO with backpressure; no dropping"
+    },
+    "hashes": {
+      "pixels_sha256": "10fef157b30f7436b72afbb0b79ace0b4a5d40ae062e8068ddfdc590c1371628",
+      "detector_predictions_sha256": "e19ae1a217b78401e5f867795e2cda43516d3307b30c29456c44fbae87e9f9b6",
+      "predictions_sha256": "56f156a8f26dbdfba9bfb2015490db11a5344f3395dc59c8268a75a2e7f175c4"
+    },
+    "thermal_states": [
+      1
+    ],
+    "window_states": [
+      "[{'number': 17618, 'visible': True, 'miniaturized': False, 'occlusion_state': 8194}]",
+      "[{'number': 17618, 'visible': True, 'miniaturized': False, 'occlusion_state': 8192}]"
+    ],
+    "sampled_process_peak_cpu": {
+      "Python": 186.0,
+      "WindowServer": 75.9,
+      "MenuBarAgent": 23.6,
+      "Wallflow": 16.6,
+      "Safari": 11.3,
+      "launchservicesd": 9.8,
+      "PerfPowerServices": 9.4,
+      "com.apple.WebKit.WebContent": 54.4,
+      "launchd": 11.2,
+      "coreduetd": 6.4,
+      "AltTab": 5.7,
+      "osascript": 5.5,
+      "deleted": 65.9,
+      "triald_system": 44.8,
+      "triald": 42.3,
+      "mobileassetd": 36.9,
+      "mds": 27.8,
+      "cloudd": 26.1,
+      "AssetCacheTetheratorService": 8.2,
+      "CacheDeleteExtension": 8.2,
+      "Blender": 667.1,
+      "rustc": 292.0,
+      "SkyComputerUseService": 5.5,
+      "RunCatNeo": 3.7,
+      "Google Chrome Helper (Renderer)": 3.8,
+      "com.apple.WebKit.GPU": 8.5,
+      "coreaudiod": 1.7,
+      "codex": 53.5,
+      "backgroundtaskmanagementd": 1.0,
+      "trustd": 0.8,
+      "dsymutil": 95.1,
+      "Codex (Renderer)": 37.1,
+      "cargo": 5.1,
+      "cargo-clippy": 4.3,
+      "clippy-driver": 99.6,
+      "Google Chrome Helper": 1.4,
+      "Steam Helper": 1.0,
+      "sysmond": 11.4,
+      "Activity Monitor": 4.9,
+      "unicornprod": 1.9,
+      "ChatGPT": 22.1,
+      "Codex (Service)": 10.7,
+      "duetexpertd": 2.4,
+      "mdworker_shared": 14.9,
+      "ospredictiond": 11.2
+    },
+    "cost": {
+      "process_cpu_s": 152.786938,
+      "mean_cpu_cores_during_loop": 1.4077692494900664,
+      "scope": "measured loop, all host process threads; setup excluded",
+      "gpu_ane_time_measured": false,
+      "power_measured": false
+    },
+    "rss_mib": 1051.71875
+  },
+  {
+    "name": "retry-A2",
+    "status": "completed",
+    "frames": 6442,
+    "consumed": 6442,
+    "hz": 58.10337870513274,
+    "age": {
+      "samples": 6442,
+      "mean_ms": 4041.585951448308,
+      "p50_ms": 3581.624583,
+      "p95_ms": 9074.32436965,
+      "p99_ms": 9501.190341470001,
+      "max_ms": 9522.453027,
+      "threshold_exceedances": {
+        "33.333333333333336": 5943,
+        "50.0": 5913,
+        "100.0": 5866
+      }
+    },
+    "last_age_ms": 2407.08443,
+    "stages": {
+      "detector_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 9.8127123273828,
+        "p50_ms": 9.606396,
+        "p95_ms": 14.32036875,
+        "p99_ms": 16.34217672,
+        "max_ms": 96.833583,
+        "over_budget": 53
+      },
+      "pose_inference_ms": {
+        "samples": 6442,
+        "mean_ms": 10.290682930766843,
+        "p50_ms": 10.3543335,
+        "p95_ms": 15.72423365,
+        "p99_ms": 18.10412819,
+        "max_ms": 45.034,
+        "over_budget": 147
+      },
+      "decode_read_ms": {
+        "samples": 6442,
+        "mean_ms": 3.493776121235641,
+        "p50_ms": 1.7556455,
+        "p95_ms": 8.7734851,
+        "p99_ms": 11.978321410000007,
+        "max_ms": 80.27225,
+        "over_budget": 32
+      },
+      "verification_ms": {
+        "samples": 6442,
+        "mean_ms": 3.388369269326296,
+        "p50_ms": 3.2740625000000003,
+        "p95_ms": 4.642745850000001,
+        "p99_ms": 6.389533190000004,
+        "max_ms": 27.387958,
+        "over_budget": 3
+      }
+    },
+    "ui": {
+      "samples": 0,
+      "mean_ms": null,
+      "p50_ms": null,
+      "p95_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "over_budget": null
+    },
+    "cleanup": "not_opened",
+    "pipeline": {
+      "read_frames": 6442,
+      "emitted_frames": 6442,
+      "max_outstanding_per_stage": 1,
+      "model_stages": 2,
+      "pose_lanes": 1,
+      "frame_parallel_pose": false,
+      "intentional_frame_skips": 0,
+      "unemitted_read_frames": 0,
+      "detector_cadence": "every_source_frame",
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "native_hang_force_cancellation": false,
+      "pose_requests": 6442,
+      "unemitted_pose_requests": 0,
+      "ready_pose_handoff_enabled": true,
+      "ready_pose_handoffs": 946,
+      "next_detection_not_ready": 5495,
+      "ready_handoff_waits_for_detector": false,
+      "dependency_pose_handoff_enabled": false,
+      "dependency_pose_handoffs": 0,
+      "dependency_wait_owner": null,
+      "normalization_kernel": "opencv",
+      "source_pacing": {
+        "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+        "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+        "first_decode_in_source_age": false,
+        "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+        "expected_frames": 6442,
+        "released_frames": 6442,
+        "pending_sequence": null,
+        "scheduled_source_span_s": 108.483644445,
+        "scheduled_source_rate_hz": 59.37300533137523,
+        "source_time_base": "1/90000",
+        "cancel_requested": false,
+        "clock_rebases": 0,
+        "frames_skipped": 0,
+        "wait_owner": "detector_worker_not_result_consumer",
+        "hardware_camera_emulated": false
+      },
+      "same_frame_pose_batch_size": 2,
+      "native_pose_sessions": 2,
+      "future_frame_pose_batching": false,
+      "batch2_failure_fallback": false
+    },
+    "handoff": {
+      "queue_capacity_packets": 1,
+      "queue_wait_ms": {
+        "samples": 6442,
+        "mean_ms": 0.022893323191555418,
+        "p50_ms": 0.011041,
+        "p95_ms": 0.02882464999999997,
+        "p99_ms": 0.059166,
+        "max_ms": 56.450583,
+        "over_budget": 1
+      },
+      "frames_replaced": 0,
+      "undisplayed_queued_packets_at_exit": 0,
+      "inference_owner_joined": true,
+      "policy": "bounded FIFO with backpressure; no dropping"
+    },
+    "hashes": {
+      "pixels_sha256": "10fef157b30f7436b72afbb0b79ace0b4a5d40ae062e8068ddfdc590c1371628",
+      "detector_predictions_sha256": "e19ae1a217b78401e5f867795e2cda43516d3307b30c29456c44fbae87e9f9b6",
+      "predictions_sha256": "56f156a8f26dbdfba9bfb2015490db11a5344f3395dc59c8268a75a2e7f175c4"
+    },
+    "thermal_states": [
+      1
+    ],
+    "window_states": [
+      "[]"
+    ],
+    "sampled_process_peak_cpu": {
+      "Python": 187.8,
+      "Blender": 751.5,
+      "rustc": 97.3,
+      "WindowServer": 66.2,
+      "mediaanalysisd": 36.5,
+      "com.apple.WebKit.WebContent": 12.4,
+      "unicornprod": 10.1,
+      "com.apple.WebKit.GPU": 11.0,
+      "mdworker_shared": 6.3,
+      "SkyComputerUseService": 5.3,
+      "Codex (Renderer)": 3.9,
+      "com.apple.DriverKit.AppleUserECM": 3.2,
+      "dsymutil": 24.9,
+      "Wallflow": 16.0,
+      "Google Chrome Helper (Renderer)": 5.3,
+      "Google Chrome Helper": 1.3,
+      "coreaudiod": 2.3,
+      "backgroundtaskmanagementd": 2.2,
+      "Discord Helper (Renderer)": 1.6,
+      "trustd": 1.6,
+      "smd": 1.1,
+      "(netstat)": 1.3,
+      "Dock": 4.4,
+      "Steam Helper": 0.9,
+      "Karabiner-Elements Privileged Daemons v2": 1.5,
+      "codex": 4.1,
+      "codex-code-mode-host": 1.6,
+      "tccd": 1.9,
+      "Karabiner-Elements Non-Privileged Agents v2": 0.9,
+      "Safari": 8.3,
+      "mds": 8.7,
+      "launchservicesd": 8.1,
+      "MenuBarAgent": 4.1,
+      "intelligenceflowd": 2.8,
+      "IntelligencePlatformComputeService": 9.0,
+      "biomesyncd": 6.6,
+      "com.apple.AppleUserHIDDrivers": 5.4
+    },
+    "cost": {
+      "process_cpu_s": 175.859418,
+      "mean_cpu_cores_during_loop": 1.5846884342366616,
+      "scope": "measured loop, all host process threads; setup excluded",
+      "gpu_ane_time_measured": false,
+      "power_measured": false
+    },
+    "rss_mib": 1058.28125
+  }
+]

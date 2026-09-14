@@ -8,7 +8,9 @@ __pycache__/
 
 # Downloaded model assets and local runtime records.
 models/*.task
-sessions/
+# Keep new runtime data local; explicitly published text snapshot only.
+sessions/*
+!sessions/archive-20260914/
 
 # Third-party avatar binaries are fetched locally and retain their own licenses.
 assets/avatars/live2d/haru/

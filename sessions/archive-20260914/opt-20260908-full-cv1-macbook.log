@@ -1,0 +1,14 @@
+[0;93m2026-09-08 09:50:28.001239 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+[0;93m2026-09-08 09:50:28.760500 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+source-pts-ready-cvlut: 300/3599
+source-pts-ready-cvlut: 600/3599
+source-pts-ready-cvlut: 900/3599
+source-pts-ready-cvlut: 1200/3599
+source-pts-ready-cvlut: 1500/3599
+source-pts-ready-cvlut: 1800/3599
+source-pts-ready-cvlut: 2100/3599
+source-pts-ready-cvlut: 2400/3599
+source-pts-ready-cvlut: 2700/3599
+source-pts-ready-cvlut: 3000/3599
+source-pts-ready-cvlut: 3300/3599
+{"status": "completed", "error": null}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "mode": "recorded_file_2d_preview",
+  "status": "running",
+  "error": null,
+  "cleanup_errors": [],
+  "privacy": {
+    "frames_written": true,
+    "coordinates_written": false,
+    "annotated_snapshots_explicitly_selected": [
+      300,
+      3000,
+      6000
+    ],
+    "audio_processed": false
+  },
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "runtime": {
+    "python": "3.12.10",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "source": {
+      "revision": "b4bb4b729ed5a4deeef5bd1bd668713f0316d1ce",
+      "dirty": true,
+      "python_sources_sha256": "ae78a42af1413cb34bf86f8b8f9a3994f82755f631e05d0973c24b0ae55f9ecf"
+    }
+  }
+}

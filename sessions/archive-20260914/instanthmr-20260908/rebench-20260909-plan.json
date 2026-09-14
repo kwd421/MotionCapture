@@ -1,0 +1,20 @@
+[
+  {
+    "name": "rebench-20260909-phone-unpaced",
+    "start_ns": 443255321643708,
+    "end_ns": 443405030498708,
+    "returncode": 0
+  },
+  {
+    "name": "rebench-20260909-phone-paced",
+    "start_ns": 443405030579500,
+    "end_ns": 443557405830708,
+    "returncode": 0
+  },
+  {
+    "name": "rebench-20260909-macbook-paced",
+    "start_ns": 443557405895625,
+    "end_ns": 443698100927708,
+    "returncode": 0
+  }
+]

@@ -1,0 +1,87 @@
+{
+  "scope": "selected visual comparisons, NOT accuracy ground truth",
+  "snapshots_saved_locally": true,
+  "coordinates_saved": false,
+  "rows": [
+    {
+      "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+      "sequence": 300,
+      "pts": 453443,
+      "people": 1,
+      "snapshot": "phone-1080p60-20260906_030954-000300.png",
+      "estimated_3d_snapshot": "phone-1080p60-20260906_030954-000300-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+      "sequence": 1200,
+      "pts": 1818130,
+      "people": 1,
+      "snapshot": "phone-1080p60-20260906_030954-001200.png",
+      "estimated_3d_snapshot": "phone-1080p60-20260906_030954-001200-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+      "sequence": 3000,
+      "pts": 4547507,
+      "people": 1,
+      "snapshot": "phone-1080p60-20260906_030954-003000.png",
+      "estimated_3d_snapshot": "phone-1080p60-20260906_030954-003000-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+      "sequence": 5000,
+      "pts": 7575857,
+      "people": 1,
+      "snapshot": "phone-1080p60-20260906_030954-005000.png",
+      "estimated_3d_snapshot": "phone-1080p60-20260906_030954-005000-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "f0346fc4539e6b8f17c67287f6827a3d775459307c3eff515ac574134986414d",
+      "sequence": 200,
+      "pts": 102912,
+      "people": 1,
+      "snapshot": "macbook-720p30-20260905T175716Z-000200.png",
+      "estimated_3d_snapshot": "macbook-720p30-20260905T175716Z-000200-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "f0346fc4539e6b8f17c67287f6827a3d775459307c3eff515ac574134986414d",
+      "sequence": 1200,
+      "pts": 614912,
+      "people": 1,
+      "snapshot": "macbook-720p30-20260905T175716Z-001200.png",
+      "estimated_3d_snapshot": "macbook-720p30-20260905T175716Z-001200-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "504a39d0c6fe22847e91eae95f05e8784ad212564c42a0d0aa3507b78a4299ca",
+      "sequence": 60,
+      "pts": 64000,
+      "people": 1,
+      "snapshot": "pose-rpi-dance-000060.png",
+      "estimated_3d_snapshot": "pose-rpi-dance-000060-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    },
+    {
+      "source_sha256": "504a39d0c6fe22847e91eae95f05e8784ad212564c42a0d0aa3507b78a4299ca",
+      "sequence": 180,
+      "pts": 184000,
+      "people": 1,
+      "snapshot": "pose-rpi-dance-000180.png",
+      "estimated_3d_snapshot": "pose-rpi-dance-000180-3d.png",
+      "same_boxes": true,
+      "source_pixels_unmodified": true
+    }
+  ]
+}

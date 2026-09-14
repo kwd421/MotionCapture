@@ -1,0 +1,7 @@
+{
+  "mode": "source-pts-ready-cvlut",
+  "detector_provider": "coreml-all",
+  "pose_provider": "coreml-ane",
+  "pose_intra_op_threads": 4,
+  "status": "started"
+}

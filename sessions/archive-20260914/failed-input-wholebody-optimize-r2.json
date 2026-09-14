@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "experiment": "wholebody_exact_input_stage_overlap_v1",
+  "status": "failed",
+  "runs": [],
+  "error": {
+    "phase": "inspect",
+    "type": "BenchmarkError",
+    "code": "input_video_missing"
+  },
+  "performance_verdict": "requires_device_and_quality_review",
+  "live_60fps_verified": false,
+  "accuracy_verified": false,
+  "commercial_release_cleared": false,
+  "privacy": {
+    "frames_written": false,
+    "coordinates_written": false,
+    "audio_processed": false,
+    "observations": "bounded_RAM_only"
+  }
+}

@@ -1,0 +1,2199 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "stage": "finished",
+  "mode": "track",
+  "inference_requested": true,
+  "runtime": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "python": "3.12.10",
+    "opencv": "4.14.0",
+    "numpy": "2.5.2",
+    "mediapipe": "0.10.31",
+    "cpu_count": 10,
+    "opencv_threads": 10,
+    "source": {
+      "revision": "d77c332e08d281d80d50087c846f1dc6452fb836",
+      "dirty": true,
+      "python_sources_sha256": "216acf21f5a4039648d16882896343dddd243ccfc0ba9307aa3b54635a820854"
+    }
+  },
+  "configuration": {
+    "decode_threads_requested": 0,
+    "task_scheduling": "serial",
+    "scheduling_plan": [
+      "serial"
+    ],
+    "verify_results": true,
+    "preview": "display",
+    "target_fps": 60.0,
+    "budget_ms": 16.666666666666668,
+    "warmup_frames_included_in_all_frames": 60,
+    "repeats": 1,
+    "resized": false,
+    "paced": false
+  },
+  "source": {
+    "sha256": "982bed047178c8c526f81d394f659e7402f0a2cf1dd620d0d85320bac27ea2c6",
+    "dimensions": [
+      1920,
+      1080
+    ],
+    "codec": "hevc",
+    "frames": 6442,
+    "duration_s": 108.5003,
+    "time_base": "1/90000",
+    "start_pts": 0,
+    "first_pts": 0,
+    "last_pts": 9763528,
+    "declared_average_rate": "12884000/217001",
+    "pts_span_fps": 59.37300533167928,
+    "interval_ms": {
+      "min": 8.511111111111111,
+      "p50": 16.855555555555554,
+      "p95": 16.866666666666667,
+      "p99": 16.877777777777776,
+      "max": 25.2
+    },
+    "timestamp_kind": "ffprobe_integer_pts_and_rational_time_base",
+    "sensor_exposure_uniqueness_verified": false
+  },
+  "runs": [
+    {
+      "status": "completed",
+      "decoder_cleanup_complete": true,
+      "inference_executed": true,
+      "setup_ms": 1177.661333,
+      "task_scheduling": "serial",
+      "predictions_sha256": "5571a60dfc22b9d2c652313ff13fe5f60405ae3ee7a6511aad28ae1d9e0005eb",
+      "result_hash_overhead_in_loop_fps": true,
+      "loop_s": 215.293911125,
+      "unpaced_loop_fps": 29.921886626230524,
+      "decode_threads_reported": 10.0,
+      "pixels_sha256": null,
+      "pixel_hash_overhead_in_loop_fps": false,
+      "all_frames": {
+        "frames": 6442,
+        "detections": {
+          "face": 4311,
+          "pose": 5694,
+          "left_hand": 4527,
+          "right_hand": 4667
+        },
+        "stages": {
+          "decode_read_ms": {
+            "samples": 6442,
+            "mean_ms": 0.6787979358894752,
+            "p50_ms": 0.723084,
+            "p95_ms": 0.8914770999999999,
+            "p99_ms": 1.03024109,
+            "max_ms": 33.26075,
+            "over_budget": 1
+          },
+          "input_conversion_ms": {
+            "samples": 6442,
+            "mean_ms": 0.6729128823346788,
+            "p50_ms": 0.7209375,
+            "p95_ms": 0.83974375,
+            "p99_ms": 0.9498469700000002,
+            "max_ms": 2.586625,
+            "over_budget": 0
+          },
+          "pose_ms": {
+            "samples": 6442,
+            "mean_ms": 10.94706437317603,
+            "p50_ms": 11.339979,
+            "p95_ms": 11.9328854,
+            "p99_ms": 13.378694090000016,
+            "max_ms": 36.492875,
+            "over_budget": 60
+          },
+          "hands_ms": {
+            "samples": 6442,
+            "mean_ms": 16.03330479493946,
+            "p50_ms": 16.488854,
+            "p95_ms": 19.5861375,
+            "p99_ms": 26.603888530000003,
+            "max_ms": 30.742209,
+            "over_budget": 1647
+          },
+          "face_ms": {
+            "samples": 6442,
+            "mean_ms": 3.965625187829866,
+            "p50_ms": 5.0524375,
+            "p95_ms": 5.3666042,
+            "p99_ms": 5.62774919,
+            "max_ms": 10.023292,
+            "over_budget": 0
+          },
+          "inference_wall_ms": {
+            "samples": 6442,
+            "mean_ms": 30.949043412915245,
+            "p50_ms": 32.904604500000005,
+            "p95_ms": 36.704662199999994,
+            "p99_ms": 42.932064530000005,
+            "max_ms": 61.297041,
+            "over_budget": 6442
+          },
+          "result_assembly_ms": {
+            "samples": 6442,
+            "mean_ms": 0.3288662061471592,
+            "p50_ms": 0.43314549999999996,
+            "p95_ms": 0.48028784999999996,
+            "p99_ms": 0.5704425000000001,
+            "max_ms": 4.248542,
+            "over_budget": 0
+          },
+          "total_ms": {
+            "samples": 6442,
+            "mean_ms": 31.950877761875194,
+            "p50_ms": 34.001645999999994,
+            "p95_ms": 37.85241875,
+            "p99_ms": 44.07725603,
+            "max_ms": 64.350667,
+            "over_budget": 6442
+          },
+          "preview_ms": {
+            "samples": 6442,
+            "mean_ms": 0.5833552716547655,
+            "p50_ms": 0.6075625,
+            "p95_ms": 0.7353729,
+            "p99_ms": 0.8370427200000001,
+            "max_ms": 1.679292,
+            "over_budget": 0
+          },
+          "frame_service_ms": {
+            "samples": 6442,
+            "mean_ms": 33.28878200310463,
+            "p50_ms": 35.3489165,
+            "p95_ms": 39.264944050000004,
+            "p99_ms": 45.556762,
+            "max_ms": 73.4525,
+            "over_budget": 6442
+          },
+          "result_verification_ms": {
+            "samples": 6442,
+            "mean_ms": 0.05703761347407636,
+            "p50_ms": 0.07525,
+            "p95_ms": 0.0825819,
+            "p99_ms": 0.09792397000000001,
+            "max_ms": 2.702083,
+            "over_budget": 0
+          }
+        }
+      },
+      "steady_after_initial_frames": {
+        "frames": 6382,
+        "detections": {
+          "face": 4311,
+          "pose": 5694,
+          "left_hand": 4527,
+          "right_hand": 4667
+        },
+        "stages": {
+          "decode_read_ms": {
+            "samples": 6382,
+            "mean_ms": 0.6735731446255092,
+            "p50_ms": 0.723084,
+            "p95_ms": 0.8914770999999999,
+            "p99_ms": 1.02907354,
+            "max_ms": 8.256083,
+            "over_budget": 0
+          },
+          "input_conversion_ms": {
+            "samples": 6382,
+            "mean_ms": 0.6717231535568788,
+            "p50_ms": 0.7207085,
+            "p95_ms": 0.83899375,
+            "p99_ms": 0.9463884799999999,
+            "max_ms": 2.586625,
+            "over_budget": 0
+          },
+          "pose_ms": {
+            "samples": 6382,
+            "mean_ms": 10.989095760890002,
+            "p50_ms": 11.3419795,
+            "p95_ms": 11.93612115,
+            "p99_ms": 13.557756999999716,
+            "max_ms": 36.492875,
+            "over_budget": 60
+          },
+          "hands_ms": {
+            "samples": 6382,
+            "mean_ms": 16.091850763553744,
+            "p50_ms": 16.490729,
+            "p95_ms": 19.6054143,
+            "p99_ms": 26.611732,
+            "max_ms": 30.742209,
+            "over_budget": 1647
+          },
+          "face_ms": {
+            "samples": 6382,
+            "mean_ms": 3.991223486837982,
+            "p50_ms": 5.0539375,
+            "p95_ms": 5.36799795,
+            "p99_ms": 5.629923209999998,
+            "max_ms": 10.023292,
+            "over_budget": 0
+          },
+          "inference_wall_ms": {
+            "samples": 6382,
+            "mean_ms": 31.07522116922595,
+            "p50_ms": 32.908041,
+            "p95_ms": 36.79960835,
+            "p99_ms": 42.94065752,
+            "max_ms": 61.297041,
+            "over_budget": 6382
+          },
+          "result_assembly_ms": {
+            "samples": 6382,
+            "mean_ms": 0.33185654544030074,
+            "p50_ms": 0.43325,
+            "p95_ms": 0.48057679999999997,
+            "p99_ms": 0.5707895199999999,
+            "max_ms": 4.248542,
+            "over_budget": 0
+          },
+          "total_ms": {
+            "samples": 6382,
+            "mean_ms": 32.078856145095585,
+            "p50_ms": 34.008458000000005,
+            "p95_ms": 37.93236635,
+            "p99_ms": 44.082918539999994,
+            "max_ms": 64.350667,
+            "over_budget": 6382
+          },
+          "preview_ms": {
+            "samples": 6382,
+            "mean_ms": 0.5850173194923222,
+            "p50_ms": 0.608083,
+            "p95_ms": 0.73573335,
+            "p99_ms": 0.8367595199999996,
+            "max_ms": 1.679292,
+            "over_budget": 0
+          },
+          "frame_service_ms": {
+            "samples": 6382,
+            "mean_ms": 33.413289055155126,
+            "p50_ms": 35.3575415,
+            "p95_ms": 39.30896604999999,
+            "p99_ms": 45.553562,
+            "max_ms": 73.4525,
+            "over_budget": 6382
+          },
+          "result_verification_ms": {
+            "samples": 6382,
+            "mean_ms": 0.05752271576308367,
+            "p50_ms": 0.07525,
+            "p95_ms": 0.082625,
+            "p99_ms": 0.09798972999999994,
+            "max_ms": 2.702083,
+            "over_budget": 0
+          }
+        }
+      },
+      "windows_source_time": {
+        "0-10s": {
+          "frames": 595,
+          "detections": {
+            "face": 283,
+            "pose": 357,
+            "left_hand": 314,
+            "right_hand": 261
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 595,
+              "mean_ms": 0.7233669411764706,
+              "p50_ms": 0.709083,
+              "p95_ms": 0.9017668,
+              "p99_ms": 1.0399324999999986,
+              "max_ms": 33.26075,
+              "over_budget": 1
+            },
+            "input_conversion_ms": {
+              "samples": 595,
+              "mean_ms": 0.6780316722689076,
+              "p50_ms": 0.713875,
+              "p95_ms": 0.8377667999999997,
+              "p99_ms": 1.0413469599999818,
+              "max_ms": 2.523709,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 595,
+              "mean_ms": 9.695872546218487,
+              "p50_ms": 11.22675,
+              "p95_ms": 11.6179661,
+              "p99_ms": 17.55507448,
+              "max_ms": 18.137125,
+              "over_budget": 17
+            },
+            "hands_ms": {
+              "samples": 595,
+              "mean_ms": 13.896529684033613,
+              "p50_ms": 16.412,
+              "p95_ms": 18.2291419,
+              "p99_ms": 26.13961446,
+              "max_ms": 26.300125,
+              "over_budget": 91
+            },
+            "face_ms": {
+              "samples": 595,
+              "mean_ms": 3.114467210084034,
+              "p50_ms": 1.412333,
+              "p95_ms": 5.318808099999999,
+              "p99_ms": 5.497749999999998,
+              "max_ms": 8.799583,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 595,
+              "mean_ms": 26.709852453781515,
+              "p50_ms": 30.727083,
+              "p95_ms": 33.7786918,
+              "p99_ms": 38.596256,
+              "max_ms": 42.760333,
+              "over_budget": 595
+            },
+            "result_assembly_ms": {
+              "samples": 595,
+              "mean_ms": 0.22694426386554623,
+              "p50_ms": 0.102,
+              "p95_ms": 0.4540501,
+              "p99_ms": 0.5119499799999988,
+              "max_ms": 0.589375,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 595,
+              "mean_ms": 27.614880544537815,
+              "p50_ms": 31.559667,
+              "p95_ms": 34.6766581,
+              "p99_ms": 39.40578252,
+              "max_ms": 43.790875,
+              "over_budget": 595
+            },
+            "preview_ms": {
+              "samples": 595,
+              "mean_ms": 0.5383442857142857,
+              "p50_ms": 0.568042,
+              "p95_ms": 0.7453917999999999,
+              "p99_ms": 0.8637650399999995,
+              "max_ms": 1.161166,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 595,
+              "mean_ms": 28.951496213445377,
+              "p50_ms": 33.005874999999996,
+              "p95_ms": 36.30249609999999,
+              "p99_ms": 40.88554839999999,
+              "max_ms": 56.930791,
+              "over_budget": 595
+            },
+            "result_verification_ms": {
+              "samples": 595,
+              "mean_ms": 0.04098344537815127,
+              "p50_ms": 0.019959,
+              "p95_ms": 0.0802332,
+              "p99_ms": 0.08893199999999998,
+              "max_ms": 0.10975,
+              "over_budget": 0
+            }
+          }
+        },
+        "10-20s": {
+          "frames": 594,
+          "detections": {
+            "face": 594,
+            "pose": 594,
+            "left_hand": 545,
+            "right_hand": 550
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 594,
+              "mean_ms": 0.6607174545454545,
+              "p50_ms": 0.7155205,
+              "p95_ms": 0.8542421,
+              "p99_ms": 0.9791615600000001,
+              "max_ms": 1.106458,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 594,
+              "mean_ms": 0.6723845538720539,
+              "p50_ms": 0.7245,
+              "p95_ms": 0.8409688500000001,
+              "p99_ms": 0.9644951300000005,
+              "max_ms": 1.231417,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 594,
+              "mean_ms": 11.355005003367003,
+              "p50_ms": 11.340875,
+              "p95_ms": 11.582460849999999,
+              "p99_ms": 11.71852794,
+              "max_ms": 15.603459,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 594,
+              "mean_ms": 16.470876614478115,
+              "p50_ms": 16.4796045,
+              "p95_ms": 17.545197700000017,
+              "p99_ms": 26.033587500000003,
+              "max_ms": 29.942375,
+              "over_budget": 66
+            },
+            "face_ms": {
+              "samples": 594,
+              "mean_ms": 5.173672069023569,
+              "p50_ms": 5.1193954999999995,
+              "p95_ms": 5.35675405,
+              "p99_ms": 5.672882130000034,
+              "max_ms": 9.728708,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 594,
+              "mean_ms": 33.002662771043774,
+              "p50_ms": 32.970812,
+              "p95_ms": 34.5033876,
+              "p99_ms": 42.58783744000001,
+              "max_ms": 55.278875,
+              "over_budget": 594
+            },
+            "result_assembly_ms": {
+              "samples": 594,
+              "mean_ms": 0.44775623737373743,
+              "p50_ms": 0.4354165,
+              "p95_ms": 0.47798915000000003,
+              "p99_ms": 0.5795315600000003,
+              "max_ms": 3.394958,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 594,
+              "mean_ms": 34.12285773063973,
+              "p50_ms": 34.112187000000006,
+              "p95_ms": 35.6607604,
+              "p99_ms": 43.676495810000006,
+              "max_ms": 56.496334,
+              "over_budget": 594
+            },
+            "preview_ms": {
+              "samples": 594,
+              "mean_ms": 0.6481433316498316,
+              "p50_ms": 0.6324585,
+              "p95_ms": 0.75758925,
+              "p99_ms": 0.8584314400000002,
+              "max_ms": 0.967,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 594,
+              "mean_ms": 35.51382028114479,
+              "p50_ms": 35.5274795,
+              "p95_ms": 37.01921075,
+              "p99_ms": 45.00458906000001,
+              "max_ms": 57.9505,
+              "over_budget": 594
+            },
+            "result_verification_ms": {
+              "samples": 594,
+              "mean_ms": 0.07753184848484848,
+              "p50_ms": 0.076667,
+              "p95_ms": 0.08530635,
+              "p99_ms": 0.09977331000000064,
+              "max_ms": 0.145083,
+              "over_budget": 0
+            }
+          }
+        },
+        "20-30s": {
+          "frames": 593,
+          "detections": {
+            "face": 593,
+            "pose": 593,
+            "left_hand": 593,
+            "right_hand": 593
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 593,
+              "mean_ms": 0.6666895885328836,
+              "p50_ms": 0.725083,
+              "p95_ms": 0.8867332,
+              "p99_ms": 1.0479086400000002,
+              "max_ms": 1.25,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 593,
+              "mean_ms": 0.6690936037099494,
+              "p50_ms": 0.723417,
+              "p95_ms": 0.8394331999999999,
+              "p99_ms": 0.950431,
+              "max_ms": 1.58225,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 593,
+              "mean_ms": 11.34582997301855,
+              "p50_ms": 11.339208,
+              "p95_ms": 11.5872672,
+              "p99_ms": 11.709864360000001,
+              "max_ms": 11.838,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 593,
+              "mean_ms": 16.490706792580102,
+              "p50_ms": 16.4635,
+              "p95_ms": 16.676483400000002,
+              "p99_ms": 16.88684392,
+              "max_ms": 17.76475,
+              "over_budget": 34
+            },
+            "face_ms": {
+              "samples": 593,
+              "mean_ms": 5.167096755480607,
+              "p50_ms": 5.123083,
+              "p95_ms": 5.3790584,
+              "p99_ms": 5.53885028,
+              "max_ms": 8.397333,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 593,
+              "mean_ms": 33.006816971332206,
+              "p50_ms": 32.96075,
+              "p95_ms": 33.3723664,
+              "p99_ms": 33.78924664000001,
+              "max_ms": 36.423458,
+              "over_budget": 593
+            },
+            "result_assembly_ms": {
+              "samples": 593,
+              "mean_ms": 0.4429736745362563,
+              "p50_ms": 0.43625,
+              "p95_ms": 0.4735831999999999,
+              "p99_ms": 0.5567963600000007,
+              "max_ms": 0.687791,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 593,
+              "mean_ms": 34.11894085160203,
+              "p50_ms": 34.089334,
+              "p95_ms": 34.5709334,
+              "p99_ms": 35.01515664000001,
+              "max_ms": 37.591292,
+              "over_budget": 593
+            },
+            "preview_ms": {
+              "samples": 593,
+              "mean_ms": 0.648092610455312,
+              "p50_ms": 0.629792,
+              "p95_ms": 0.7505172,
+              "p99_ms": 0.8239967200000006,
+              "max_ms": 0.961958,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 593,
+              "mean_ms": 35.51369515514334,
+              "p50_ms": 35.509541999999996,
+              "p95_ms": 36.1172164,
+              "p99_ms": 36.561683640000005,
+              "max_ms": 39.19475,
+              "over_budget": 593
+            },
+            "result_verification_ms": {
+              "samples": 593,
+              "mean_ms": 0.07818920573355818,
+              "p50_ms": 0.076666,
+              "p95_ms": 0.08910019999999999,
+              "p99_ms": 0.10997600000000003,
+              "max_ms": 0.123583,
+              "over_budget": 0
+            }
+          }
+        },
+        "30-40s": {
+          "frames": 594,
+          "detections": {
+            "face": 591,
+            "pose": 594,
+            "left_hand": 540,
+            "right_hand": 560
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 594,
+              "mean_ms": 0.6751310858585859,
+              "p50_ms": 0.728896,
+              "p95_ms": 0.8764273000000001,
+              "p99_ms": 1.027190060000001,
+              "max_ms": 1.298958,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 594,
+              "mean_ms": 0.6734924882154881,
+              "p50_ms": 0.7264165,
+              "p95_ms": 0.85790045,
+              "p99_ms": 0.9494093200000002,
+              "max_ms": 1.176167,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 594,
+              "mean_ms": 11.350055005050503,
+              "p50_ms": 11.3464995,
+              "p95_ms": 11.57817675,
+              "p99_ms": 11.71681987,
+              "max_ms": 12.831792,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 594,
+              "mean_ms": 16.75671669191919,
+              "p50_ms": 16.5061665,
+              "p95_ms": 18.1361126,
+              "p99_ms": 26.08493307,
+              "max_ms": 26.322375,
+              "over_budget": 96
+            },
+            "face_ms": {
+              "samples": 594,
+              "mean_ms": 5.172523984848485,
+              "p50_ms": 5.1304165,
+              "p95_ms": 5.39555625,
+              "p99_ms": 6.542236560000081,
+              "max_ms": 8.809625,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 594,
+              "mean_ms": 33.282394526936024,
+              "p50_ms": 33.0228125,
+              "p95_ms": 34.65933565,
+              "p99_ms": 42.42467825000001,
+              "max_ms": 43.080083,
+              "over_budget": 594
+            },
+            "result_assembly_ms": {
+              "samples": 594,
+              "mean_ms": 0.4459250235690235,
+              "p50_ms": 0.4364165,
+              "p95_ms": 0.49159769999999997,
+              "p99_ms": 0.56810031,
+              "max_ms": 1.808792,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 594,
+              "mean_ms": 34.40186931649831,
+              "p50_ms": 34.1674375,
+              "p95_ms": 35.8497625,
+              "p99_ms": 43.61206268000001,
+              "max_ms": 44.294209,
+              "over_budget": 594
+            },
+            "preview_ms": {
+              "samples": 594,
+              "mean_ms": 0.6495979393939394,
+              "p50_ms": 0.6311665,
+              "p95_ms": 0.7558693,
+              "p99_ms": 0.8883356300000002,
+              "max_ms": 1.679292,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 594,
+              "mean_ms": 35.808399060606064,
+              "p50_ms": 35.597125,
+              "p95_ms": 37.31640615,
+              "p99_ms": 45.01451182000001,
+              "max_ms": 45.851333000000004,
+              "over_budget": 594
+            },
+            "result_verification_ms": {
+              "samples": 594,
+              "mean_ms": 0.07723189562289562,
+              "p50_ms": 0.076333,
+              "p95_ms": 0.08666875,
+              "p99_ms": 0.10697125000000007,
+              "max_ms": 0.122458,
+              "over_budget": 0
+            }
+          }
+        },
+        "40-50s": {
+          "frames": 593,
+          "detections": {
+            "face": 589,
+            "pose": 593,
+            "left_hand": 410,
+            "right_hand": 425
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 593,
+              "mean_ms": 0.6689891635750421,
+              "p50_ms": 0.719709,
+              "p95_ms": 0.8986585999999998,
+              "p99_ms": 1.0266413600000006,
+              "max_ms": 1.129792,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 593,
+              "mean_ms": 0.6778017639123103,
+              "p50_ms": 0.723625,
+              "p95_ms": 0.8456086,
+              "p99_ms": 0.9318827200000009,
+              "max_ms": 1.053625,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 593,
+              "mean_ms": 11.352096532883643,
+              "p50_ms": 11.335791,
+              "p95_ms": 11.603316399999999,
+              "p99_ms": 11.791034720000003,
+              "max_ms": 12.67475,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 593,
+              "mean_ms": 15.674754865092748,
+              "p50_ms": 16.465583,
+              "p95_ms": 26.0619082,
+              "p99_ms": 26.430007720000003,
+              "max_ms": 28.534792,
+              "over_budget": 77
+            },
+            "face_ms": {
+              "samples": 593,
+              "mean_ms": 5.140811333895447,
+              "p50_ms": 5.106166,
+              "p95_ms": 5.3480416,
+              "p99_ms": 5.53875836,
+              "max_ms": 8.110625,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 593,
+              "mean_ms": 32.170788907251264,
+              "p50_ms": 32.933875,
+              "p95_ms": 42.420507799999996,
+              "p99_ms": 43.01093664000001,
+              "max_ms": 45.372209,
+              "over_budget": 593
+            },
+            "result_assembly_ms": {
+              "samples": 593,
+              "mean_ms": 0.45189434064080947,
+              "p50_ms": 0.435,
+              "p95_ms": 0.49539159999999993,
+              "p99_ms": 0.5898913600000001,
+              "max_ms": 3.400334,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 593,
+              "mean_ms": 33.300543261382806,
+              "p50_ms": 34.04475,
+              "p95_ms": 43.5098754,
+              "p99_ms": 44.15790028000001,
+              "max_ms": 46.612125,
+              "over_budget": 593
+            },
+            "preview_ms": {
+              "samples": 593,
+              "mean_ms": 0.625179586846543,
+              "p50_ms": 0.621041,
+              "p95_ms": 0.7417334,
+              "p99_ms": 0.8322127200000013,
+              "max_ms": 1.009209,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 593,
+              "mean_ms": 34.674519173693085,
+              "p50_ms": 35.436082999999996,
+              "p95_ms": 44.891400399999995,
+              "p99_ms": 45.7055538,
+              "max_ms": 48.374834,
+              "over_budget": 593
+            },
+            "result_verification_ms": {
+              "samples": 593,
+              "mean_ms": 0.07609927150084317,
+              "p50_ms": 0.075958,
+              "p95_ms": 0.08769179999999997,
+              "p99_ms": 0.1293544400000003,
+              "max_ms": 0.180667,
+              "over_budget": 0
+            }
+          }
+        },
+        "50-60s": {
+          "frames": 594,
+          "detections": {
+            "face": 594,
+            "pose": 594,
+            "left_hand": 409,
+            "right_hand": 466
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 594,
+              "mean_ms": 0.6700135606060605,
+              "p50_ms": 0.720667,
+              "p95_ms": 0.9028393500000002,
+              "p99_ms": 1.0063374400000005,
+              "max_ms": 1.120125,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 594,
+              "mean_ms": 0.6637704276094276,
+              "p50_ms": 0.717354,
+              "p95_ms": 0.82390865,
+              "p99_ms": 0.9068334400000007,
+              "max_ms": 0.993167,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 594,
+              "mean_ms": 11.376324676767675,
+              "p50_ms": 11.346063000000001,
+              "p95_ms": 11.61642905,
+              "p99_ms": 11.902709820000009,
+              "max_ms": 19.758291,
+              "over_budget": 1
+            },
+            "hands_ms": {
+              "samples": 594,
+              "mean_ms": 16.486914914141416,
+              "p50_ms": 16.502542,
+              "p95_ms": 25.88990845,
+              "p99_ms": 26.21403662,
+              "max_ms": 30.742209,
+              "over_budget": 165
+            },
+            "face_ms": {
+              "samples": 594,
+              "mean_ms": 5.144901242424242,
+              "p50_ms": 5.0930415,
+              "p95_ms": 5.35510835,
+              "p99_ms": 5.6121291200000005,
+              "max_ms": 8.583084,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 594,
+              "mean_ms": 33.01119078787879,
+              "p50_ms": 33.004875,
+              "p95_ms": 42.28682455,
+              "p99_ms": 42.717314560000005,
+              "max_ms": 55.96225,
+              "over_budget": 594
+            },
+            "result_assembly_ms": {
+              "samples": 594,
+              "mean_ms": 0.45070623400673404,
+              "p50_ms": 0.4371045,
+              "p95_ms": 0.48524145,
+              "p99_ms": 0.5750412500000002,
+              "max_ms": 3.446458,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 594,
+              "mean_ms": 34.12572013131313,
+              "p50_ms": 34.1535625,
+              "p95_ms": 43.13051875,
+              "p99_ms": 43.907104249999996,
+              "max_ms": 57.140333,
+              "over_budget": 594
+            },
+            "preview_ms": {
+              "samples": 594,
+              "mean_ms": 0.6266917087542087,
+              "p50_ms": 0.61825,
+              "p95_ms": 0.7411647,
+              "p99_ms": 0.83503563,
+              "max_ms": 1.015875,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 594,
+              "mean_ms": 35.505025341750844,
+              "p50_ms": 35.602438,
+              "p95_ms": 44.4117557,
+              "p99_ms": 45.27542012000001,
+              "max_ms": 58.6245,
+              "over_budget": 594
+            },
+            "result_verification_ms": {
+              "samples": 594,
+              "mean_ms": 0.07616609764309763,
+              "p50_ms": 0.075958,
+              "p95_ms": 0.0849478,
+              "p99_ms": 0.10551206000000009,
+              "max_ms": 0.172,
+              "over_budget": 0
+            }
+          }
+        },
+        "60-70s": {
+          "frames": 595,
+          "detections": {
+            "face": 138,
+            "pose": 240,
+            "left_hand": 162,
+            "right_hand": 159
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 595,
+              "mean_ms": 0.662857156302521,
+              "p50_ms": 0.713625,
+              "p95_ms": 0.8572669999999999,
+              "p99_ms": 0.9705919599999998,
+              "max_ms": 1.0835,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 595,
+              "mean_ms": 0.6672140890756303,
+              "p50_ms": 0.713833,
+              "p95_ms": 0.8350589999999999,
+              "p99_ms": 0.9315799999999997,
+              "max_ms": 1.042709,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 595,
+              "mean_ms": 8.674809216806722,
+              "p50_ms": 6.853416,
+              "p95_ms": 11.717441399999998,
+              "p99_ms": 17.47166495999997,
+              "max_ms": 19.270542,
+              "over_budget": 7
+            },
+            "hands_ms": {
+              "samples": 595,
+              "mean_ms": 12.293646512605042,
+              "p50_ms": 10.412583,
+              "p95_ms": 18.101108899999996,
+              "p99_ms": 19.07062603999999,
+              "max_ms": 27.930042,
+              "over_budget": 47
+            },
+            "face_ms": {
+              "samples": 595,
+              "mean_ms": 2.1751826100840335,
+              "p50_ms": 1.263958,
+              "p95_ms": 5.2316126,
+              "p99_ms": 5.38247248,
+              "max_ms": 8.00225,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 595,
+              "mean_ms": 23.14640849747899,
+              "p50_ms": 18.680833,
+              "p95_ms": 33.182112499999995,
+              "p99_ms": 34.457299979999995,
+              "max_ms": 35.893583,
+              "over_budget": 595
+            },
+            "result_assembly_ms": {
+              "samples": 595,
+              "mean_ms": 0.12436456806722689,
+              "p50_ms": 0.011458,
+              "p95_ms": 0.4439248,
+              "p99_ms": 0.5002644799999978,
+              "max_ms": 0.6505,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 595,
+              "mean_ms": 23.938041878991598,
+              "p50_ms": 19.3915,
+              "p95_ms": 34.3630455,
+              "p99_ms": 35.19918601999997,
+              "max_ms": 36.977084,
+              "over_budget": 595
+            },
+            "preview_ms": {
+              "samples": 595,
+              "mean_ms": 0.44923225882352935,
+              "p50_ms": 0.405041,
+              "p95_ms": 0.698317,
+              "p99_ms": 0.7702505199999985,
+              "max_ms": 0.906041,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 595,
+              "mean_ms": 25.1144276302521,
+              "p50_ms": 20.547084,
+              "p95_ms": 35.811151,
+              "p99_ms": 36.688513039999975,
+              "max_ms": 38.355542,
+              "over_budget": 595
+            },
+            "result_verification_ms": {
+              "samples": 595,
+              "mean_ms": 0.024174433613445376,
+              "p50_ms": 0.006,
+              "p95_ms": 0.0781793,
+              "p99_ms": 0.08268947999999987,
+              "max_ms": 0.175,
+              "over_budget": 0
+            }
+          }
+        },
+        "70-80s": {
+          "frames": 595,
+          "detections": {
+            "face": 2,
+            "pose": 505,
+            "left_hand": 432,
+            "right_hand": 382
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 595,
+              "mean_ms": 0.6748555159663866,
+              "p50_ms": 0.726875,
+              "p95_ms": 0.8936498999999998,
+              "p99_ms": 1.012667539999999,
+              "max_ms": 1.146208,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 595,
+              "mean_ms": 0.6730945798319328,
+              "p50_ms": 0.721084,
+              "p95_ms": 0.8393295000000001,
+              "p99_ms": 0.9362524599999996,
+              "max_ms": 1.05,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 595,
+              "mean_ms": 10.915268774789915,
+              "p50_ms": 11.316375,
+              "p95_ms": 11.969020599999999,
+              "p99_ms": 17.65166753999998,
+              "max_ms": 18.751584,
+              "over_budget": 14
+            },
+            "hands_ms": {
+              "samples": 595,
+              "mean_ms": 16.9952678,
+              "p50_ms": 16.515667,
+              "p95_ms": 26.135129199999998,
+              "p99_ms": 26.544786999999992,
+              "max_ms": 27.66375,
+              "over_budget": 213
+            },
+            "face_ms": {
+              "samples": 595,
+              "mean_ms": 1.538694887394958,
+              "p50_ms": 1.223417,
+              "p95_ms": 4.8562875,
+              "p99_ms": 5.083842499999999,
+              "max_ms": 6.539917,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 595,
+              "mean_ms": 29.452171993277314,
+              "p50_ms": 29.091042,
+              "p95_ms": 38.7766625,
+              "p99_ms": 40.3681875,
+              "max_ms": 43.72325,
+              "over_budget": 595
+            },
+            "result_assembly_ms": {
+              "samples": 595,
+              "mean_ms": 0.1034962974789916,
+              "p50_ms": 0.124458,
+              "p95_ms": 0.136625,
+              "p99_ms": 0.17333249999999992,
+              "max_ms": 0.457125,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 595,
+              "mean_ms": 30.228817297478987,
+              "p50_ms": 29.933292,
+              "p95_ms": 39.5926714,
+              "p99_ms": 41.07623895999999,
+              "max_ms": 44.585167,
+              "over_budget": 595
+            },
+            "preview_ms": {
+              "samples": 595,
+              "mean_ms": 0.499151818487395,
+              "p50_ms": 0.503,
+              "p95_ms": 0.6189043,
+              "p99_ms": 0.678911419999999,
+              "max_ms": 0.77775,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 595,
+              "mean_ms": 31.466393880672268,
+              "p50_ms": 31.24875,
+              "p95_ms": 40.824467,
+              "p99_ms": 42.344885559999994,
+              "max_ms": 45.761208,
+              "over_budget": 595
+            },
+            "result_verification_ms": {
+              "samples": 595,
+              "mean_ms": 0.018750694117647057,
+              "p50_ms": 0.0215,
+              "p95_ms": 0.023667,
+              "p99_ms": 0.028020519999999945,
+              "max_ms": 0.076583,
+              "over_budget": 0
+            }
+          }
+        },
+        "80-90s": {
+          "frames": 593,
+          "detections": {
+            "face": 324,
+            "pose": 593,
+            "left_hand": 428,
+            "right_hand": 537
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 593,
+              "mean_ms": 0.7013397554806072,
+              "p50_ms": 0.738333,
+              "p95_ms": 0.9168245999999999,
+              "p99_ms": 1.13365728,
+              "max_ms": 8.256083,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 593,
+              "mean_ms": 0.6765353642495784,
+              "p50_ms": 0.720667,
+              "p95_ms": 0.8465249999999999,
+              "p99_ms": 0.99701664,
+              "max_ms": 2.586625,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 593,
+              "mean_ms": 11.541064430016863,
+              "p50_ms": 11.391542,
+              "p95_ms": 12.1104336,
+              "p99_ms": 12.46584444,
+              "max_ms": 36.492875,
+              "over_budget": 2
+            },
+            "hands_ms": {
+              "samples": 593,
+              "mean_ms": 17.68207749747049,
+              "p50_ms": 16.690792,
+              "p95_ms": 26.2071334,
+              "p99_ms": 27.934389440000004,
+              "max_ms": 28.598208,
+              "over_budget": 303
+            },
+            "face_ms": {
+              "samples": 593,
+              "mean_ms": 3.515685713322091,
+              "p50_ms": 5.005792,
+              "p95_ms": 5.4050668,
+              "p99_ms": 5.732083360000015,
+              "max_ms": 8.138291,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 593,
+              "mean_ms": 32.741937284991565,
+              "p50_ms": 32.923125,
+              "p95_ms": 40.0040166,
+              "p99_ms": 45.17475836000001,
+              "max_ms": 61.297041,
+              "over_budget": 593
+            },
+            "result_assembly_ms": {
+              "samples": 593,
+              "mean_ms": 0.30348458010118046,
+              "p50_ms": 0.431625,
+              "p95_ms": 0.4831,
+              "p99_ms": 0.5680517200000003,
+              "max_ms": 1.570416,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 593,
+              "mean_ms": 33.72201488195615,
+              "p50_ms": 34.029042,
+              "p95_ms": 40.83111699999999,
+              "p99_ms": 46.39429636000001,
+              "max_ms": 64.350667,
+              "over_budget": 593
+            },
+            "preview_ms": {
+              "samples": 593,
+              "mean_ms": 0.5889899730185498,
+              "p50_ms": 0.592209,
+              "p95_ms": 0.7248996,
+              "p99_ms": 0.82739164,
+              "max_ms": 1.154292,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 593,
+              "mean_ms": 35.084476409780784,
+              "p50_ms": 35.390541999999996,
+              "p95_ms": 42.148733199999995,
+              "p99_ms": 47.88854964000003,
+              "max_ms": 73.4525,
+              "over_budget": 593
+            },
+            "result_verification_ms": {
+              "samples": 593,
+              "mean_ms": 0.05635340134907252,
+              "p50_ms": 0.072792,
+              "p95_ms": 0.0823836,
+              "p99_ms": 0.09788300000000003,
+              "max_ms": 2.702083,
+              "over_budget": 0
+            }
+          }
+        },
+        "90-100s": {
+          "frames": 593,
+          "detections": {
+            "face": 415,
+            "pose": 593,
+            "left_hand": 421,
+            "right_hand": 478
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 593,
+              "mean_ms": 0.6847641973018549,
+              "p50_ms": 0.729792,
+              "p95_ms": 0.8841583999999999,
+              "p99_ms": 1.0760952800000012,
+              "max_ms": 1.213833,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 593,
+              "mean_ms": 0.6782311669477236,
+              "p50_ms": 0.723,
+              "p95_ms": 0.8210752,
+              "p99_ms": 0.9001952800000007,
+              "max_ms": 1.078792,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 593,
+              "mean_ms": 11.532320693086003,
+              "p50_ms": 11.420875,
+              "p95_ms": 12.1112582,
+              "p99_ms": 12.588088360000006,
+              "max_ms": 20.807,
+              "over_budget": 1
+            },
+            "hands_ms": {
+              "samples": 593,
+              "mean_ms": 18.011218033726813,
+              "p50_ms": 17.143208,
+              "p95_ms": 26.344133399999997,
+              "p99_ms": 27.850207,
+              "max_ms": 28.613042,
+              "over_budget": 361
+            },
+            "face_ms": {
+              "samples": 593,
+              "mean_ms": 4.255171531197302,
+              "p50_ms": 5.077458,
+              "p95_ms": 5.4994586,
+              "p99_ms": 6.078965000000005,
+              "max_ms": 10.023292,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 593,
+              "mean_ms": 33.80188041652614,
+              "p50_ms": 33.37375,
+              "p95_ms": 42.5983584,
+              "p99_ms": 45.08693664,
+              "max_ms": 45.479167,
+              "over_budget": 593
+            },
+            "result_assembly_ms": {
+              "samples": 593,
+              "mean_ms": 0.38028000337268125,
+              "p50_ms": 0.437416,
+              "p95_ms": 0.5087418,
+              "p99_ms": 0.6573880000000052,
+              "max_ms": 4.248542,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 593,
+              "mean_ms": 34.860446237774035,
+              "p50_ms": 34.512708,
+              "p95_ms": 43.5681502,
+              "p99_ms": 45.844592280000015,
+              "max_ms": 46.603708,
+              "over_budget": 593
+            },
+            "preview_ms": {
+              "samples": 593,
+              "mean_ms": 0.6030633136593592,
+              "p50_ms": 0.601958,
+              "p95_ms": 0.7353666,
+              "p99_ms": 0.8480319200000003,
+              "max_ms": 1.0425,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 593,
+              "mean_ms": 36.22911314671164,
+              "p50_ms": 35.984375,
+              "p95_ms": 44.864008399999996,
+              "p99_ms": 47.141288640000006,
+              "max_ms": 48.231584,
+              "over_budget": 593
+            },
+            "result_verification_ms": {
+              "samples": 593,
+              "mean_ms": 0.06052761045531198,
+              "p50_ms": 0.074,
+              "p95_ms": 0.0836172,
+              "p99_ms": 0.09929444000000014,
+              "max_ms": 0.165583,
+              "over_budget": 0
+            }
+          }
+        },
+        "100-110s": {
+          "frames": 503,
+          "detections": {
+            "face": 188,
+            "pose": 438,
+            "left_hand": 273,
+            "right_hand": 256
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 503,
+              "mean_ms": 0.6778821093439363,
+              "p50_ms": 0.734542,
+              "p95_ms": 0.8910793999999999,
+              "p99_ms": 1.029163,
+              "max_ms": 1.419209,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 503,
+              "mean_ms": 0.6723184532803181,
+              "p50_ms": 0.721916,
+              "p95_ms": 0.8405497,
+              "p99_ms": 0.9589136600000001,
+              "max_ms": 1.069084,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 503,
+              "mean_ms": 11.350134836978132,
+              "p50_ms": 11.426459,
+              "p95_ms": 12.516166299999998,
+              "p99_ms": 18.398597180000003,
+              "max_ms": 18.759916,
+              "over_budget": 18
+            },
+            "hands_ms": {
+              "samples": 503,
+              "mean_ms": 15.547811958250497,
+              "p50_ms": 16.505583,
+              "p95_ms": 25.389699999999884,
+              "p99_ms": 27.87395616000002,
+              "max_ms": 29.171292,
+              "over_budget": 194
+            },
+            "face_ms": {
+              "samples": 503,
+              "mean_ms": 3.103921912524851,
+              "p50_ms": 1.414791,
+              "p95_ms": 5.3931586000000005,
+              "p99_ms": 5.55541716,
+              "max_ms": 8.717084,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 503,
+              "mean_ms": 30.004859876739562,
+              "p50_ms": 30.522125,
+              "p95_ms": 38.403053799999995,
+              "p99_ms": 45.14449966000003,
+              "max_ms": 46.071667,
+              "over_budget": 503
+            },
+            "result_assembly_ms": {
+              "samples": 503,
+              "mean_ms": 0.2251525745526839,
+              "p50_ms": 0.12775,
+              "p95_ms": 0.48374169999999994,
+              "p99_ms": 0.5196256600000001,
+              "max_ms": 0.625583,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 503,
+              "mean_ms": 30.902386204771368,
+              "p50_ms": 31.296625,
+              "p95_ms": 39.3729544,
+              "p99_ms": 46.347244680000024,
+              "max_ms": 47.264583,
+              "over_budget": 503
+            },
+            "preview_ms": {
+              "samples": 503,
+              "mean_ms": 0.5334395268389661,
+              "p50_ms": 0.529792,
+              "p95_ms": 0.6969416999999999,
+              "p99_ms": 0.7644341800000002,
+              "max_ms": 0.883791,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 503,
+              "mean_ms": 32.18419795626242,
+              "p50_ms": 32.599542,
+              "p95_ms": 40.79269939999999,
+              "p99_ms": 47.641822680000026,
+              "max_ms": 48.710375,
+              "over_budget": 503
+            },
+            "result_verification_ms": {
+              "samples": 503,
+              "mean_ms": 0.03883672365805169,
+              "p50_ms": 0.022375,
+              "p95_ms": 0.0792702,
+              "p99_ms": 0.08795552,
+              "max_ms": 0.108,
+              "over_budget": 0
+            }
+          }
+        }
+      },
+      "resolved_detection_workloads": {
+        "resolved_hands=0,face=0": {
+          "frames": 959,
+          "detections": {
+            "face": 0,
+            "pose": 235,
+            "left_hand": 0,
+            "right_hand": 0
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 959,
+              "mean_ms": 0.7034100198123044,
+              "p50_ms": 0.71275,
+              "p95_ms": 0.8964461,
+              "p99_ms": 1.0417769999999995,
+              "max_ms": 33.26075,
+              "over_budget": 1
+            },
+            "input_conversion_ms": {
+              "samples": 959,
+              "mean_ms": 0.6752523576642335,
+              "p50_ms": 0.714041,
+              "p95_ms": 0.8402542000000001,
+              "p99_ms": 1.0083022199999996,
+              "max_ms": 2.523709,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 959,
+              "mean_ms": 8.333698336809176,
+              "p50_ms": 6.673917,
+              "p95_ms": 13.599633599999631,
+              "p99_ms": 18.533567219999995,
+              "max_ms": 20.807,
+              "over_budget": 48
+            },
+            "hands_ms": {
+              "samples": 959,
+              "mean_ms": 10.923920495307613,
+              "p50_ms": 9.972875,
+              "p95_ms": 18.439557999999998,
+              "p99_ms": 20.36538777999998,
+              "max_ms": 27.930042,
+              "over_budget": 88
+            },
+            "face_ms": {
+              "samples": 959,
+              "mean_ms": 1.2841193712200207,
+              "p50_ms": 1.228791,
+              "p95_ms": 1.4060464,
+              "p99_ms": 1.6116501399999994,
+              "max_ms": 5.387333,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 959,
+              "mean_ms": 20.544460952033372,
+              "p50_ms": 18.36925,
+              "p95_ms": 30.233941599999994,
+              "p99_ms": 34.27861749999999,
+              "max_ms": 43.126542,
+              "over_budget": 959
+            },
+            "result_assembly_ms": {
+              "samples": 959,
+              "mean_ms": 0.02633798957247132,
+              "p50_ms": 0.010875,
+              "p95_ms": 0.076167,
+              "p99_ms": 0.08094277999999998,
+              "max_ms": 0.125791,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 959,
+              "mean_ms": 21.246104507820643,
+              "p50_ms": 19.002792,
+              "p95_ms": 30.9272545,
+              "p99_ms": 34.95926749999999,
+              "max_ms": 44.045833,
+              "over_budget": 959
+            },
+            "preview_ms": {
+              "samples": 959,
+              "mean_ms": 0.39318872784150155,
+              "p50_ms": 0.389542,
+              "p95_ms": 0.5092584,
+              "p99_ms": 0.5598774999999998,
+              "max_ms": 1.161166,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 959,
+              "mean_ms": 22.40642911261731,
+              "p50_ms": 20.088916,
+              "p95_ms": 32.208741399999994,
+              "p99_ms": 36.88101555999993,
+              "max_ms": 56.930791,
+              "over_budget": 959
+            },
+            "result_verification_ms": {
+              "samples": 959,
+              "mean_ms": 0.0075781960375391035,
+              "p50_ms": 0.005625,
+              "p95_ms": 0.0149161,
+              "p99_ms": 0.01658121999999999,
+              "max_ms": 0.032459,
+              "over_budget": 0
+            }
+          }
+        },
+        "resolved_hands=1,face=0": {
+          "frames": 429,
+          "detections": {
+            "face": 0,
+            "pose": 406,
+            "left_hand": 249,
+            "right_hand": 180
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 429,
+              "mean_ms": 0.6833935431235432,
+              "p50_ms": 0.7275,
+              "p95_ms": 0.9143667999999995,
+              "p99_ms": 1.0337299999999998,
+              "max_ms": 1.201959,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 429,
+              "mean_ms": 0.6863863799533799,
+              "p50_ms": 0.725375,
+              "p95_ms": 0.8358669999999999,
+              "p99_ms": 0.93272548,
+              "max_ms": 1.035375,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 429,
+              "mean_ms": 11.397599433566434,
+              "p50_ms": 11.379042,
+              "p95_ms": 12.0992002,
+              "p99_ms": 17.57237152,
+              "max_ms": 18.093167,
+              "over_budget": 8
+            },
+            "hands_ms": {
+              "samples": 429,
+              "mean_ms": 19.69742695104895,
+              "p50_ms": 18.258875,
+              "p95_ms": 26.4885502,
+              "p99_ms": 27.73500976,
+              "max_ms": 28.613042,
+              "over_budget": 365
+            },
+            "face_ms": {
+              "samples": 429,
+              "mean_ms": 1.7739250932400936,
+              "p50_ms": 1.239042,
+              "p95_ms": 4.963916599999999,
+              "p99_ms": 5.274459759999999,
+              "max_ms": 5.63475,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 429,
+              "mean_ms": 32.8719802960373,
+              "p50_ms": 31.097375,
+              "p95_ms": 40.31605,
+              "p99_ms": 42.70166647999999,
+              "max_ms": 45.35025,
+              "over_budget": 429
+            },
+            "result_assembly_ms": {
+              "samples": 429,
+              "mean_ms": 0.10007021678321679,
+              "p50_ms": 0.100542,
+              "p95_ms": 0.11422479999999995,
+              "p99_ms": 0.16017023999999994,
+              "max_ms": 0.182417,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 429,
+              "mean_ms": 33.65849358741259,
+              "p50_ms": 31.920708,
+              "p95_ms": 41.0464504,
+              "p99_ms": 43.588827759999994,
+              "max_ms": 46.1135,
+              "over_budget": 429
+            },
+            "preview_ms": {
+              "samples": 429,
+              "mean_ms": 0.5065560745920746,
+              "p50_ms": 0.485333,
+              "p95_ms": 0.5946083999999999,
+              "p99_ms": 0.6957445200000001,
+              "max_ms": 0.862625,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 429,
+              "mean_ms": 34.91601152913753,
+              "p50_ms": 33.302959,
+              "p95_ms": 42.317833,
+              "p99_ms": 44.85223623999999,
+              "max_ms": 47.276375,
+              "over_budget": 429
+            },
+            "result_verification_ms": {
+              "samples": 429,
+              "mean_ms": 0.018407899766899764,
+              "p50_ms": 0.018375,
+              "p95_ms": 0.021033399999999997,
+              "p99_ms": 0.024746279999999957,
+              "max_ms": 0.058667,
+              "over_budget": 0
+            }
+          }
+        },
+        "resolved_hands=2,face=0": {
+          "frames": 743,
+          "detections": {
+            "face": 0,
+            "pose": 742,
+            "left_hand": 743,
+            "right_hand": 743
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 743,
+              "mean_ms": 0.6853041682368776,
+              "p50_ms": 0.732083,
+              "p95_ms": 0.9097457999999999,
+              "p99_ms": 1.0310552800000001,
+              "max_ms": 1.146208,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 743,
+              "mean_ms": 0.6738759461641992,
+              "p50_ms": 0.722875,
+              "p95_ms": 0.8380756,
+              "p99_ms": 0.9488277800000003,
+              "max_ms": 1.05,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 743,
+              "mean_ms": 11.441534612382235,
+              "p50_ms": 11.367833,
+              "p95_ms": 12.0277955,
+              "p99_ms": 12.548444220000002,
+              "max_ms": 17.505958,
+              "over_budget": 1
+            },
+            "hands_ms": {
+              "samples": 743,
+              "mean_ms": 17.050233014804846,
+              "p50_ms": 16.516,
+              "p95_ms": 18.3371539,
+              "p99_ms": 26.532742780000003,
+              "max_ms": 27.928916,
+              "over_budget": 198
+            },
+            "face_ms": {
+              "samples": 743,
+              "mean_ms": 1.6877639515477794,
+              "p50_ms": 1.231458,
+              "p95_ms": 5.018000599999999,
+              "p99_ms": 5.18735328,
+              "max_ms": 10.023292,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 743,
+              "mean_ms": 30.182530877523554,
+              "p50_ms": 29.186709,
+              "p95_ms": 34.687570799999996,
+              "p99_ms": 40.235487360000015,
+              "max_ms": 43.920292,
+              "over_budget": 743
+            },
+            "result_assembly_ms": {
+              "samples": 743,
+              "mean_ms": 0.12968433109017496,
+              "p50_ms": 0.1275,
+              "p95_ms": 0.14202469999999998,
+              "p99_ms": 0.17479436,
+              "max_ms": 0.204167,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 743,
+              "mean_ms": 30.986145524899054,
+              "p50_ms": 30.025208,
+              "p95_ms": 35.6461372,
+              "p99_ms": 41.05464764000002,
+              "max_ms": 44.7415,
+              "over_budget": 743
+            },
+            "preview_ms": {
+              "samples": 743,
+              "mean_ms": 0.5419285733512785,
+              "p50_ms": 0.521417,
+              "p95_ms": 0.6316086999999999,
+              "p99_ms": 0.70109486,
+              "max_ms": 0.77775,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 743,
+              "mean_ms": 32.27753157873486,
+              "p50_ms": 31.348375,
+              "p95_ms": 37.12691669999999,
+              "p99_ms": 42.27621678000002,
+              "max_ms": 46.117709,
+              "over_budget": 743
+            },
+            "result_verification_ms": {
+              "samples": 743,
+              "mean_ms": 0.02272987079407806,
+              "p50_ms": 0.022417,
+              "p95_ms": 0.0257458,
+              "p99_ms": 0.03130186000000005,
+              "max_ms": 0.046333,
+              "over_budget": 0
+            }
+          }
+        },
+        "resolved_hands=0,face=1": {
+          "frames": 370,
+          "detections": {
+            "face": 370,
+            "pose": 370,
+            "left_hand": 0,
+            "right_hand": 0
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 370,
+              "mean_ms": 0.6734319918918918,
+              "p50_ms": 0.724396,
+              "p95_ms": 0.89345855,
+              "p99_ms": 1.0063860400000002,
+              "max_ms": 1.129792,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 370,
+              "mean_ms": 0.6601615783783784,
+              "p50_ms": 0.709771,
+              "p95_ms": 0.8322788,
+              "p99_ms": 0.9040217500000001,
+              "max_ms": 1.069084,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 370,
+              "mean_ms": 11.39351114054054,
+              "p50_ms": 11.3503745,
+              "p95_ms": 11.85067935,
+              "p99_ms": 12.38193152,
+              "max_ms": 12.67475,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 370,
+              "mean_ms": 11.420178264864866,
+              "p50_ms": 9.866687500000001,
+              "p95_ms": 18.2382728,
+              "p99_ms": 26.03411427,
+              "max_ms": 26.195167,
+              "over_budget": 61
+            },
+            "face_ms": {
+              "samples": 370,
+              "mean_ms": 5.1292712486486485,
+              "p50_ms": 5.0840625,
+              "p95_ms": 5.4304372,
+              "p99_ms": 5.678123230000001,
+              "max_ms": 6.454209,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 370,
+              "mean_ms": 27.94597443243243,
+              "p50_ms": 26.310479,
+              "p95_ms": 34.7495606,
+              "p99_ms": 42.420617209999996,
+              "max_ms": 42.703542,
+              "over_budget": 370
+            },
+            "result_assembly_ms": {
+              "samples": 370,
+              "mean_ms": 0.4644270378378379,
+              "p50_ms": 0.43281250000000004,
+              "p95_ms": 0.48788345000000016,
+              "p99_ms": 0.6932645000000004,
+              "max_ms": 3.446458,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 370,
+              "mean_ms": 29.070618932432428,
+              "p50_ms": 27.445771,
+              "p95_ms": 35.903883699999994,
+              "p99_ms": 43.654201019999995,
+              "max_ms": 43.913666,
+              "over_budget": 370
+            },
+            "preview_ms": {
+              "samples": 370,
+              "mean_ms": 0.5559712513513514,
+              "p50_ms": 0.5295209999999999,
+              "p95_ms": 0.6622625000000001,
+              "p99_ms": 0.7448102300000001,
+              "max_ms": 0.8,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 370,
+              "mean_ms": 30.379550364864862,
+              "p50_ms": 28.8076875,
+              "p95_ms": 37.49163315,
+              "p99_ms": 45.03725104000001,
+              "max_ms": 45.366375,
+              "over_budget": 370
+            },
+            "result_verification_ms": {
+              "samples": 370,
+              "mean_ms": 0.07105025135135136,
+              "p50_ms": 0.06910450000000001,
+              "p95_ms": 0.08264590000000001,
+              "p99_ms": 0.10086198000000006,
+              "max_ms": 0.137209,
+              "over_budget": 0
+            }
+          }
+        },
+        "resolved_hands=2,face=1": {
+          "frames": 3338,
+          "detections": {
+            "face": 3338,
+            "pose": 3338,
+            "left_hand": 3338,
+            "right_hand": 3338
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 3338,
+              "mean_ms": 0.6702336297183943,
+              "p50_ms": 0.7223539999999999,
+              "p95_ms": 0.8796579999999998,
+              "p99_ms": 1.02165404,
+              "max_ms": 8.256083,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 3338,
+              "mean_ms": 0.6734353660874776,
+              "p50_ms": 0.7239165000000001,
+              "p95_ms": 0.8434481999999999,
+              "p99_ms": 0.95206809,
+              "max_ms": 2.586625,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 3338,
+              "mean_ms": 11.389812252846015,
+              "p50_ms": 11.3511255,
+              "p95_ms": 11.668833,
+              "p99_ms": 12.130139830000001,
+              "max_ms": 36.492875,
+              "over_budget": 3
+            },
+            "hands_ms": {
+              "samples": 3338,
+              "mean_ms": 16.721382886159375,
+              "p50_ms": 16.491979,
+              "p95_ms": 17.124095649999997,
+              "p99_ms": 26.13401783,
+              "max_ms": 30.742209,
+              "over_budget": 443
+            },
+            "face_ms": {
+              "samples": 3338,
+              "mean_ms": 5.182670239065308,
+              "p50_ms": 5.1279375,
+              "p95_ms": 5.412587449999999,
+              "p99_ms": 6.211022500000006,
+              "max_ms": 9.728708,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 3338,
+              "mean_ms": 33.29700538915519,
+              "p50_ms": 32.994958,
+              "p95_ms": 34.601025050000004,
+              "p99_ms": 42.696328040000004,
+              "max_ms": 61.297041,
+              "over_budget": 3338
+            },
+            "result_assembly_ms": {
+              "samples": 3338,
+              "mean_ms": 0.44554278310365486,
+              "p50_ms": 0.43625,
+              "p95_ms": 0.4880536,
+              "p99_ms": 0.5780375000000002,
+              "max_ms": 3.3555,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 3338,
+              "mean_ms": 34.41603881725584,
+              "p50_ms": 34.135853999999995,
+              "p95_ms": 35.76332135,
+              "p99_ms": 43.824711040000004,
+              "max_ms": 64.350667,
+              "over_budget": 3338
+            },
+            "preview_ms": {
+              "samples": 3338,
+              "mean_ms": 0.6548501150389454,
+              "p50_ms": 0.6334165,
+              "p95_ms": 0.7605330999999995,
+              "p99_ms": 0.8676530000000001,
+              "max_ms": 1.679292,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 3338,
+              "mean_ms": 35.82249276632714,
+              "p50_ms": 35.5614785,
+              "p95_ms": 37.21289819999999,
+              "p99_ms": 45.1439295,
+              "max_ms": 73.4525,
+              "over_budget": 3338
+            },
+            "result_verification_ms": {
+              "samples": 3338,
+              "mean_ms": 0.07902365278609946,
+              "p50_ms": 0.076791,
+              "p95_ms": 0.08688129999999998,
+              "p99_ms": 0.10802583,
+              "max_ms": 2.702083,
+              "over_budget": 0
+            }
+          }
+        },
+        "resolved_hands=1,face=1": {
+          "frames": 603,
+          "detections": {
+            "face": 603,
+            "pose": 603,
+            "left_hand": 197,
+            "right_hand": 406
+          },
+          "stages": {
+            "decode_read_ms": {
+              "samples": 603,
+              "mean_ms": 0.6790706036484245,
+              "p50_ms": 0.726791,
+              "p95_ms": 0.8810163999999999,
+              "p99_ms": 1.0425218400000003,
+              "max_ms": 1.291708,
+              "over_budget": 0
+            },
+            "input_conversion_ms": {
+              "samples": 603,
+              "mean_ms": 0.6633518341625207,
+              "p50_ms": 0.720333,
+              "p95_ms": 0.8338921999999999,
+              "p99_ms": 0.93625082,
+              "max_ms": 1.053625,
+              "over_budget": 0
+            },
+            "pose_ms": {
+              "samples": 603,
+              "mean_ms": 11.448671958540631,
+              "p50_ms": 11.373209,
+              "p95_ms": 12.026116,
+              "p99_ms": 12.297251020000001,
+              "max_ms": 15.558667,
+              "over_budget": 0
+            },
+            "hands_ms": {
+              "samples": 603,
+              "mean_ms": 19.320975804311775,
+              "p50_ms": 18.186708,
+              "p95_ms": 26.471446099999998,
+              "p99_ms": 28.02137832,
+              "max_ms": 29.171292,
+              "over_budget": 492
+            },
+            "face_ms": {
+              "samples": 603,
+              "mean_ms": 5.145076089552239,
+              "p50_ms": 5.1045,
+              "p95_ms": 5.4323333,
+              "p99_ms": 5.799818340000001,
+              "max_ms": 8.358,
+              "over_budget": 0
+            },
+            "inference_wall_ms": {
+              "samples": 603,
+              "mean_ms": 35.91788572968491,
+              "p50_ms": 34.672417,
+              "p95_ms": 43.050142,
+              "p99_ms": 45.44942418,
+              "max_ms": 48.980917,
+              "over_budget": 603
+            },
+            "result_assembly_ms": {
+              "samples": 603,
+              "mean_ms": 0.48914191210613595,
+              "p50_ms": 0.464542,
+              "p95_ms": 0.5122410000000001,
+              "p99_ms": 0.6447785200000002,
+              "max_ms": 4.248542,
+              "over_budget": 0
+            },
+            "total_ms": {
+              "samples": 603,
+              "mean_ms": 37.0704375920398,
+              "p50_ms": 35.850333,
+              "p95_ms": 44.2148917,
+              "p99_ms": 46.7278875,
+              "max_ms": 49.831167,
+              "over_budget": 603
+            },
+            "preview_ms": {
+              "samples": 603,
+              "mean_ms": 0.6125076898839137,
+              "p50_ms": 0.586583,
+              "p95_ms": 0.7250589999999999,
+              "p99_ms": 0.8474736600000001,
+              "max_ms": 1.154292,
+              "over_budget": 0
+            },
+            "frame_service_ms": {
+              "samples": 603,
+              "mean_ms": 38.44358001160862,
+              "p50_ms": 37.246125,
+              "p95_ms": 45.678446199999996,
+              "p99_ms": 48.03399,
+              "max_ms": 51.882875,
+              "over_budget": 603
+            },
+            "result_verification_ms": {
+              "samples": 603,
+              "mean_ms": 0.07514757379767827,
+              "p50_ms": 0.073291,
+              "p95_ms": 0.0826125,
+              "p99_ms": 0.10806582000000017,
+              "max_ms": 0.180667,
+              "over_budget": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "error": null,
+  "privacy": {
+    "raw_frames_written": false,
+    "audio_processed": false,
+    "landmarks_written": false,
+    "source_paths_written": false
+  },
+  "scope": "all-frame unpaced file service; not live camera/display latency or accuracy",
+  "probe_ms": 21880.132375,
+  "models": [
+    {
+      "key": "pose",
+      "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+    },
+    {
+      "key": "hands",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    },
+    {
+      "key": "face",
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+    }
+  ],
+  "prediction_equivalence": {
+    "kind": "exact ordered numeric outputs and original PTS, not accuracy",
+    "checked": true,
+    "all_passes_equal": true
+  }
+}

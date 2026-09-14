@@ -1,0 +1,130 @@
+{
+  "schema_version": 2,
+  "session_id": "20260905T122046Z-9348b854",
+  "started_at": "2026-09-05T12:20:46.016254+00:00",
+  "finished_at": "2026-09-05T12:20:46.863037+00:00",
+  "duration_seconds": 0.846783,
+  "terminal_status": "failed",
+  "terminal_error": "CameraError: Capture failed: Unable to open explicitly selected camera index 0 with AVFoundation",
+  "application": {
+    "name": "motioncapture",
+    "version": "0.1.0"
+  },
+  "runtime": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "python": "3.12.10",
+    "opencv": "4.14.0",
+    "mediapipe": "0.10.31",
+    "inference_provider": "MediaPipe 0.10.31 CPU (Pose + Hands + Face); parallel tasks"
+  },
+  "models": [
+    {
+      "key": "pose",
+      "name": "pose_landmarker_full_float16_v1",
+      "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+    },
+    {
+      "key": "hands",
+      "name": "hand_landmarker_float16_v1",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    },
+    {
+      "key": "face",
+      "name": "face_landmarker_float16_v1",
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+    }
+  ],
+  "mode": {
+    "capture": "live_local_camera",
+    "delivery": "latest_only_single_slot",
+    "geometry": "monocular_2d_landmarks",
+    "preview_mirrored": true,
+    "calibrated_3d": false,
+    "retargeting": false,
+    "task_scheduling": "parallel"
+  },
+  "camera_request": {
+    "index": 0,
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0
+  },
+  "camera_observation": null,
+  "capture": {
+    "state": "failed",
+    "stream_id": "74166dfddee74e22aee9e936377c772d",
+    "captured": 0,
+    "delivered": 0,
+    "replaced": 0,
+    "discarded": 0,
+    "pending": 0,
+    "first_received_ns": null,
+    "last_received_ns": null,
+    "mean_capture_fps": null,
+    "cleanup_complete": true,
+    "terminal_error": "Unable to open explicitly selected camera index 0 with AVFoundation"
+  },
+  "first_processed_frame": null,
+  "last_processed_frame": null,
+  "frames": 0,
+  "latency": {
+    "provenance": "host_process_perf_counter",
+    "camera_sensor_to_display_measured": false,
+    "capture_queue_provenance": "host_receive_to_dequeue_monotonic",
+    "capture_queue": {
+      "mean_ms": null,
+      "maximum_ms": null
+    },
+    "post_receive_includes_queue": true,
+    "post_receive_provenance": "host_receive_to_preview_monotonic",
+    "stages": {
+      "input_conversion": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "pose": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "hands": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "face": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "inference_wall": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "result_assembly": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "tracker_total": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "preview_composition": {
+        "mean_ms": null,
+        "maximum_ms": null
+      },
+      "host_post_receive_total": {
+        "mean_ms": null,
+        "maximum_ms": null
+      }
+    }
+  },
+  "mean_processing_fps": null,
+  "detection_totals": {
+    "pose_frames": 0,
+    "face_frames": 0,
+    "left_hand_frames": 0,
+    "right_hand_frames": 0
+  },
+  "privacy": {
+    "raw_frames_recorded": false,
+    "landmarks_recorded": false
+  }
+}

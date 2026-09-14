@@ -1,0 +1,628 @@
+{
+  "mode": "overlap-lut",
+  "status": "completed",
+  "scope": "explicit_prefix",
+  "requested_frames": 900,
+  "error": null,
+  "capabilities": {
+    "schema": "COCO-WholeBody-133-2D",
+    "body_points": 17,
+    "foot_points": 6,
+    "face_points": 68,
+    "hand_points_each": 21,
+    "face_blendshapes": false,
+    "metric_3d": false,
+    "monocular_world_landmarks": false,
+    "bone_rotations": false,
+    "persistent_actor_identity": false
+  },
+  "live_60fps_verified": false,
+  "ground_truth_accuracy_verified": false,
+  "cleanup_errors": [],
+  "same_provider_in_all_arms": true,
+  "timing_scope": {
+    "loop": "all-frame unpaced service incl verification; no GUI",
+    "frame_work_ms": "sum of host-measured stage wall times; NOT latency",
+    "submit_to_pose_completion_ms": "host detector submit to pose end",
+    "source_to_photon_measured": false,
+    "initial_recipe_check_in_loop": true
+  },
+  "backend": {
+    "detector": {
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ],
+        "CPUExecutionProvider"
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": true,
+      "dynamic_dimension_bindings": {},
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 1
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        1,
+        3,
+        416,
+        416
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 284.334792,
+      "preflight_source": "synthetic zero tensor; not measured tracking",
+      "profiling_during_timed_pass": false
+    },
+    "pose": {
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ],
+        "CPUExecutionProvider"
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": true,
+      "dynamic_dimension_bindings": {
+        "batch": 1
+      },
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 7,
+          "CPUExecutionProvider": 6
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        1,
+        3,
+        256,
+        192
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 625.863959,
+      "preflight_source": "synthetic zero tensor; not measured tracking",
+      "profiling_during_timed_pass": false
+    }
+  },
+  "decode_threads_reported": 10.0,
+  "setup_ms": 938.910583,
+  "loop_s": 17.645133708,
+  "unpaced_loop_fps": 51.00556419087692,
+  "all_frames": {
+    "frames": 900,
+    "person_observations": 968,
+    "person_count_distribution": {
+      "1": 832,
+      "2": 68
+    },
+    "valid_point_observations": {
+      "body": 10190,
+      "feet": 1230,
+      "face": 41554,
+      "left_hand": 14377,
+      "right_hand": 14623
+    },
+    "counts_are_accuracy": false,
+    "stages": {
+      "detector_queue_ms": {
+        "samples": 900,
+        "mean_ms": 0.016573160000000003,
+        "p50_ms": 0.014917,
+        "p95_ms": 0.025461049999999995,
+        "p99_ms": 0.03150125,
+        "max_ms": 0.067375,
+        "over_budget": 0
+      },
+      "detector_pre_ms": {
+        "samples": 900,
+        "mean_ms": 0.5031271244444444,
+        "p50_ms": 0.491521,
+        "p95_ms": 0.8073746999999998,
+        "p99_ms": 0.93015041,
+        "max_ms": 0.98375,
+        "over_budget": 0
+      },
+      "detector_inference_ms": {
+        "samples": 900,
+        "mean_ms": 11.677894778888888,
+        "p50_ms": 11.7650415,
+        "p95_ms": 13.1941726,
+        "p99_ms": 13.971407,
+        "max_ms": 15.519459,
+        "over_budget": 0
+      },
+      "detector_post_ms": {
+        "samples": 900,
+        "mean_ms": 0.2054201388888889,
+        "p50_ms": 0.1796665,
+        "p95_ms": 0.39166634999999855,
+        "p99_ms": 0.70862834,
+        "max_ms": 0.763416,
+        "over_budget": 0
+      },
+      "detector_stage_ms": {
+        "samples": 900,
+        "mean_ms": 12.386442042222223,
+        "p50_ms": 12.458667,
+        "p95_ms": 13.91112325,
+        "p99_ms": 14.80418267,
+        "max_ms": 16.547084,
+        "over_budget": 0
+      },
+      "pose_pre_ms": {
+        "samples": 900,
+        "mean_ms": 0.7265029666666667,
+        "p50_ms": 0.6262085,
+        "p95_ms": 1.2922708499999997,
+        "p99_ms": 1.8271133299999998,
+        "max_ms": 2.861833,
+        "over_budget": 0
+      },
+      "pose_inference_ms": {
+        "samples": 900,
+        "mean_ms": 16.369156108888888,
+        "p50_ms": 15.741938000000001,
+        "p95_ms": 26.62529375,
+        "p99_ms": 30.13624266999999,
+        "max_ms": 33.144916,
+        "over_budget": 160
+      },
+      "pose_post_ms": {
+        "samples": 900,
+        "mean_ms": 0.1262028288888889,
+        "p50_ms": 0.09768750000000001,
+        "p95_ms": 0.23888809999999994,
+        "p99_ms": 0.59998,
+        "max_ms": 1.079792,
+        "over_budget": 0
+      },
+      "pose_stage_ms": {
+        "samples": 900,
+        "mean_ms": 17.22457521222222,
+        "p50_ms": 16.509708,
+        "p95_ms": 28.187026799999998,
+        "p99_ms": 32.93572499999999,
+        "max_ms": 35.24675,
+        "over_budget": 377
+      },
+      "pose_queue_ms": {
+        "samples": 900,
+        "mean_ms": 0.015903412222222222,
+        "p50_ms": 0.015459,
+        "p95_ms": 0.019421149999999998,
+        "p99_ms": 0.027335919999999996,
+        "max_ms": 0.030584,
+        "over_budget": 0
+      },
+      "detector_to_pose_wait_ms": {
+        "samples": 900,
+        "mean_ms": 6.239588242222221,
+        "p50_ms": 5.3683125,
+        "p95_ms": 17.6867604,
+        "p99_ms": 20.43486583,
+        "max_ms": 22.283042,
+        "over_budget": 61
+      },
+      "decode_read_ms": {
+        "samples": 900,
+        "mean_ms": 0.9252355177777779,
+        "p50_ms": 0.869542,
+        "p95_ms": 1.2520955,
+        "p99_ms": 1.4034791599999998,
+        "max_ms": 29.611959,
+        "over_budget": 1
+      },
+      "submit_to_pose_completion_ms": {
+        "samples": 900,
+        "mean_ms": 35.86717865666667,
+        "p50_ms": 34.400082999999995,
+        "p95_ms": 56.788658299999994,
+        "p99_ms": 66.094643,
+        "max_ms": 70.823,
+        "over_budget": 900
+      },
+      "frame_work_ms": {
+        "samples": 900,
+        "mean_ms": 30.536252772222223,
+        "p50_ms": 29.885687,
+        "p95_ms": 41.33577615,
+        "p99_ms": 48.88210076,
+        "max_ms": 54.072959,
+        "over_budget": 900
+      },
+      "result_residence_ms": {
+        "samples": 900,
+        "mean_ms": 0.029472324444444444,
+        "p50_ms": 0.022708,
+        "p95_ms": 0.030294049999999996,
+        "p99_ms": 0.28831791999999984,
+        "max_ms": 0.504208,
+        "over_budget": 0
+      },
+      "verification_ms": {
+        "samples": 900,
+        "mean_ms": 2.1932993722222225,
+        "p50_ms": 2.163917,
+        "p95_ms": 2.3906951999999997,
+        "p99_ms": 2.63520824,
+        "max_ms": 2.716875,
+        "over_budget": 0
+      }
+    },
+    "pose_by_person_count": {
+      "1": {
+        "frame_pose_ms": {
+          "samples": 832,
+          "mean_ms": 15.449579379807691,
+          "p50_ms": 15.640854000000001,
+          "p95_ms": 17.05453125,
+          "p99_ms": 17.793695729999992,
+          "max_ms": 20.592833,
+          "over_budget": 92
+        },
+        "per_person_ms": {
+          "samples": 832,
+          "mean_ms": 15.449579379807691,
+          "p50_ms": 15.640854000000001,
+          "p95_ms": 17.05453125,
+          "p99_ms": 17.793695729999992,
+          "max_ms": 20.592833,
+          "over_budget": 92
+        }
+      },
+      "2": {
+        "frame_pose_ms": {
+          "samples": 68,
+          "mean_ms": 27.620447852941176,
+          "p50_ms": 27.554125,
+          "p95_ms": 32.5384126,
+          "p99_ms": 32.85974792,
+          "max_ms": 33.144916,
+          "over_budget": 68
+        },
+        "per_person_ms": {
+          "samples": 136,
+          "mean_ms": 13.810223926470588,
+          "p50_ms": 13.7078125,
+          "p95_ms": 17.86525,
+          "p99_ms": 18.819912600000002,
+          "max_ms": 18.977083,
+          "over_budget": 14
+        }
+      }
+    }
+  },
+  "steady_after_initial_frames": {
+    "frames": 840,
+    "person_observations": 882,
+    "person_count_distribution": {
+      "1": 798,
+      "2": 42
+    },
+    "valid_point_observations": {
+      "body": 9923,
+      "feet": 1012,
+      "face": 41554,
+      "left_hand": 14095,
+      "right_hand": 14086
+    },
+    "counts_are_accuracy": false,
+    "stages": {
+      "detector_queue_ms": {
+        "samples": 840,
+        "mean_ms": 0.016509384523809522,
+        "p50_ms": 0.0149165,
+        "p95_ms": 0.025296149999999996,
+        "p99_ms": 0.03148401,
+        "max_ms": 0.067375,
+        "over_budget": 0
+      },
+      "detector_pre_ms": {
+        "samples": 840,
+        "mean_ms": 0.5016975190476191,
+        "p50_ms": 0.4912915,
+        "p95_ms": 0.7989044999999998,
+        "p99_ms": 0.92731388,
+        "max_ms": 0.976459,
+        "over_budget": 0
+      },
+      "detector_inference_ms": {
+        "samples": 840,
+        "mean_ms": 11.818673817857142,
+        "p50_ms": 11.784396000000001,
+        "p95_ms": 13.1941726,
+        "p99_ms": 14.105807000000004,
+        "max_ms": 15.519459,
+        "over_budget": 0
+      },
+      "detector_post_ms": {
+        "samples": 840,
+        "mean_ms": 0.2044175130952381,
+        "p50_ms": 0.1799375,
+        "p95_ms": 0.2629166999999997,
+        "p99_ms": 0.7012711300000001,
+        "max_ms": 0.763416,
+        "over_budget": 0
+      },
+      "detector_stage_ms": {
+        "samples": 840,
+        "mean_ms": 12.52478885,
+        "p50_ms": 12.486167,
+        "p95_ms": 13.8993705,
+        "p99_ms": 14.78393675,
+        "max_ms": 16.547084,
+        "over_budget": 0
+      },
+      "pose_pre_ms": {
+        "samples": 840,
+        "mean_ms": 0.7070348238095238,
+        "p50_ms": 0.6242705,
+        "p95_ms": 1.2133389499999998,
+        "p99_ms": 1.7701049900000003,
+        "max_ms": 2.861833,
+        "over_budget": 0
+      },
+      "pose_inference_ms": {
+        "samples": 840,
+        "mean_ms": 16.22915044761905,
+        "p50_ms": 15.741938000000001,
+        "p95_ms": 20.78078509999983,
+        "p99_ms": 29.981418610000002,
+        "max_ms": 33.144916,
+        "over_budget": 132
+      },
+      "pose_post_ms": {
+        "samples": 840,
+        "mean_ms": 0.11888819404761905,
+        "p50_ms": 0.09743750000000001,
+        "p95_ms": 0.22050625,
+        "p99_ms": 0.55898987,
+        "max_ms": 0.802791,
+        "over_budget": 0
+      },
+      "pose_stage_ms": {
+        "samples": 840,
+        "mean_ms": 17.05772389047619,
+        "p50_ms": 16.509708,
+        "p95_ms": 21.565454449999798,
+        "p99_ms": 32.69836388000001,
+        "max_ms": 35.24675,
+        "over_budget": 347
+      },
+      "pose_queue_ms": {
+        "samples": 840,
+        "mean_ms": 0.015858759523809524,
+        "p50_ms": 0.015458,
+        "p95_ms": 0.019417,
+        "p99_ms": 0.026118250000000003,
+        "max_ms": 0.030542,
+        "over_budget": 0
+      },
+      "detector_to_pose_wait_ms": {
+        "samples": 840,
+        "mean_ms": 5.969231446428572,
+        "p50_ms": 5.3673335,
+        "p95_ms": 15.392964299999958,
+        "p99_ms": 20.188787630000007,
+        "max_ms": 22.283042,
+        "over_budget": 41
+      },
+      "decode_read_ms": {
+        "samples": 840,
+        "mean_ms": 0.8901062083333333,
+        "p50_ms": 0.8679375,
+        "p95_ms": 1.23810865,
+        "p99_ms": 1.36050501,
+        "max_ms": 1.437625,
+        "over_budget": 0
+      },
+      "submit_to_pose_completion_ms": {
+        "samples": 840,
+        "mean_ms": 35.56825357142857,
+        "p50_ms": 34.400082999999995,
+        "p95_ms": 46.26976214999994,
+        "p99_ms": 65.33403839000003,
+        "max_ms": 70.823,
+        "over_budget": 840
+      },
+      "frame_work_ms": {
+        "samples": 840,
+        "mean_ms": 30.472618948809526,
+        "p50_ms": 29.887416,
+        "p95_ms": 36.39899704999991,
+        "p99_ms": 47.690804250000014,
+        "max_ms": 51.134708,
+        "over_budget": 840
+      },
+      "result_residence_ms": {
+        "samples": 840,
+        "mean_ms": 0.028934933333333333,
+        "p50_ms": 0.022667,
+        "p95_ms": 0.029377099999999996,
+        "p99_ms": 0.28771862000000004,
+        "max_ms": 0.490625,
+        "over_budget": 0
+      },
+      "verification_ms": {
+        "samples": 840,
+        "mean_ms": 2.1969980333333337,
+        "p50_ms": 2.1690625,
+        "p95_ms": 2.38195655,
+        "p99_ms": 2.567023130000001,
+        "max_ms": 2.716875,
+        "over_budget": 0
+      }
+    },
+    "pose_by_person_count": {
+      "1": {
+        "frame_pose_ms": {
+          "samples": 798,
+          "mean_ms": 15.601644323308271,
+          "p50_ms": 15.666458,
+          "p95_ms": 17.0636375,
+          "p99_ms": 17.834921239999996,
+          "max_ms": 20.592833,
+          "over_budget": 90
+        },
+        "per_person_ms": {
+          "samples": 798,
+          "mean_ms": 15.601644323308271,
+          "p50_ms": 15.666458,
+          "p95_ms": 17.0636375,
+          "p99_ms": 17.834921239999996,
+          "max_ms": 20.592833,
+          "over_budget": 90
+        }
+      },
+      "2": {
+        "frame_pose_ms": {
+          "samples": 42,
+          "mean_ms": 28.15176680952381,
+          "p50_ms": 27.5019165,
+          "p95_ms": 32.70186845,
+          "p99_ms": 32.97041016,
+          "max_ms": 33.144916,
+          "over_budget": 42
+        },
+        "per_person_ms": {
+          "samples": 84,
+          "mean_ms": 14.0758834047619,
+          "p50_ms": 13.946833,
+          "p95_ms": 18.21284735,
+          "p99_ms": 18.916666470000003,
+          "max_ms": 18.977083,
+          "over_budget": 9
+        }
+      }
+    }
+  },
+  "last_completed": {
+    "sequence": 899,
+    "pts": 1361719,
+    "time_base": "1/90000"
+  },
+  "pipeline": {
+    "read_frames": 900,
+    "emitted_frames": 900,
+    "max_outstanding_per_stage": 1,
+    "model_stages": 2,
+    "intentional_frame_skips": 0,
+    "unemitted_read_frames": 0,
+    "detector_cadence": "every_source_frame",
+    "cleanup": {
+      "detector": "owner_released",
+      "pose": "owner_released"
+    },
+    "native_hang_force_cancellation": false
+  },
+  "decoder_cleanup": "owner_released",
+  "predictions_sha256": "5b0866674658c20b8b059e4fafbec999e3fed9d4b9db8bc66e37447f37d0971c",
+  "detector_predictions_sha256": "49003c3557b891c7d4365e2895fc9118f6f46ac9e54f41a306e20fdac0214c53",
+  "pixels_sha256": "a051fc060218c8a03d5172308a68f4334576908f58613ad309b391ea4e620a2a",
+  "hash_scope": "complete_pass",
+  "reference_hash_equal": true,
+  "provider_disagreement": {
+    "checked_frames": 900,
+    "reference_unavailable_frames": 0,
+    "ambiguous_multi_person_frames": 68,
+    "parts": {
+      "body": {
+        "matched_points": 9685,
+        "mean_pixels": 0.0,
+        "p95_pixels": 0.0,
+        "p99_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0
+      },
+      "feet": {
+        "matched_points": 933,
+        "mean_pixels": 0.0,
+        "p95_pixels": 0.0,
+        "p99_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0
+      },
+      "face": {
+        "matched_points": 41554,
+        "mean_pixels": 0.0,
+        "p95_pixels": 0.0,
+        "p99_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0
+      },
+      "left_hand": {
+        "matched_points": 14317,
+        "mean_pixels": 0.0,
+        "p95_pixels": 0.0,
+        "p99_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0
+      },
+      "right_hand": {
+        "matched_points": 14092,
+        "mean_pixels": 0.0,
+        "p95_pixels": 0.0,
+        "p99_pixels": 0.0,
+        "max_pixels": 0.0,
+        "above_1px": 0,
+        "above_10px": 0
+      }
+    },
+    "reference_only_point_observations": {
+      "body": 0,
+      "feet": 0,
+      "face": 0,
+      "left_hand": 0,
+      "right_hand": 0
+    },
+    "candidate_only_point_observations": {
+      "body": 0,
+      "feet": 0,
+      "face": 0,
+      "left_hand": 0,
+      "right_hand": 0
+    },
+    "worst_frames": [],
+    "coordinate_delta_lower_is_better": true,
+    "accuracy_verified": false,
+    "reference": "same-provider sequential/reference first completed pass; NOT truth"
+  }
+}

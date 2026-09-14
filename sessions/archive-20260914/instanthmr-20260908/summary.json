@@ -1,0 +1,61 @@
+{
+  "scope": "InstantHMR bounded native trial, headless offline files; no production changes",
+  "github_revision": "dfa7a2daebca3c6d74b692c560546b828f493f62",
+  "model_revision": "3504446fc31e7f76fdb1cd7e463189e7cf0fdd0f",
+  "model_sha256": "f717558094f57d7c9cd084d7981874dbcc3f08e7308501eb98c12844e2cce3b7",
+  "runs": [
+    {
+      "name": "phone-unpaced",
+      "status": "completed",
+      "frames": 6442,
+      "fps": 55.54295754856736,
+      "pose_mean_ms": 12.77356003834213,
+      "detector_mean_ms": 14.611921560074512,
+      "age_p95_ms": null,
+      "final_age_ms": null,
+      "peak_rss_mib": 1362.015625,
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "decoder_released": true
+    },
+    {
+      "name": "phone-paced",
+      "status": "completed",
+      "frames": 6442,
+      "fps": 56.402868411397534,
+      "pose_mean_ms": 12.606026469729898,
+      "detector_mean_ms": 14.169295807823655,
+      "age_p95_ms": 5681.355700849999,
+      "final_age_ms": 5699.898263,
+      "peak_rss_mib": 1253.421875,
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "decoder_released": true
+    },
+    {
+      "name": "macbook-paced",
+      "status": "completed",
+      "frames": 3599,
+      "fps": 29.988637283248377,
+      "pose_mean_ms": 11.134460164212282,
+      "detector_mean_ms": 13.105840824117811,
+      "age_p95_ms": 63.98170839999989,
+      "final_age_ms": 41.8355,
+      "peak_rss_mib": 1075.765625,
+      "cleanup": {
+        "detector": "owner_released",
+        "pose": "owner_released"
+      },
+      "decoder_released": true
+    }
+  ],
+  "phone_unpaced_vs_paced_hashes_equal": {
+    "input_pixels_sha256": true,
+    "boxes_raw_sha256": true,
+    "outputs_sha256": true
+  }
+}

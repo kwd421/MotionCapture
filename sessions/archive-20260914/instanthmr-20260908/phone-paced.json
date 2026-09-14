@@ -1,0 +1,346 @@
+{
+  "status": "completed",
+  "source": {
+    "sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+    "dimensions": [
+      1920,
+      1080
+    ],
+    "codec": "hevc",
+    "frames": 6442,
+    "duration_s": 108.5003,
+    "time_base": "1/90000",
+    "start_pts": 0,
+    "first_pts": 0,
+    "last_pts": 9763528,
+    "declared_average_rate": "12884000/217001",
+    "pts_span_fps": 59.37300533167928,
+    "interval_ms": {
+      "min": 8.511111111111111,
+      "p50": 16.855555555555554,
+      "p95": 16.866666666666667,
+      "p99": 16.877777777777776,
+      "max": 25.2
+    },
+    "timestamp_kind": "ffprobe_integer_pts_and_rational_time_base",
+    "sensor_exposure_uniqueness_verified": false
+  },
+  "name": "phone-paced",
+  "scope": "offline headless all-frame pipeline; every-frame detector, serial people",
+  "pose_mode": "coreml-strict",
+  "paced": true,
+  "limit": 6442,
+  "python": "3.12.10",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "git_head": "451740f0226abbefa810226268baacc8f14c8339",
+  "opencv_threads": 10,
+  "raw_frames_saved": false,
+  "joint_coordinates_saved": false,
+  "accuracy_verified": false,
+  "models": {
+    "detector": {
+      "onnxruntime_version": "1.29.0",
+      "requested": "coreml-all",
+      "requested_providers": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ]
+      ],
+      "registered_providers": [
+        "CoreMLExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "reported_options": {
+        "CPUExecutionProvider": {},
+        "CoreMLExecutionProvider": {}
+      },
+      "ort_cpu_partitions_explicitly_allowed": false,
+      "dynamic_dimension_bindings": {},
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 1
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "input_shape": [
+        1,
+        3,
+        416,
+        416
+      ],
+      "intra_op_threads": 4,
+      "preflight_ms": 704.488334,
+      "preflight_source": "synthetic zero tensor; not measured tracking",
+      "profiling_during_timed_pass": false
+    },
+    "pose": {
+      "mode": "coreml-strict",
+      "runtime": "1.29.0",
+      "requested": [
+        [
+          "CoreMLExecutionProvider",
+          {
+            "ModelFormat": "MLProgram",
+            "MLComputeUnits": "ALL",
+            "RequireStaticInputShapes": "1",
+            "EnableOnSubgraphs": "0"
+          }
+        ]
+      ],
+      "placement": {
+        "node_execution_events": {
+          "CoreMLExecutionProvider": 5
+        },
+        "scope": "one_zero_tensor_preflight",
+        "coreml_internal_hardware_verified": false,
+        "ane_dispatch_verified": false
+      },
+      "model_sha256": "f717558094f57d7c9cd084d7981874dbcc3f08e7308501eb98c12844e2cce3b7",
+      "batch": 1,
+      "profiling_during_timed_pass": false,
+      "conditioning": "published pixel-based CLIFF; no calibrated focal supplied",
+      "coordinates": "estimated body-centred metres, Y-down; not calibrated 3D",
+      "joint_confidence": "not provided by model",
+      "mhr_decode": false
+    },
+    "pose_execution": {
+      "native_sessions": 1,
+      "assignment": "serial",
+      "scope": "within_one_source_frame; slot_is_not_actor_id",
+      "native_parallel_speedup_verified": false
+    }
+  },
+  "loop_s": 114.21404941700166,
+  "cpu_s": 141.411007,
+  "frames": 6442,
+  "person_observations": 6254,
+  "person_counts": {
+    "1": 5991,
+    "2": 130,
+    "0": 320,
+    "3": 1
+  },
+  "input_pixels_sha256": "fe3932b4168666cec3470abadff3c11fafd625f0427179898f9068b7c819eb0a",
+  "boxes_raw_sha256": "5169ff58233f5f169dbbfc40c63084d4fed240e802312428ba102d768414b86a",
+  "outputs_sha256": "1c3255d862331a2e790c38a9cc45bd6531292b8b923ad78054b723752f150a59",
+  "pipeline": {
+    "read_frames": 6442,
+    "emitted_frames": 6442,
+    "max_outstanding_per_stage": 1,
+    "model_stages": 2,
+    "pose_lanes": 1,
+    "frame_parallel_pose": false,
+    "intentional_frame_skips": 0,
+    "unemitted_read_frames": 0,
+    "detector_cadence": "every_source_frame",
+    "cleanup": {
+      "detector": "owner_released",
+      "pose": "owner_released"
+    },
+    "native_hang_force_cancellation": false,
+    "pose_requests": 6442,
+    "unemitted_pose_requests": 0,
+    "ready_pose_handoff_enabled": true,
+    "ready_pose_handoffs": 498,
+    "next_detection_not_ready": 5943,
+    "ready_handoff_waits_for_detector": false,
+    "dependency_pose_handoff_enabled": false,
+    "dependency_pose_handoffs": 0,
+    "dependency_wait_owner": null,
+    "normalization_kernel": "numpy",
+    "source_pacing": {
+      "policy": "original_pts_fixed_epoch_no_skip_no_rebase",
+      "epoch": "first_detector_worker_entry_after_setup_and_first_decode",
+      "first_decode_in_source_age": false,
+      "nanosecond_rounding": "ceil_of_absolute_rational_pts_offset",
+      "expected_frames": 6442,
+      "released_frames": 6442,
+      "pending_sequence": null,
+      "scheduled_source_span_s": 108.483644445,
+      "scheduled_source_rate_hz": 59.37300533137523,
+      "source_time_base": "1/90000",
+      "cancel_requested": false,
+      "clock_rebases": 0,
+      "frames_skipped": 0,
+      "wait_owner": "detector_worker_not_result_consumer",
+      "hardware_camera_emulated": false
+    }
+  },
+  "decoder_released": true,
+  "decoder_eof": true,
+  "peak_rss_mib": 1253.421875,
+  "final_age_ms": 5699.898263,
+  "stages": {
+    "detector_queue_ms": {
+      "samples": 6442,
+      "mean_ms": 0.0697676766532133,
+      "p50_ms": 0.016708,
+      "p95_ms": 0.3404353999999998,
+      "p99_ms": 0.8054570300000001,
+      "max_ms": 31.382625,
+      "over_budget": 3
+    },
+    "detector_pre_ms": {
+      "samples": 6442,
+      "mean_ms": 0.6359135822725861,
+      "p50_ms": 0.5411459999999999,
+      "p95_ms": 1.1598409999999997,
+      "p99_ms": 1.651237060000001,
+      "max_ms": 8.333375,
+      "over_budget": 0
+    },
+    "detector_inference_ms": {
+      "samples": 6442,
+      "mean_ms": 14.169295807823655,
+      "p50_ms": 14.393604,
+      "p95_ms": 16.6958524,
+      "p99_ms": 18.82257278,
+      "max_ms": 99.019791,
+      "over_budget": 335
+    },
+    "detector_post_ms": {
+      "samples": 6442,
+      "mean_ms": 0.292448712356411,
+      "p50_ms": 0.181313,
+      "p95_ms": 0.7345371999999998,
+      "p99_ms": 1.677486500000001,
+      "max_ms": 7.065583,
+      "over_budget": 0
+    },
+    "detector_stage_ms": {
+      "samples": 6442,
+      "mean_ms": 15.097658102452655,
+      "p50_ms": 15.1473545,
+      "p95_ms": 18.22232855,
+      "p99_ms": 20.705866530000012,
+      "max_ms": 100.623,
+      "over_budget": 889
+    },
+    "source_pacing_wait_ms": {
+      "samples": 6442,
+      "mean_ms": 0.027615459950325986,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "max_ms": 13.894708,
+      "over_budget": 0
+    },
+    "scheduled_source_to_detector_ms": {
+      "samples": 6442,
+      "mean_ms": 3970.662708216237,
+      "p50_ms": 3968.0968955,
+      "p95_ms": 5648.59473365,
+      "p99_ms": 5676.79543884,
+      "max_ms": 5694.952846,
+      "over_budget": 6408
+    },
+    "pose_pre_ms": {
+      "samples": 6442,
+      "mean_ms": 1.7123475520024838,
+      "p50_ms": 1.5328125,
+      "p95_ms": 3.27473575,
+      "p99_ms": 4.5649888500000095,
+      "max_ms": 8.123167,
+      "over_budget": 0
+    },
+    "pose_inference_ms": {
+      "samples": 6442,
+      "mean_ms": 12.606026469729898,
+      "p50_ms": 12.6772505,
+      "p95_ms": 16.71136665,
+      "p99_ms": 24.535362810000002,
+      "max_ms": 48.472875,
+      "over_budget": 328
+    },
+    "pose_post_ms": {
+      "samples": 6442,
+      "mean_ms": 0.039208140173859055,
+      "p50_ms": 0.0391665,
+      "p95_ms": 0.06374795,
+      "p99_ms": 0.09021956000000009,
+      "max_ms": 1.98275,
+      "over_budget": 0
+    },
+    "pose_stage_ms": {
+      "samples": 6442,
+      "mean_ms": 14.36296520987271,
+      "p50_ms": 14.1898955,
+      "p95_ms": 19.4924979,
+      "p99_ms": 28.714847440000025,
+      "max_ms": 51.701959,
+      "over_budget": 963
+    },
+    "pose_queue_ms": {
+      "samples": 6442,
+      "mean_ms": 0.07079650093138777,
+      "p50_ms": 0.017083,
+      "p95_ms": 0.48599164999999994,
+      "p99_ms": 0.7878454400000005,
+      "max_ms": 9.731,
+      "over_budget": 0
+    },
+    "detector_to_pose_wait_ms": {
+      "samples": 6442,
+      "mean_ms": 1.1175400437752252,
+      "p50_ms": 0.769042,
+      "p95_ms": 2.794353849999999,
+      "p99_ms": 9.831003,
+      "max_ms": 23.974125,
+      "over_budget": 1
+    },
+    "decode_read_ms": {
+      "samples": 6442,
+      "mean_ms": 1.1649382226016765,
+      "p50_ms": 0.9431875000000001,
+      "p95_ms": 2.1644419999999998,
+      "p99_ms": 4.437937500000002,
+      "max_ms": 30.277583,
+      "over_budget": 2
+    },
+    "submit_to_pose_completion_ms": {
+      "samples": 6442,
+      "mean_ms": 30.68908603616889,
+      "p50_ms": 30.0063545,
+      "p95_ms": 40.208233050000004,
+      "p99_ms": 54.513296470000014,
+      "max_ms": 109.611292,
+      "over_budget": 6180
+    },
+    "result_residence_ms": {
+      "samples": 6442,
+      "mean_ms": 0.19664400667494566,
+      "p50_ms": 0.1129375,
+      "p95_ms": 0.5152975999999999,
+      "p99_ms": 1.0320334700000002,
+      "max_ms": 20.052333,
+      "over_budget": 1
+    },
+    "scheduled_source_to_validated_ms": {
+      "samples": 6442,
+      "mean_ms": 4004.2272428882334,
+      "p50_ms": 4000.7309925,
+      "p95_ms": 5681.355700849999,
+      "p99_ms": 5699.03240447,
+      "max_ms": 5722.301444,
+      "over_budget": 6441
+    },
+    "pose_submit_gap_ms": {
+      "samples": 6441,
+      "mean_ms": 3.288783292035398,
+      "p50_ms": 2.672542,
+      "p95_ms": 8.702208,
+      "p99_ms": 16.5096084,
+      "max_ms": 104.214166,
+      "over_budget": 56
+    }
+  },
+  "frames_per_s": 56.402868411397534
+}

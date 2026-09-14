@@ -1,0 +1,8 @@
+opencv_threads 10
+[0;93m2026-09-08 09:41:03.850556 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+[0;93m2026-09-08 09:41:04.660381 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"status": "completed", "error": null}

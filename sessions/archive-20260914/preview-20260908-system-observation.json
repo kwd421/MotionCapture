@@ -1,0 +1,55 @@
+{
+  "observed_unix_s": 1788826649.337488,
+  "scope": "single system snapshot during MacBook FIFO run; not earlier phone runs",
+  "top_processes": [
+    {
+      "cpu_percent": 84.7,
+      "process_name": "Python"
+    },
+    {
+      "cpu_percent": 65.2,
+      "process_name": "rustc"
+    },
+    {
+      "cpu_percent": 48.4,
+      "process_name": "WindowServer"
+    },
+    {
+      "cpu_percent": 46.3,
+      "process_name": "rustc"
+    },
+    {
+      "cpu_percent": 45.0,
+      "process_name": "rustc"
+    },
+    {
+      "cpu_percent": 9.1,
+      "process_name": "codex"
+    },
+    {
+      "cpu_percent": 6.8,
+      "process_name": "com.apple.WebKit.WebContent"
+    },
+    {
+      "cpu_percent": 6.5,
+      "process_name": "Codex (Service)"
+    },
+    {
+      "cpu_percent": 6.2,
+      "process_name": "rustc"
+    },
+    {
+      "cpu_percent": 4.4,
+      "process_name": "Codex (Renderer)"
+    },
+    {
+      "cpu_percent": 4.1,
+      "process_name": "com.apple.WebKit.GPU"
+    },
+    {
+      "cpu_percent": 3.4,
+      "process_name": "Safari"
+    }
+  ],
+  "other_processes_modified": false
+}

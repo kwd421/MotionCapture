@@ -1,0 +1,38 @@
+Uninstalled 1 package in 9ms
+Installed 1 package in 3ms
+{"starting": "A1", "detector": "coreml-all", "pose": "coreml-all"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "A1", "status": "completed", "loop": null, "pose": null}
+{"starting": "B1", "detector": "coreml-gpu", "pose": "coreml-ane"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "B1", "status": "completed", "loop": null, "pose": null}
+{"starting": "C1", "detector": "coreml-ane", "pose": "coreml-gpu"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "C1", "status": "completed", "loop": null, "pose": null}
+{"starting": "C2", "detector": "coreml-ane", "pose": "coreml-gpu"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "C2", "status": "completed", "loop": null, "pose": null}
+{"starting": "B2", "detector": "coreml-gpu", "pose": "coreml-ane"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "B2", "status": "completed", "loop": null, "pose": null}
+{"starting": "A2", "detector": "coreml-all", "pose": "coreml-all"}
+source-pts-ready-cvlut: 300/1200
+source-pts-ready-cvlut: 600/1200
+source-pts-ready-cvlut: 900/1200
+source-pts-ready-cvlut: 1200/1200
+{"finished": "A2", "status": "completed", "loop": null, "pose": null}

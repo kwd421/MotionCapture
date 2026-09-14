@@ -1,0 +1,40 @@
+objc[57797]: Class SDL_RumbleMotor is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcd40) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a49c8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_RumbleContext is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcd90) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4a18). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLApplication is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fc890) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4a68). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLAppDelegate is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fc8e0) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4ab8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLTranslatorResponder is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fc958) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4b30). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLMessageBoxPresenter is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fc980) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4b58). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_cocoametalview is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fc9d0) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4ba8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLOpenGLContext is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fca20) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4bf8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_ShapeData is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fca98) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4c70). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_CocoaClosure is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcae8) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4cc0). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_VideoData is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcb38) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4d10). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDL_WindowData is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcb88) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4d60). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLWindow is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcbb0) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4d88). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class Cocoa_WindowListener is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcbd8) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4db0). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class SDLView is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcc50) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4e28). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class METAL_RenderData is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fccc8) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4ea0). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[57797]: Class METAL_TextureData is implemented in both ./.venv/lib/python3.12/site-packages/cv2/.dylibs/libSDL2-2.0.0.dylib (0x10a4fcd18) and <USER_HOME>/.cache/uv/archive-v0/pgxgE-Sqs2Gzl32-3tA2j/lib/python3.12/site-packages/pygame/.dylibs/libSDL2-2.0.0.dylib (0x10f6a4ef0). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+pygame-ce 2.5.8 (SDL 2.32.10, Python 3.12.10)
+source-pts-ready-cvlut: 300/6442
+source-pts-ready-cvlut: 600/6442
+source-pts-ready-cvlut: 900/6442
+source-pts-ready-cvlut: 1200/6442
+source-pts-ready-cvlut: 1500/6442
+source-pts-ready-cvlut: 1800/6442
+source-pts-ready-cvlut: 2100/6442
+source-pts-ready-cvlut: 2400/6442
+source-pts-ready-cvlut: 2700/6442
+source-pts-ready-cvlut: 3000/6442
+source-pts-ready-cvlut: 3300/6442
+source-pts-ready-cvlut: 3600/6442
+source-pts-ready-cvlut: 3900/6442
+source-pts-ready-cvlut: 4200/6442
+source-pts-ready-cvlut: 4500/6442
+source-pts-ready-cvlut: 4800/6442
+source-pts-ready-cvlut: 5100/6442
+source-pts-ready-cvlut: 5400/6442
+source-pts-ready-cvlut: 5700/6442
+source-pts-ready-cvlut: 6000/6442
+source-pts-ready-cvlut: 6300/6442
+{"status": "completed", "error": null}

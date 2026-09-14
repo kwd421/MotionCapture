@@ -1,0 +1,26 @@
+Uninstalled 1 package in 17ms
+Installed 1 package in 8ms
+2026-09-08 17:20:37.076 Python[76754:13606252] 2026-09-08 17:20:37.076759 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+2026-09-08 17:20:37.078 Python[76754:13606252] 2026-09-08 17:20:37.078190 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:20:37.084 Python[76754:13606252] 2026-09-08 17:20:37.084066 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:20:37.085 Python[76754:13606252] 2026-09-08 17:20:37.085707 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:20:37.087 Python[76754:13606252] 2026-09-08 17:20:37.087676 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:20:37.089 Python[76754:13606252] 2026-09-08 17:20:37.089070 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:20:37.090 Python[76754:13606252] 2026-09-08 17:20:37.090924 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:20:37.092 Python[76754:13606252] 2026-09-08 17:20:37.092160 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129256 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/multihead_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129390 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.3/self_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129442 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/multihead_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129487 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.2/self_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129528 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/multihead_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129568 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.1/self_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129606 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/multihead_attn/Sqrt'
+2026-09-08 17:20:37.129 Python[76754:13606252] 2026-09-08 17:20:37.129642 [W:onnxruntime:, constant_folding.cc:581 ApplyImpl] Could not find a CPU kernel and hence can't constant fold Sqrt node '/model/transformer/layers.0/self_attn/Sqrt'
+phone-1080p60-20260906_030954-000300.png
+phone-1080p60-20260906_030954-001200.png
+phone-1080p60-20260906_030954-003000.png
+phone-1080p60-20260906_030954-005000.png
+macbook-720p30-20260905T175716Z-000200.png
+macbook-720p30-20260905T175716Z-001200.png
+pose-rpi-dance-000060.png
+pose-rpi-dance-000180.png

@@ -1,0 +1,64 @@
+{
+  "scope": "two selected frames, same normalized input; numeric disagreement is not ground-truth accuracy",
+  "modes": [
+    "coreml-strict",
+    "cpu"
+  ],
+  "raw_coordinates_saved": false,
+  "rows": [
+    {
+      "source_sha256": "f0346fc4539e6b8f17c67287f6827a3d775459307c3eff515ac574134986414d",
+      "sequence": 1200,
+      "pts": 614912,
+      "people": 1,
+      "comparisons": [
+        {
+          "slot": 0,
+          "max_2d_disagreement_px": 6.818758964538574,
+          "max_3d_joint_disagreement_m": 0.0053332531824707985,
+          "coreml_wrist_out_of_frame": [
+            true,
+            true
+          ],
+          "cpu_wrist_out_of_frame": [
+            true,
+            true
+          ],
+          "dwpose_body_wrist_in_frame_and_valid": [
+            true,
+            true
+          ],
+          "left_hand_coreml_points_outside": 21,
+          "right_hand_coreml_points_outside": 21
+        }
+      ]
+    },
+    {
+      "source_sha256": "6089f23e171d0cc5d4481328f8a476e39a9f1bc74bf1ee17108dd74ad35e6f72",
+      "sequence": 1200,
+      "pts": 1818130,
+      "people": 1,
+      "comparisons": [
+        {
+          "slot": 0,
+          "max_2d_disagreement_px": 1.2566148042678833,
+          "max_3d_joint_disagreement_m": 0.0015545290661975741,
+          "coreml_wrist_out_of_frame": [
+            false,
+            false
+          ],
+          "cpu_wrist_out_of_frame": [
+            false,
+            false
+          ],
+          "dwpose_body_wrist_in_frame_and_valid": [
+            true,
+            true
+          ],
+          "left_hand_coreml_points_outside": 0,
+          "right_hand_coreml_points_outside": 0
+        }
+      ]
+    }
+  ]
+}

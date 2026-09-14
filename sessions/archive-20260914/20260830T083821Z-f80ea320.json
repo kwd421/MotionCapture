@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "session_id": "20260830T083821Z-f80ea320",
+  "started_at": "2026-08-30T08:38:21.086194+00:00",
+  "finished_at": "2026-08-30T08:38:39.941951+00:00",
+  "duration_seconds": 18.855757,
+  "terminal_status": "completed",
+  "terminal_error": null,
+  "application": {
+    "name": "motioncapture",
+    "version": "0.1.0"
+  },
+  "runtime": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "python": "3.12.10",
+    "opencv": "4.14.0",
+    "mediapipe": "0.10.31",
+    "inference_provider": "MediaPipe 0.10.31 CPU (Pose + Hands + Face)"
+  },
+  "models": [
+    {
+      "key": "pose",
+      "name": "pose_landmarker_full_float16_v1",
+      "sha256": "5134a3aad27a58b93da0088d431f366da362b44e3ccfbe3462b3827a839011b1"
+    },
+    {
+      "key": "hands",
+      "name": "hand_landmarker_float16_v1",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    },
+    {
+      "key": "face",
+      "name": "face_landmarker_float16_v1",
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+    }
+  ],
+  "mode": {
+    "capture": "live_local_camera",
+    "geometry": "monocular_2d_landmarks",
+    "preview_mirrored": true,
+    "calibrated_3d": false,
+    "retargeting": false
+  },
+  "camera_request": {
+    "index": 0,
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0
+  },
+  "camera_observation": {
+    "backend": "AVFoundation",
+    "index": 0,
+    "width": 1280,
+    "height": 720,
+    "nominal_fps": 30.0,
+    "timestamp_provenance": "host_receive_monotonic"
+  },
+  "frames": 120,
+  "latency": {
+    "provenance": "host_process_perf_counter",
+    "camera_sensor_to_display_measured": false,
+    "stages": {
+      "input_conversion": {
+        "mean_ms": 0.9637563000000002,
+        "maximum_ms": 2.243875
+      },
+      "pose": {
+        "mean_ms": 39.55537498333334,
+        "maximum_ms": 82.496917
+      },
+      "hands": {
+        "mean_ms": 37.59341670833335,
+        "maximum_ms": 89.674375
+      },
+      "face": {
+        "mean_ms": 18.617573633333336,
+        "maximum_ms": 34.087416
+      },
+      "result_assembly": {
+        "mean_ms": 0.018482941666666673,
+        "maximum_ms": 0.067958
+      },
+      "tracker_total": {
+        "mean_ms": 96.74860456666667,
+        "maximum_ms": 175.044125
+      },
+      "preview_composition": {
+        "mean_ms": 8.737976758333334,
+        "maximum_ms": 13.089375
+      },
+      "host_post_receive_total": {
+        "mean_ms": 105.70746666666665,
+        "maximum_ms": 187.459125
+      }
+    }
+  },
+  "mean_processing_fps": 7.846890957738923,
+  "detection_totals": {
+    "pose_frames": 120,
+    "face_frames": 120,
+    "left_hand_frames": 0,
+    "right_hand_frames": 11
+  },
+  "privacy": {
+    "raw_frames_recorded": false,
+    "landmarks_recorded": false
+  }
+}

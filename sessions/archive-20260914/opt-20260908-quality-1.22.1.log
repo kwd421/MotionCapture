@@ -1,0 +1,8 @@
+Uninstalled 1 package in 7ms
+Installed 1 package in 2ms
+[0;93m2026-09-08 10:10:49.344636 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+[0;93m2026-09-08 10:10:50.114973 [W:onnxruntime:, coreml_execution_provider.cc:113 GetCapability] CoreMLExecutionProvider::GetCapability, number of partitions supported by CoreML: 7 number of nodes in the graph: 244 number of nodes supported by CoreML: 238[m
+overlap-ready-cvlut: 300/1200
+overlap-ready-cvlut: 600/1200
+overlap-ready-cvlut: 900/1200
+overlap-ready-cvlut: 1200/1200
